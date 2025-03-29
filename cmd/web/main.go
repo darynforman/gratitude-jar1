@@ -6,9 +6,8 @@ import (
 )
 
 func main() {
-	// Initialize the server
-	mux := http.NewServeMux()
-	mux.HandleFunc("/", home)
+	// Initialize the server with routes
+	mux := routes()
 
 	// Start the server
 	log.Println("Starting server on :4000...")
@@ -16,8 +15,4 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-}
-
-func home(w http.ResponseWriter, r *http.Request) {
-	w.Write([]byte("Hello, World!"))
 }
