@@ -9,6 +9,7 @@ func routes() http.Handler {
 	mux.HandleFunc("/", home)
 	mux.HandleFunc("/gratitude", gratitude)
 	mux.HandleFunc("/gratitude/create", createGratitude)
+	mux.HandleFunc("/gratitude/", deleteGratitude)
 
 	// Chain middleware
 	handler := LoggingMiddleware(mux)

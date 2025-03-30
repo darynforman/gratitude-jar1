@@ -1,44 +1,75 @@
 {{define "content"}}
-<div class="container">
-    <div class="row">
-        <div class="col-md-6">
-            <h2>Add New Gratitude Note</h2>
-            <form action="/gratitude/create" method="POST" class="mb-4">
-                <div class="form-group">
-                    <label for="title">Title</label>
-                    <input type="text" class="form-control" id="title" name="title" required>
-                </div>
-                <div class="form-group">
-                    <label for="content">Content</label>
-                    <textarea class="form-control" id="content" name="content" rows="4" required></textarea>
-                </div>
-                <div class="form-group">
-                    <label for="category">Category</label>
-                    <select class="form-control" id="category" name="category">
-                        <option value="personal">Personal</option>
-                        <option value="work">Work</option>
-                        <option value="family">Family</option>
-                        <option value="achievements">Achievements</option>
-                    </select>
-                </div>
-                <button type="submit" class="btn btn-primary">Save Note</button>
-            </form>
-        </div>
-        <div class="col-md-6">
-            <h2>Your Gratitude Notes</h2>
-            {{range .Notes}}
-            <div class="card mb-3">
-                <div class="card-body">
-                    <h5 class="card-title">{{.Title}}</h5>
-                    <p class="card-text">{{.Content}}</p>
-                    <div class="d-flex justify-content-between align-items-center">
-                        <span class="badge badge-primary">{{.Category}}</span>
-                        <small class="text-muted">{{.CreatedAt}}</small>
-                    </div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+    <!-- Add New Note Form -->
+    <div class="bg-white p-6 rounded-lg shadow-md">
+        <h2 class="text-2xl font-bold mb-4">Add New Gratitude Note</h2>
+        <form hx-post="/gratitude/create" 
+              hx-target="#notes-list" 
+              hx-swap="afterbegin"
+              class="space-y-4">
+            <div>
+                <label for="title" class="block text-sm font-medium text-gray-700">Title</label>
+                <input type="text" 
+                       id="title" 
+                       name="title" 
+                       required
+                       class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+            </div>
+            <div>
+                <label for="content" class="block text-sm font-medium text-gray-700">Content</label>
+                <textarea id="content" 
+                          name="content" 
+                          rows="4" 
+                          required
+                          class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"></textarea>
+            </div>
+            <div>
+                <label for="category" class="block text-sm font-medium text-gray-700">Category</label>
+                <select id="category" 
+                        name="category"
+                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                    <option value="personal">Personal</option>
+                    <option value="work">Work</option>
+                    <option value="family">Family</option>
+                    <option value="achievements">Achievements</option>
+                </select>
+            </div>
+            <button type="submit" 
+                    class="w-full bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
+                Save Note
+            </button>
+        </form>
+    </div>
+
+    <!-- Notes List -->
+    <div id="notes-list" class="space-y-4">
+        {{range .Notes}}
+        <div class="bg-white p-6 rounded-lg shadow-md">
+            <div class="flex justify-between items-start">
+                <h3 class="text-xl font-semibold text-gray-900">{{.Title}}</h3>
+                <span class="px-2 py-1 text-xs font-semibold rounded-full 
+                           {{if eq .Category "personal"}}bg-blue-100 text-blue-800
+                           {{else if eq .Category "work"}}bg-green-100 text-green-800
+                           {{else if eq .Category "family"}}bg-purple-100 text-purple-800
+                           {{else}}bg-yellow-100 text-yellow-800{{end}}">
+                    {{.Category}}
+                </span>
+            </div>
+            <p class="mt-2 text-gray-600">{{.Content}}</p>
+            <div class="mt-4 flex justify-between items-center text-sm text-gray-500">
+                <span>{{.CreatedAt}}</span>
+                <div class="space-x-2">
+                    <button hx-get="/gratitude/edit/{{.ID}}" 
+                            hx-target="#edit-form"
+                            class="text-indigo-600 hover:text-indigo-900">Edit</button>
+                    <button hx-delete="/gratitude/{{.ID}}"
+                            hx-target="#notes-list"
+                            hx-swap="outerHTML"
+                            class="text-red-600 hover:text-red-900">Delete</button>
                 </div>
             </div>
-            {{end}}
         </div>
+        {{end}}
     </div>
 </div>
 {{end}} 
