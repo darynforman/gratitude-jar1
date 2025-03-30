@@ -3,7 +3,13 @@
     <!-- Hero Section with Jar Image -->
     <div class="text-center mb-16">
         <div class="mb-8 transform hover:scale-105 transition-transform duration-300">
-            <img src="/static/img/gratitude-jar.jpg" alt="Gratitude Jar filled with colorful notes" class="mx-auto rounded-lg shadow-xl max-w-md hover:shadow-2xl transition-shadow duration-300">
+            <div class="relative rounded-xl overflow-hidden shadow-xl bg-white p-8">
+                <img 
+                    src="/static/img/gratitude-jar.png" 
+                    alt="Gratitude Jar filled with colorful notes" 
+                    class="mx-auto w-3/4 max-w-2xl"
+                >
+            </div>
         </div>
         <h1 class="text-4xl md:text-6xl font-bold mb-6 gradient-text animate-fade-in">
             Gratitude Jar
@@ -12,20 +18,25 @@
             "Feeling gratitude and not expressing it is like wrapping a present and not giving it."
             <span class="block text-sm text-gray-500 mt-2">- William Arthur Ward</span>
         </p>
-        <a href="/gratitude" class="inline-block bg-gradient-to-r from-orange-500 to-orange-600 text-white px-8 py-3 rounded-full hover:from-orange-600 hover:to-orange-700 transition duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1">
+        <a href="/gratitude" class="inline-block bg-gradient-to-r from-[#FFB200] to-[#EB5B00] text-white px-8 py-3 rounded-full hover:from-[#EB5B00] hover:to-[#D91656] transition duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1">
             Start Your Journey
         </a>
     </div>
 
     <!-- Mountain Sign Section -->
-    <div class="mb-16 transform hover:scale-102 transition-all duration-300">
-        <div class="bg-white p-8 rounded-xl shadow-lg overflow-hidden hover:shadow-2xl transition-shadow duration-300 border-t-4 border-golden">
-            <div class="overflow-hidden rounded-lg">
-                <img src="/static/img/gratitude-sign.jpg" alt="Wooden Gratitude sign with mountains" class="w-full rounded-lg mb-8 transform hover:scale-105 transition-transform duration-700">
+    <div class="mb-16">
+        <div class="bg-white p-8 rounded-xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-300 border-t-4 border-[#FFB200]">
+            <div class="relative rounded-lg overflow-hidden">
+                <img 
+                    src="/static/img/gratitude-sign.jpg" 
+                    alt="Wooden Gratitude sign with mountains" 
+                    class="w-full hover:scale-105 transition-transform duration-700"
+                >
+                <div class="absolute inset-0 bg-gradient-to-br from-[#FFB200]/10 via-transparent to-[#EB5B00]/10"></div>
             </div>
-            <div class="space-y-8">
+            <div class="space-y-8 mt-8">
                 <div class="text-center">
-                    <h2 class="text-2xl font-bold text-plum mb-4">What would happen if...</h2>
+                    <h2 class="text-2xl font-bold text-[#640D5F] mb-4">What would happen if...</h2>
                     <p class="text-gray-600">
                         We made gratitude our highest priority, recognizing the beauty in each moment and intentionally sharing our appreciation with others?
                     </p>
@@ -35,14 +46,19 @@
     </div>
 
     <!-- Pen and Writing Section -->
-    <div class="mb-16 transform hover:scale-102 transition-all duration-300">
-        <div class="bg-white p-8 rounded-xl shadow-lg overflow-hidden hover:shadow-2xl transition-shadow duration-300 border-t-4 border-raspberry">
-            <div class="overflow-hidden rounded-lg">
-                <img src="/static/img/gratitude-writing.jpg" alt="Pen and handwritten gratitude notes" class="w-full rounded-lg mb-8 transform hover:scale-105 transition-transform duration-700">
+    <div class="mb-16">
+        <div class="bg-white p-8 rounded-xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-300 border-t-4 border-[#D91656]">
+            <div class="relative rounded-lg overflow-hidden">
+                <img 
+                    src="/static/img/gratitude-writing.jpg" 
+                    alt="Pen and handwritten gratitude notes" 
+                    class="w-full hover:scale-105 transition-transform duration-700"
+                >
+                <div class="absolute inset-0 bg-gradient-to-br from-[#D91656]/10 via-transparent to-[#640D5F]/10"></div>
             </div>
-            <div class="space-y-8">
+            <div class="space-y-8 mt-8">
                 <div class="text-center">
-                    <h2 class="text-2xl font-bold text-plum mb-4">Express Your Gratitude</h2>
+                    <h2 class="text-2xl font-bold text-[#640D5F] mb-4">Express Your Gratitude</h2>
                     <p class="text-gray-600">
                         Take a moment each day to write down what you're grateful for. Let your thoughts flow freely and capture the moments that make life beautiful.
                     </p>
@@ -82,49 +98,6 @@
 </div>
 
 <style>
-    :root {
-        --color-golden: #FFB200;
-        --color-orange: #EB5B00;
-        --color-raspberry: #D91656;
-        --color-plum: #640D5F;
-    }
-    
-    .text-plum {
-        color: var(--color-plum);
-    }
-    
-    .border-golden {
-        border-color: var(--color-golden);
-    }
-    
-    .border-raspberry {
-        border-color: var(--color-raspberry);
-    }
-    
-    .from-golden {
-        --tw-gradient-from: var(--color-golden);
-    }
-    
-    .from-orange {
-        --tw-gradient-from: var(--color-orange);
-    }
-    
-    .from-raspberry {
-        --tw-gradient-from: var(--color-raspberry);
-    }
-    
-    .to-orange {
-        --tw-gradient-to: var(--color-orange);
-    }
-    
-    .to-raspberry {
-        --tw-gradient-to: var(--color-raspberry);
-    }
-    
-    .to-plum {
-        --tw-gradient-to: var(--color-plum);
-    }
-
     @keyframes fade-in {
         from { opacity: 0; }
         to { opacity: 1; }
