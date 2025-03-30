@@ -62,12 +62,26 @@
         
         /* Page background with subtle radial gradients */
         body {
-            background-color: #fffaf0;
+            background-color: #e6f3ff;
             background-image: 
-                radial-gradient(at 40% 20%, rgba(255, 178, 0, 0.1) 0px, transparent 50%),
-                radial-gradient(at 80% 0%, rgba(235, 91, 0, 0.1) 0px, transparent 50%),
-                radial-gradient(at 0% 50%, rgba(217, 22, 86, 0.1) 0px, transparent 50%);
+                linear-gradient(135deg, #e6f3ff 0%, #f0e6ff 100%);
             background-attachment: fixed;
+            background-size: 100% 100%;
+            background-position: center;
+            background-repeat: no-repeat;
+        }
+        
+        /* Add a subtle pattern overlay */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23FFB200' fill-opacity='0.1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+            pointer-events: none;
+            z-index: 0;
         }
         
         /* Footer heading color */

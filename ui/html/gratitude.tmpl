@@ -8,8 +8,8 @@
         
         <!-- Form submission handled by HTMX -->
         <form hx-post="/gratitude/create" 
-              hx-target="#notes-list"  <!-- Updates the notes list on submit -->
-              hx-swap="afterbegin"      <!-- Inserts the new note at the top -->
+              hx-target="#notes-list"
+              hx-swap="afterbegin"
               class="space-y-4">
             
             <!-- Input field for note title -->
@@ -76,11 +76,11 @@
                 <!-- Edit and delete buttons with HTMX actions -->
                 <div class="space-x-2">
                     <button hx-get="/gratitude/edit/{{.ID}}"  
-                            hx-target="#edit-form"   <!-- Loads edit form dynamically -->
+                            hx-target="#edit-form"
                             class="text-indigo-600 hover:text-indigo-900">Edit</button>
                     <button hx-delete="/gratitude/{{.ID}}"  
-                            hx-target="#notes-list"  <!-- Removes note from the list -->
-                            hx-swap="outerHTML"       <!-- Deletes the note from the DOM -->
+                            hx-target="#notes-list"
+                            hx-swap="outerHTML"
                             class="text-red-600 hover:text-red-900">Delete</button>
                 </div>
             </div>

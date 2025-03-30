@@ -9,11 +9,13 @@ import (
 
 // render renders an HTML template with the provided data
 func render(w http.ResponseWriter, tmpl string, data interface{}) {
+	log.Printf("Rendering template: %s", tmpl)
 	// Parse both the base template and the specific page template together
 	templates := template.Must(template.ParseFiles(
 		filepath.Join("ui", "html", "base.tmpl"), // Base layout template (common structure)
 		filepath.Join("ui", "html", tmpl),        // Specific page template
 	))
+	log.Printf("Templates parsed successfully")
 
 	// Execute the parsed templates and send the output to the response writer
 	err := templates.Execute(w, data)
@@ -25,4 +27,5 @@ func render(w http.ResponseWriter, tmpl string, data interface{}) {
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 		return
 	}
+	log.Printf("Template executed successfully")
 }

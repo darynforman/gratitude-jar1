@@ -1,116 +1,136 @@
 {{define "content"}}
 <!-- Main container with a max width and centered alignment -->
 <div class="max-w-4xl mx-auto">
-    
-    <!-- Hero Section with an Image of a Gratitude Jar -->
-    <div class="text-center mb-16">
-        <div class="mb-8 transform hover:scale-105 transition-transform duration-300">
-            <div class="relative rounded-xl overflow-hidden shadow-xl bg-white p-8">
-                <img 
-                    src="/static/img/gratitude-jar.png" 
-                    alt="Gratitude Jar filled with colorful notes" 
-                    class="mx-auto w-3/4 max-w-2xl"
-                >
-            </div>
-        </div>
+    <!-- Hero Section -->
+    <div class="text-center mb-16 relative">
+        <!-- Floating elements for visual interest -->
+        <div class="absolute -top-8 -left-8 w-24 h-24 bg-[#FFB200]/10 rounded-full blur-2xl"></div>
+        <div class="absolute -bottom-8 -right-8 w-32 h-32 bg-[#D91656]/10 rounded-full blur-2xl"></div>
         
-        <!-- Page Title -->
-        <h1 class="text-4xl md:text-6xl font-bold mb-6 gradient-text animate-fade-in">
-            Gratitude Jar
-        </h1>
-        
-        <!-- Inspirational Quote -->
-        <p class="text-xl text-gray-600 mb-8 animate-slide-up">
-            "Feeling gratitude and not expressing it is like wrapping a present and not giving it."
-            <span class="block text-sm text-gray-500 mt-2">- William Arthur Ward</span>
-        </p>
-        
-        <!-- Call-to-Action Button -->
-        <a href="/gratitude" 
-           class="inline-block bg-gradient-to-r from-[#FFB200] to-[#EB5B00] text-white px-8 py-3 rounded-full hover:from-[#EB5B00] hover:to-[#D91656] transition duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1">
-            Start Your Journey
-        </a>
-    </div>
-
-    <!-- Section with an Image of a Wooden Gratitude Sign -->
-    <div class="mb-16">
-        <div class="bg-white p-8 rounded-xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-300 border-t-4 border-[#FFB200]">
-            <div class="relative rounded-lg overflow-hidden">
-                <img 
-                    src="/static/img/gratitude-sign.jpg" 
-                    alt="Wooden Gratitude sign with mountains" 
-                    class="w-full hover:scale-105 transition-transform duration-700"
-                >
-                <div class="absolute inset-0 bg-gradient-to-br from-[#FFB200]/10 via-transparent to-[#EB5B00]/10"></div>
-            </div>
-            
-            <!-- Text Section -->
-            <div class="space-y-8 mt-8">
-                <div class="text-center">
-                    <h2 class="text-2xl font-bold text-[#640D5F] mb-4">What would happen if...</h2>
-                    <p class="text-gray-600">
-                        We made gratitude our highest priority, recognizing the beauty in each moment and intentionally sharing our appreciation with others?
-                    </p>
+        <!-- Main hero content -->
+        <div class="relative z-10">
+            <!-- Jar Image with enhanced hover effect -->
+            <div class="mb-8 transform hover:scale-105 transition-all duration-500">
+                <div class="relative">
+                    <!-- Main image -->
+                    <img 
+                        src="/static/img/gratitude-jar.png" 
+                        alt="Gratitude Jar filled with colorful notes" 
+                        class="mx-auto w-3/4 max-w-2xl"
+                    >
                 </div>
             </div>
-        </div>
-    </div>
-
-    <!-- Section with an Image of Handwritten Gratitude Notes -->
-    <div class="mb-16">
-        <div class="bg-white p-8 rounded-xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-300 border-t-4 border-[#D91656]">
-            <div class="relative rounded-lg overflow-hidden">
-                <img 
-                    src="/static/img/gratitude-writing.jpg" 
-                    alt="Pen and handwritten gratitude notes" 
-                    class="w-full hover:scale-105 transition-transform duration-700"
-                >
-                <div class="absolute inset-0 bg-gradient-to-br from-[#D91656]/10 via-transparent to-[#640D5F]/10"></div>
+            
+            <!-- Inspirational Quote with enhanced typography -->
+            <div class="max-w-2xl mx-auto">
+                <p class="text-2xl md:text-3xl text-gray-700 mb-6 font-serif italic animate-slide-up">
+                    "Feeling gratitude and not expressing it is like wrapping a present and not giving it."
+                </p>
+                <p class="text-gray-500 animate-slide-up-delayed">- William Arthur Ward</p>
             </div>
             
-            <!-- Encouragement to Write Gratitude Notes -->
-            <div class="space-y-8 mt-8">
-                <div class="text-center">
-                    <h2 class="text-2xl font-bold text-[#640D5F] mb-4">Express Your Gratitude</h2>
-                    <p class="text-gray-600">
-                        Take a moment each day to write down what you're grateful for. Let your thoughts flow freely and capture the moments that make life beautiful.
-                    </p>
-                </div>
+            <!-- Call-to-Action Button with enhanced styling -->
+            <div class="mt-8 animate-slide-up-delayed">
+                <a href="/gratitude" 
+                   class="inline-flex items-center px-8 py-4 rounded-full text-lg font-medium text-white bg-gradient-to-r from-[#FFB200] to-[#EB5B00] hover:from-[#EB5B00] hover:to-[#D91656] transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1">
+                    Begin Your Gratitude Journey
+                    <svg class="w-5 h-5 ml-2 transform group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/>
+                    </svg>
+                </a>
             </div>
         </div>
     </div>
 
-    <!-- Motivational "I Believe" Statements Section -->
-    <div class="space-y-8">
-        <div class="bg-gradient-to-r from-[#FFB200] to-[#EB5B00] text-white p-8 rounded-xl shadow-lg transform hover:scale-102 transition-all duration-300 hover:shadow-2xl">
-            <h2 class="text-2xl font-bold mb-4">I believe...</h2>
-            <p class="text-white/90">
-                As we acknowledge the way our lives are intertwined, the vibrational foundations of our relationships 
-                will begin to shift. We will begin to feel more connected, less separate from one another, 
-                and our relationships and connections will become stronger.
-            </p>
+    <!-- Features Grid -->
+    <div class="grid md:grid-cols-3 gap-8 mb-16">
+        <!-- Feature 1 -->
+        <div class="bg-white p-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 border-t-4 border-[#FFB200] transform hover:-translate-y-1">
+            <div class="text-center">
+                <div class="w-12 h-12 bg-[#FFB200]/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <svg class="w-6 h-6 text-[#FFB200]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
+                    </svg>
+                </div>
+                <h3 class="text-xl font-semibold text-gray-800 mb-2">Write Daily</h3>
+                <p class="text-gray-600">Capture moments of gratitude in your personal digital jar</p>
+            </div>
         </div>
 
-        <div class="bg-gradient-to-r from-[#D91656] to-[#640D5F] text-white p-8 rounded-xl shadow-lg transform hover:scale-102 transition-all duration-300 hover:shadow-2xl">
-            <h2 class="text-2xl font-bold mb-4">I believe...</h2>
-            <p class="text-white/90">
-                As our dominant feelings became ones of appreciation, we will become more and more courageous 
-                in sharing our gratitude with others. Gratitude will spread.
-            </p>
+        <!-- Feature 2 -->
+        <div class="bg-white p-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 border-t-4 border-[#D91656] transform hover:-translate-y-1">
+            <div class="text-center">
+                <div class="w-12 h-12 bg-[#D91656]/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <svg class="w-6 h-6 text-[#D91656]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
+                    </svg>
+                </div>
+                <h3 class="text-xl font-semibold text-gray-800 mb-2">Share Joy</h3>
+                <p class="text-gray-600">Spread positivity by sharing your gratitude with others</p>
+            </div>
         </div>
 
-        <div class="bg-gradient-to-r from-[#EB5B00] to-[#D91656] text-white p-8 rounded-xl shadow-lg transform hover:scale-102 transition-all duration-300 hover:shadow-2xl">
-            <h2 class="text-2xl font-bold mb-4">I believe...</h2>
-            <p class="text-white/90">
-                As our individual characters continue to deepen, so too will our happiness and the happiness 
-                of those around us. The world will become a more peaceful and loving place, driven by the 
-                simple act of cultivating and expressing appreciation to one another.
-            </p>
+        <!-- Feature 3 -->
+        <div class="bg-white p-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 border-t-4 border-[#640D5F] transform hover:-translate-y-1">
+            <div class="text-center">
+                <div class="w-12 h-12 bg-[#640D5F]/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <svg class="w-6 h-6 text-[#640D5F]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                </div>
+                <h3 class="text-xl font-semibold text-gray-800 mb-2">Grow Together</h3>
+                <p class="text-gray-600">Build a community of grateful hearts</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Impact Section -->
+    <div class="bg-gradient-to-br from-[#FFB200]/5 to-[#640D5F]/5 p-8 rounded-2xl shadow-lg mb-16">
+        <div class="text-center">
+            <h2 class="text-3xl font-bold text-gray-800 mb-6">The Power of Gratitude</h2>
+            <div class="grid md:grid-cols-2 gap-8">
+                <div class="space-y-4">
+                    <div class="flex items-start space-x-4">
+                        <div class="w-8 h-8 bg-[#FFB200]/10 rounded-full flex items-center justify-center flex-shrink-0">
+                            <svg class="w-4 h-4 text-[#FFB200]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                            </svg>
+                        </div>
+                        <p class="text-gray-700">Enhances emotional well-being</p>
+                    </div>
+                    <div class="flex items-start space-x-4">
+                        <div class="w-8 h-8 bg-[#FFB200]/10 rounded-full flex items-center justify-center flex-shrink-0">
+                            <svg class="w-4 h-4 text-[#FFB200]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                            </svg>
+                        </div>
+                        <p class="text-gray-700">Strengthens relationships</p>
+                    </div>
+                </div>
+                <div class="space-y-4">
+                    <div class="flex items-start space-x-4">
+                        <div class="w-8 h-8 bg-[#FFB200]/10 rounded-full flex items-center justify-center flex-shrink-0">
+                            <svg class="w-4 h-4 text-[#FFB200]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                            </svg>
+                        </div>
+                        <p class="text-gray-700">Improves sleep quality</p>
+                    </div>
+                    <div class="flex items-start space-x-4">
+                        <div class="w-8 h-8 bg-[#FFB200]/10 rounded-full flex items-center justify-center flex-shrink-0">
+                            <svg class="w-4 h-4 text-[#FFB200]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                            </svg>
+                        </div>
+                        <p class="text-gray-700">Boosts self-esteem</p>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </div>
 
-<!-- Custom CSS Animations -->
+<!-- Enhanced Animations -->
 <style>
     @keyframes fade-in {
         from { opacity: 0; }
@@ -128,6 +148,10 @@
     
     .animate-slide-up {
         animation: slide-up 1s ease-out;
+    }
+    
+    .animate-slide-up-delayed {
+        animation: slide-up 1s ease-out 0.3s both;
     }
 </style>
 {{end}}

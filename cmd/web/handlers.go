@@ -2,6 +2,7 @@ package main
 
 import (
 	"html/template"
+	"log"
 	"net/http"
 )
 
@@ -17,20 +18,24 @@ func home(w http.ResponseWriter, r *http.Request) {
 
 // Handles the gratitude page request
 func gratitude(w http.ResponseWriter, r *http.Request) {
+	log.Printf("Handling gratitude page request")
 	// Create a PageData struct with a title and sample gratitude notes
 	data := PageData{
 		Title: "Gratitude Notes",
 		Notes: GetSampleNotes(),
 	}
+	log.Printf("Created PageData with %d notes", len(data.Notes))
 
 	// Check if the request is from HTMX (for partial updates)
 	if r.Header.Get("HX-Request") == "true" {
+		log.Printf("HTMX request detected, rendering partial template")
 		// Load and parse only the notes-list section from gratitude.tmpl
 		tmpl := template.Must(template.ParseFiles("ui/html/gratitude.tmpl"))
 		tmpl.ExecuteTemplate(w, "notes-list", data)
 		return
 	}
 
+	log.Printf("Rendering full gratitude template")
 	// Otherwise, render the full gratitude template
 	render(w, "gratitude.tmpl", data)
 }
