@@ -7,11 +7,11 @@ import (
 	"path/filepath"
 )
 
-func render(w http.ResponseWriter, r *http.Request, tmpl string, data map[string]interface{}) {
+func render(w http.ResponseWriter, r *http.Request, tmpl string, data interface{}) {
 	// Parse both templates together
 	templates := template.Must(template.ParseFiles(
-		filepath.Join("html", "base.tmpl"),
-		filepath.Join("html", tmpl),
+		filepath.Join("ui", "html", "base.tmpl"),
+		filepath.Join("ui", "html", tmpl),
 	))
 
 	// Execute the templates
