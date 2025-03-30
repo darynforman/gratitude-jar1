@@ -14,7 +14,26 @@ type GratitudeNote struct {
 	Title     string // Title of the gratitude note
 	Content   string // Content or the body of the gratitude note
 	Category  string // Category of the gratitude note (e.g., personal, work)
+	Emoji     string // Emoji representing the mood/feeling
 	CreatedAt string // The creation date of the gratitude note
+}
+
+// notes is our in-memory storage for gratitude notes
+var notes []GratitudeNote
+
+// init initializes the notes slice with sample data
+func init() {
+	notes = GetSampleNotes()
+}
+
+// GetNotes returns all notes, including both sample and user-created notes
+func GetNotes() []GratitudeNote {
+	return notes
+}
+
+// AddNote adds a new note to our in-memory storage
+func AddNote(note GratitudeNote) {
+	notes = append(notes, note)
 }
 
 // GetSampleNotes returns a slice of sample gratitude notes for testing
@@ -27,6 +46,7 @@ func GetSampleNotes() []GratitudeNote {
 			Title:     "First Gratitude Note",                          // Title of the first note
 			Content:   "I'm grateful for the beautiful weather today.", // Content of the first note
 			Category:  "personal",                                      // Category of the first note
+			Emoji:     "😊",                                             // Emoji for the first note
 			CreatedAt: "2024-03-29",                                    // Creation date of the first note
 		},
 		{
@@ -34,6 +54,7 @@ func GetSampleNotes() []GratitudeNote {
 			Title:     "Work Achievement",                         // Title of the second note
 			Content:   "Completed the project ahead of schedule.", // Content of the second note
 			Category:  "work",                                     // Category of the second note
+			Emoji:     "🤩",                                        // Emoji for the second note
 			CreatedAt: "2024-03-28",                               // Creation date of the second note
 		},
 	}

@@ -4,6 +4,7 @@ import (
 	"html/template"
 	"log"
 	"net/http"
+	"time"
 )
 
 // Handles the home page request
@@ -19,10 +20,10 @@ func home(w http.ResponseWriter, r *http.Request) {
 // Handles the gratitude page request
 func gratitude(w http.ResponseWriter, r *http.Request) {
 	log.Printf("Handling gratitude page request")
-	// Create a PageData struct with a title and sample gratitude notes
+	// Create a PageData struct with a title and all gratitude notes
 	data := PageData{
 		Title: "Gratitude Notes",
-		Notes: GetSampleNotes(),
+		Notes: GetNotes(),
 	}
 	log.Printf("Created PageData with %d notes", len(data.Notes))
 
@@ -55,8 +56,32 @@ func createGratitude(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Placeholder: Currently, no database storage is implemented
-	// Redirect back to the gratitude page after form submission
+	// Get form values
+	title := r.FormValue("title")
+	content := r.FormValue("content")
+	category := r.FormValue("category")
+	emoji := r.FormValue("emoji")
+
+	// Validate required fields
+	if title == "" || content == "" || emoji == "" {
+		http.Error(w, "Missing required fields", http.StatusBadRequest)
+		return
+	}
+
+	// Create a new note
+	note := GratitudeNote{
+		ID:        len(GetNotes()) + 1, // Simple ID generation for now
+		Title:     title,
+		Content:   content,
+		Category:  category,
+		Emoji:     emoji,
+		CreatedAt: time.Now().Format("2006-01-02"),
+	}
+
+	// Add the note to our in-memory storage
+	AddNote(note)
+
+	// Redirect back to the gratitude page
 	http.Redirect(w, r, "/gratitude", http.StatusSeeOther)
 }
 
