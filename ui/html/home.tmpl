@@ -1,6 +1,8 @@
 {{define "content"}}
+<!-- Main container with a max width and centered alignment -->
 <div class="max-w-4xl mx-auto">
-    <!-- Hero Section with Jar Image -->
+    
+    <!-- Hero Section with an Image of a Gratitude Jar -->
     <div class="text-center mb-16">
         <div class="mb-8 transform hover:scale-105 transition-transform duration-300">
             <div class="relative rounded-xl overflow-hidden shadow-xl bg-white p-8">
@@ -11,19 +13,26 @@
                 >
             </div>
         </div>
+        
+        <!-- Page Title -->
         <h1 class="text-4xl md:text-6xl font-bold mb-6 gradient-text animate-fade-in">
             Gratitude Jar
         </h1>
+        
+        <!-- Inspirational Quote -->
         <p class="text-xl text-gray-600 mb-8 animate-slide-up">
             "Feeling gratitude and not expressing it is like wrapping a present and not giving it."
             <span class="block text-sm text-gray-500 mt-2">- William Arthur Ward</span>
         </p>
-        <a href="/gratitude" class="inline-block bg-gradient-to-r from-[#FFB200] to-[#EB5B00] text-white px-8 py-3 rounded-full hover:from-[#EB5B00] hover:to-[#D91656] transition duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1">
+        
+        <!-- Call-to-Action Button -->
+        <a href="/gratitude" 
+           class="inline-block bg-gradient-to-r from-[#FFB200] to-[#EB5B00] text-white px-8 py-3 rounded-full hover:from-[#EB5B00] hover:to-[#D91656] transition duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1">
             Start Your Journey
         </a>
     </div>
 
-    <!-- Mountain Sign Section -->
+    <!-- Section with an Image of a Wooden Gratitude Sign -->
     <div class="mb-16">
         <div class="bg-white p-8 rounded-xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-300 border-t-4 border-[#FFB200]">
             <div class="relative rounded-lg overflow-hidden">
@@ -34,6 +43,8 @@
                 >
                 <div class="absolute inset-0 bg-gradient-to-br from-[#FFB200]/10 via-transparent to-[#EB5B00]/10"></div>
             </div>
+            
+            <!-- Text Section -->
             <div class="space-y-8 mt-8">
                 <div class="text-center">
                     <h2 class="text-2xl font-bold text-[#640D5F] mb-4">What would happen if...</h2>
@@ -45,7 +56,7 @@
         </div>
     </div>
 
-    <!-- Pen and Writing Section -->
+    <!-- Section with an Image of Handwritten Gratitude Notes -->
     <div class="mb-16">
         <div class="bg-white p-8 rounded-xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-300 border-t-4 border-[#D91656]">
             <div class="relative rounded-lg overflow-hidden">
@@ -56,6 +67,8 @@
                 >
                 <div class="absolute inset-0 bg-gradient-to-br from-[#D91656]/10 via-transparent to-[#640D5F]/10"></div>
             </div>
+            
+            <!-- Encouragement to Write Gratitude Notes -->
             <div class="space-y-8 mt-8">
                 <div class="text-center">
                     <h2 class="text-2xl font-bold text-[#640D5F] mb-4">Express Your Gratitude</h2>
@@ -67,7 +80,7 @@
         </div>
     </div>
 
-    <!-- I Believe Section -->
+    <!-- Motivational "I Believe" Statements Section -->
     <div class="space-y-8">
         <div class="bg-gradient-to-r from-[#FFB200] to-[#EB5B00] text-white p-8 rounded-xl shadow-lg transform hover:scale-102 transition-all duration-300 hover:shadow-2xl">
             <h2 class="text-2xl font-bold mb-4">I believe...</h2>
@@ -97,6 +110,7 @@
     </div>
 </div>
 
+<!-- Custom CSS Animations -->
 <style>
     @keyframes fade-in {
         from { opacity: 0; }

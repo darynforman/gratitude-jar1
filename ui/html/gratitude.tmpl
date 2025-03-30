@@ -1,32 +1,35 @@
 {{define "content"}}
+<!-- Create a grid layout with one column on small screens and two on medium+ screens -->
 <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-    <!-- Add New Note Form -->
+    
+    <!-- Form for adding a new gratitude note -->
     <div class="bg-white p-6 rounded-lg shadow-md">
         <h2 class="text-2xl font-bold mb-4">Add New Gratitude Note</h2>
+        
+        <!-- Form submission handled by HTMX -->
         <form hx-post="/gratitude/create" 
-              hx-target="#notes-list" 
-              hx-swap="afterbegin"
+              hx-target="#notes-list"  <!-- Updates the notes list on submit -->
+              hx-swap="afterbegin"      <!-- Inserts the new note at the top -->
               class="space-y-4">
+            
+            <!-- Input field for note title -->
             <div>
                 <label for="title" class="block text-sm font-medium text-gray-700">Title</label>
-                <input type="text" 
-                       id="title" 
-                       name="title" 
-                       required
+                <input type="text" id="title" name="title" required
                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
             </div>
+            
+            <!-- Textarea for note content -->
             <div>
                 <label for="content" class="block text-sm font-medium text-gray-700">Content</label>
-                <textarea id="content" 
-                          name="content" 
-                          rows="4" 
-                          required
+                <textarea id="content" name="content" rows="4" required
                           class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"></textarea>
             </div>
+            
+            <!-- Dropdown to select category -->
             <div>
                 <label for="category" class="block text-sm font-medium text-gray-700">Category</label>
-                <select id="category" 
-                        name="category"
+                <select id="category" name="category"
                         class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
                     <option value="personal">Personal</option>
                     <option value="work">Work</option>
@@ -34,6 +37,8 @@
                     <option value="achievements">Achievements</option>
                 </select>
             </div>
+            
+            <!-- Submit button to save the note -->
             <button type="submit" 
                     class="w-full bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
                 Save Note
@@ -41,12 +46,17 @@
         </form>
     </div>
 
-    <!-- Notes List -->
+    <!-- List of existing gratitude notes -->
     <div id="notes-list" class="space-y-4">
         {{range .Notes}}
+        <!-- Individual note card -->
         <div class="bg-white p-6 rounded-lg shadow-md">
             <div class="flex justify-between items-start">
+                
+                <!-- Note title -->
                 <h3 class="text-xl font-semibold text-gray-900">{{.Title}}</h3>
+                
+                <!-- Category label with conditional styling -->
                 <span class="px-2 py-1 text-xs font-semibold rounded-full 
                            {{if eq .Category "personal"}}bg-blue-100 text-blue-800
                            {{else if eq .Category "work"}}bg-green-100 text-green-800
@@ -55,16 +65,22 @@
                     {{.Category}}
                 </span>
             </div>
+            
+            <!-- Note content -->
             <p class="mt-2 text-gray-600">{{.Content}}</p>
+            
+            <!-- Timestamp and action buttons -->
             <div class="mt-4 flex justify-between items-center text-sm text-gray-500">
                 <span>{{.CreatedAt}}</span>
+                
+                <!-- Edit and delete buttons with HTMX actions -->
                 <div class="space-x-2">
-                    <button hx-get="/gratitude/edit/{{.ID}}" 
-                            hx-target="#edit-form"
+                    <button hx-get="/gratitude/edit/{{.ID}}"  
+                            hx-target="#edit-form"   <!-- Loads edit form dynamically -->
                             class="text-indigo-600 hover:text-indigo-900">Edit</button>
-                    <button hx-delete="/gratitude/{{.ID}}"
-                            hx-target="#notes-list"
-                            hx-swap="outerHTML"
+                    <button hx-delete="/gratitude/{{.ID}}"  
+                            hx-target="#notes-list"  <!-- Removes note from the list -->
+                            hx-swap="outerHTML"       <!-- Deletes the note from the DOM -->
                             class="text-red-600 hover:text-red-900">Delete</button>
                 </div>
             </div>
@@ -72,4 +88,4 @@
         {{end}}
     </div>
 </div>
-{{end}} 
+{{end}}

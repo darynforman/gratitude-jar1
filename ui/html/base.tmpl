@@ -3,31 +3,45 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{.Title}}</title>
-    <!-- HTMX -->
+    <title>{{.Title}}</title> <!-- Dynamic page title using templating -->
+    
+    <!-- Include HTMX for dynamic updates without full page reloads -->
     <script src="https://unpkg.com/htmx.org@1.9.10"></script>
-    <!-- Tailwind CSS -->
+    
+    <!-- Include Tailwind CSS for styling -->
     <script src="https://cdn.tailwindcss.com"></script>
+    
     <!-- Custom Styles -->
     <style>
+        /* Define custom colors as CSS variables */
         :root {
             --color-golden: #FFB200;
             --color-orange: #EB5B00;
             --color-raspberry: #D91656;
             --color-plum: #640D5F;
         }
+        
+        /* Hide elements with x-cloak attribute (used for Alpine.js or HTMX) */
         [x-cloak] { display: none !important; }
+        
+        /* Gradient background styling */
         .gradient-bg {
             background: linear-gradient(135deg, var(--color-golden) 0%, var(--color-orange) 100%);
         }
+        
+        /* Gradient text effect */
         .gradient-text {
             background: linear-gradient(135deg, var(--color-raspberry) 0%, var(--color-plum) 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
+        
+        /* Navigation bar gradient background */
         .nav-gradient {
             background: linear-gradient(to right, var(--color-golden), var(--color-orange), var(--color-raspberry), var(--color-plum));
         }
+        
+        /* Navigation link styling with hover effect */
         .nav-link {
             @apply py-4 px-2 text-white/90 hover:text-white transition duration-300 relative;
         }
@@ -45,6 +59,8 @@
         .nav-link:hover::after {
             width: 100%;
         }
+        
+        /* Page background with subtle radial gradients */
         body {
             background-color: #fffaf0;
             background-image: 
@@ -53,21 +69,26 @@
                 radial-gradient(at 0% 50%, rgba(217, 22, 86, 0.1) 0px, transparent 50%);
             background-attachment: fixed;
         }
+        
+        /* Footer heading color */
         .footer-heading {
             color: var(--color-plum);
         }
     </style>
 </head>
 <body class="min-h-screen">
+    <!-- Navigation Bar -->
     <nav class="nav-gradient shadow-lg">
         <div class="max-w-6xl mx-auto px-4">
             <div class="flex justify-between">
                 <div class="flex space-x-7">
+                    <!-- Logo/Brand Name -->
                     <div>
                         <a href="/" class="flex items-center py-4">
                             <span class="font-bold text-2xl text-white">Gratitude Jar</span>
                         </a>
                     </div>
+                    <!-- Navigation Links -->
                     <div class="hidden md:flex items-center space-x-6">
                         <a href="/" class="nav-link">Home</a>
                         <a href="/gratitude" class="nav-link">My Jar</a>
@@ -78,27 +99,33 @@
             </div>
         </div>
     </nav>
-
+    
+    <!-- Main Content Section -->
     <main class="container mx-auto px-4 py-8">
-        {{template "content" .}}
+        {{template "content" .}} <!-- Placeholder for dynamic content -->
     </main>
-
+    
+    <!-- Footer Section -->
     <footer class="bg-white shadow-lg mt-8">
         <div class="max-w-6xl mx-auto px-4 py-8">
             <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <!-- Gratitude Jar Description -->
                 <div>
                     <h3 class="text-lg font-semibold footer-heading mb-4">Gratitude Jar</h3>
                     <p class="text-gray-600">Cultivating gratitude, one note at a time.</p>
                 </div>
+                <!-- Contact Information -->
                 <div>
                     <h3 class="text-lg font-semibold footer-heading mb-4">Contact</h3>
                     <p class="text-gray-600">gratitudejar@gmail.com</p>
                 </div>
+                <!-- Location Details -->
                 <div>
                     <h3 class="text-lg font-semibold footer-heading mb-4">Location</h3>
                     <p class="text-gray-600">Cambridge, MA 02139, USA</p>
                 </div>
             </div>
+            <!-- Footer Bottom Text -->
             <div class="mt-8 pt-8 border-t border-gray-200 text-center text-gray-500">
                 <p>&copy; 2024 Gratitude Jar. All rights reserved.</p>
             </div>
