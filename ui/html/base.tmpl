@@ -10,18 +10,69 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Custom Styles -->
     <style>
+        :root {
+            --color-golden: #FFB200;
+            --color-orange: #EB5B00;
+            --color-raspberry: #D91656;
+            --color-plum: #640D5F;
+        }
         [x-cloak] { display: none !important; }
+        .gradient-bg {
+            background: linear-gradient(135deg, var(--color-golden) 0%, var(--color-orange) 100%);
+        }
+        .gradient-text {
+            background: linear-gradient(135deg, var(--color-raspberry) 0%, var(--color-plum) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .nav-gradient {
+            background: linear-gradient(to right, var(--color-golden), var(--color-orange), var(--color-raspberry), var(--color-plum));
+        }
+        .nav-link {
+            @apply py-4 px-2 text-white/90 hover:text-white transition duration-300 relative;
+        }
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: 0;
+            left: 50%;
+            background-color: white;
+            transform: translateX(-50%);
+            transition: width 0.3s ease;
+        }
+        .nav-link:hover::after {
+            width: 100%;
+        }
+        body {
+            background-color: #fffaf0;
+            background-image: 
+                radial-gradient(at 40% 20%, rgba(255, 178, 0, 0.1) 0px, transparent 50%),
+                radial-gradient(at 80% 0%, rgba(235, 91, 0, 0.1) 0px, transparent 50%),
+                radial-gradient(at 0% 50%, rgba(217, 22, 86, 0.1) 0px, transparent 50%);
+            background-attachment: fixed;
+        }
+        .footer-heading {
+            color: var(--color-plum);
+        }
     </style>
 </head>
-<body class="bg-gray-100 min-h-screen">
-    <nav class="bg-white shadow-lg">
+<body class="min-h-screen">
+    <nav class="nav-gradient shadow-lg">
         <div class="max-w-6xl mx-auto px-4">
             <div class="flex justify-between">
                 <div class="flex space-x-7">
                     <div>
                         <a href="/" class="flex items-center py-4">
-                            <span class="font-semibold text-gray-500 text-lg">Gratitude Jar</span>
+                            <span class="font-bold text-2xl text-white">Gratitude Jar</span>
                         </a>
+                    </div>
+                    <div class="hidden md:flex items-center space-x-6">
+                        <a href="/" class="nav-link">Home</a>
+                        <a href="/gratitude" class="nav-link">My Jar</a>
+                        <a href="/about" class="nav-link">About</a>
+                        <a href="/contact" class="nav-link">Contact</a>
                     </div>
                 </div>
             </div>
@@ -33,8 +84,24 @@
     </main>
 
     <footer class="bg-white shadow-lg mt-8">
-        <div class="max-w-6xl mx-auto px-4 py-4">
-            <p class="text-center text-gray-500">&copy; 2024 Gratitude Jar</p>
+        <div class="max-w-6xl mx-auto px-4 py-8">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div>
+                    <h3 class="text-lg font-semibold footer-heading mb-4">Gratitude Jar</h3>
+                    <p class="text-gray-600">Cultivating gratitude, one note at a time.</p>
+                </div>
+                <div>
+                    <h3 class="text-lg font-semibold footer-heading mb-4">Contact</h3>
+                    <p class="text-gray-600">gratitudejar@gmail.com</p>
+                </div>
+                <div>
+                    <h3 class="text-lg font-semibold footer-heading mb-4">Location</h3>
+                    <p class="text-gray-600">Cambridge, MA 02139, USA</p>
+                </div>
+            </div>
+            <div class="mt-8 pt-8 border-t border-gray-200 text-center text-gray-500">
+                <p>&copy; 2024 Gratitude Jar. All rights reserved.</p>
+            </div>
         </div>
     </footer>
 </body>

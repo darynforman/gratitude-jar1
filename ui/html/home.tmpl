@@ -1,4 +1,146 @@
 {{define "content"}}
-<h2>Welcome to the Gratitude Jar</h2>
-<p>Start saving your happy moments today!</p>
+<div class="max-w-4xl mx-auto">
+    <!-- Hero Section with Jar Image -->
+    <div class="text-center mb-16">
+        <div class="mb-8 transform hover:scale-105 transition-transform duration-300">
+            <img src="/static/img/gratitude-jar.jpg" alt="Gratitude Jar filled with colorful notes" class="mx-auto rounded-lg shadow-xl max-w-md hover:shadow-2xl transition-shadow duration-300">
+        </div>
+        <h1 class="text-4xl md:text-6xl font-bold mb-6 gradient-text animate-fade-in">
+            Gratitude Jar
+        </h1>
+        <p class="text-xl text-gray-600 mb-8 animate-slide-up">
+            "Feeling gratitude and not expressing it is like wrapping a present and not giving it."
+            <span class="block text-sm text-gray-500 mt-2">- William Arthur Ward</span>
+        </p>
+        <a href="/gratitude" class="inline-block bg-gradient-to-r from-orange-500 to-orange-600 text-white px-8 py-3 rounded-full hover:from-orange-600 hover:to-orange-700 transition duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1">
+            Start Your Journey
+        </a>
+    </div>
+
+    <!-- Mountain Sign Section -->
+    <div class="mb-16 transform hover:scale-102 transition-all duration-300">
+        <div class="bg-white p-8 rounded-xl shadow-lg overflow-hidden hover:shadow-2xl transition-shadow duration-300 border-t-4 border-golden">
+            <div class="overflow-hidden rounded-lg">
+                <img src="/static/img/gratitude-sign.jpg" alt="Wooden Gratitude sign with mountains" class="w-full rounded-lg mb-8 transform hover:scale-105 transition-transform duration-700">
+            </div>
+            <div class="space-y-8">
+                <div class="text-center">
+                    <h2 class="text-2xl font-bold text-plum mb-4">What would happen if...</h2>
+                    <p class="text-gray-600">
+                        We made gratitude our highest priority, recognizing the beauty in each moment and intentionally sharing our appreciation with others?
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pen and Writing Section -->
+    <div class="mb-16 transform hover:scale-102 transition-all duration-300">
+        <div class="bg-white p-8 rounded-xl shadow-lg overflow-hidden hover:shadow-2xl transition-shadow duration-300 border-t-4 border-raspberry">
+            <div class="overflow-hidden rounded-lg">
+                <img src="/static/img/gratitude-writing.jpg" alt="Pen and handwritten gratitude notes" class="w-full rounded-lg mb-8 transform hover:scale-105 transition-transform duration-700">
+            </div>
+            <div class="space-y-8">
+                <div class="text-center">
+                    <h2 class="text-2xl font-bold text-plum mb-4">Express Your Gratitude</h2>
+                    <p class="text-gray-600">
+                        Take a moment each day to write down what you're grateful for. Let your thoughts flow freely and capture the moments that make life beautiful.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- I Believe Section -->
+    <div class="space-y-8">
+        <div class="bg-gradient-to-r from-[#FFB200] to-[#EB5B00] text-white p-8 rounded-xl shadow-lg transform hover:scale-102 transition-all duration-300 hover:shadow-2xl">
+            <h2 class="text-2xl font-bold mb-4">I believe...</h2>
+            <p class="text-white/90">
+                As we acknowledge the way our lives are intertwined, the vibrational foundations of our relationships 
+                will begin to shift. We will begin to feel more connected, less separate from one another, 
+                and our relationships and connections will become stronger.
+            </p>
+        </div>
+
+        <div class="bg-gradient-to-r from-[#D91656] to-[#640D5F] text-white p-8 rounded-xl shadow-lg transform hover:scale-102 transition-all duration-300 hover:shadow-2xl">
+            <h2 class="text-2xl font-bold mb-4">I believe...</h2>
+            <p class="text-white/90">
+                As our dominant feelings became ones of appreciation, we will become more and more courageous 
+                in sharing our gratitude with others. Gratitude will spread.
+            </p>
+        </div>
+
+        <div class="bg-gradient-to-r from-[#EB5B00] to-[#D91656] text-white p-8 rounded-xl shadow-lg transform hover:scale-102 transition-all duration-300 hover:shadow-2xl">
+            <h2 class="text-2xl font-bold mb-4">I believe...</h2>
+            <p class="text-white/90">
+                As our individual characters continue to deepen, so too will our happiness and the happiness 
+                of those around us. The world will become a more peaceful and loving place, driven by the 
+                simple act of cultivating and expressing appreciation to one another.
+            </p>
+        </div>
+    </div>
+</div>
+
+<style>
+    :root {
+        --color-golden: #FFB200;
+        --color-orange: #EB5B00;
+        --color-raspberry: #D91656;
+        --color-plum: #640D5F;
+    }
+    
+    .text-plum {
+        color: var(--color-plum);
+    }
+    
+    .border-golden {
+        border-color: var(--color-golden);
+    }
+    
+    .border-raspberry {
+        border-color: var(--color-raspberry);
+    }
+    
+    .from-golden {
+        --tw-gradient-from: var(--color-golden);
+    }
+    
+    .from-orange {
+        --tw-gradient-from: var(--color-orange);
+    }
+    
+    .from-raspberry {
+        --tw-gradient-from: var(--color-raspberry);
+    }
+    
+    .to-orange {
+        --tw-gradient-to: var(--color-orange);
+    }
+    
+    .to-raspberry {
+        --tw-gradient-to: var(--color-raspberry);
+    }
+    
+    .to-plum {
+        --tw-gradient-to: var(--color-plum);
+    }
+
+    @keyframes fade-in {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+    
+    @keyframes slide-up {
+        from { transform: translateY(20px); opacity: 0; }
+        to { transform: translateY(0); opacity: 1; }
+    }
+    
+    .animate-fade-in {
+        animation: fade-in 1s ease-out;
+    }
+    
+    .animate-slide-up {
+        animation: slide-up 1s ease-out;
+    }
+</style>
 {{end}}
