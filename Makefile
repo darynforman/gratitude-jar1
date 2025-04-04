@@ -66,12 +66,12 @@ migrate:
 # Run database migrations up
 migrate-up:
 	@echo "Running migrations up..."
-	migrate -path migrations -database "postgres://postgres:postgres@localhost:5432/gratitude_jar?sslmode=disable" up
+	migrate -path migrations -database "postgres://gratitude_user:gratitude123@localhost:5432/gratitude_jar?sslmode=disable" up
 
 # Run database migrations down
 migrate-down:
 	@echo "Running migrations down..."
-	migrate -path migrations -database "postgres://postgres:postgres@localhost:5432/gratitude_jar?sslmode=disable" down
+	migrate -path migrations -database "postgres://gratitude_user:gratitude123@localhost:5432/gratitude_jar?sslmode=disable" down
 
 # Development setup
 dev-setup:

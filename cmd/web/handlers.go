@@ -4,7 +4,9 @@ import (
 	"html/template"
 	"log"
 	"net/http"
-	"time"
+	"strconv"
+
+	"github.com/darynforman/gratitude-jar/internal/data"
 )
 
 // Handles the home page request
@@ -17,13 +19,39 @@ func home(w http.ResponseWriter, r *http.Request) {
 	render(w, "home.tmpl", data)
 }
 
+// getGratitudeModel returns a new instance of GratitudeModel
+func getGratitudeModel() *data.GratitudeModel {
+	return data.NewGratitudeModel()
+}
+
 // Handles the gratitude page request
 func gratitude(w http.ResponseWriter, r *http.Request) {
 	log.Printf("Handling gratitude page request")
-	// Create a PageData struct with a title and all gratitude notes
+
+	// Get notes from database
+	notes, err := getGratitudeModel().List()
+	if err != nil {
+		log.Printf("Error fetching notes: %v", err)
+		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+		return
+	}
+
+	// Convert database notes to template notes
+	var templateNotes []GratitudeNote
+	for _, note := range notes {
+		templateNotes = append(templateNotes, GratitudeNote{
+			ID:        int(note.ID),
+			Title:     note.Title,
+			Content:   note.Content,
+			Category:  note.Category,
+			Emoji:     note.Emoji,
+			CreatedAt: note.CreatedAt.Format("2006-01-02"),
+		})
+	}
+
 	data := PageData{
 		Title: "Gratitude Notes",
-		Notes: GetNotes(),
+		Notes: templateNotes,
 	}
 	log.Printf("Created PageData with %d notes", len(data.Notes))
 
@@ -43,15 +71,17 @@ func gratitude(w http.ResponseWriter, r *http.Request) {
 
 // Handles form submissions for adding gratitude notes
 func createGratitude(w http.ResponseWriter, r *http.Request) {
-	// Ensure the request method is POST
+	log.Printf("Handling create gratitude note request")
+
 	if r.Method != http.MethodPost {
+		log.Printf("Invalid method: %s", r.Method)
 		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 		return
 	}
 
-	// Parse the form data from the request
 	err := r.ParseForm()
 	if err != nil {
+		log.Printf("Error parsing form: %v", err)
 		http.Error(w, "Bad Request", http.StatusBadRequest)
 		return
 	}
@@ -62,26 +92,23 @@ func createGratitude(w http.ResponseWriter, r *http.Request) {
 	category := r.FormValue("category")
 	emoji := r.FormValue("emoji")
 
-	// Validate required fields
+	log.Printf("Received form data - Title: %s, Category: %s, Emoji: %s", title, category, emoji)
+
 	if title == "" || content == "" || emoji == "" {
+		log.Printf("Missing required fields - Title: %s, Content: %s, Emoji: %s", title, content, emoji)
 		http.Error(w, "Missing required fields", http.StatusBadRequest)
 		return
 	}
 
-	// Create a new note
-	note := GratitudeNote{
-		ID:        len(GetNotes()) + 1, // Simple ID generation for now
-		Title:     title,
-		Content:   content,
-		Category:  category,
-		Emoji:     emoji,
-		CreatedAt: time.Now().Format("2006-01-02"),
+	// Insert note into database
+	id, err := getGratitudeModel().Insert(title, content, category, emoji)
+	if err != nil {
+		log.Printf("Error inserting note into database: %v", err)
+		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+		return
 	}
 
-	// Add the note to our in-memory storage
-	AddNote(note)
-
-	// Redirect back to the gratitude page
+	log.Printf("Successfully created note with ID: %d", id)
 	http.Redirect(w, r, "/gratitude", http.StatusSeeOther)
 }
 
@@ -93,7 +120,21 @@ func deleteGratitude(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Placeholder: No actual deletion logic implemented yet
-	// Respond with HTTP 200 OK to indicate success
+	// Extract ID from URL
+	idStr := r.URL.Path[len("/gratitude/"):]
+	id, err := strconv.ParseInt(idStr, 10, 64)
+	if err != nil {
+		http.Error(w, "Invalid ID", http.StatusBadRequest)
+		return
+	}
+
+	// Delete note from database
+	err = getGratitudeModel().Delete(id)
+	if err != nil {
+		log.Printf("Error deleting note: %v", err)
+		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+		return
+	}
+
 	w.WriteHeader(http.StatusOK)
 }

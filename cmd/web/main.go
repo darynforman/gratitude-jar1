@@ -3,9 +3,16 @@ package main
 import (
 	"log"
 	"net/http"
+
+	"github.com/darynforman/gratitude-jar/internal/config"
 )
 
 func main() {
+	// Initialize database connection
+	if err := config.InitDB(); err != nil {
+		log.Fatalf("Failed to initialize database: %v", err)
+	}
+
 	// Initialize the server with routes
 	mux := routes()
 
