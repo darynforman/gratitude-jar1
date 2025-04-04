@@ -10,6 +10,8 @@
         <form hx-post="/gratitude/create" 
               hx-target="#notes-list"
               hx-swap="afterbegin"
+              hx-trigger="submit"
+              hx-on::after-request="resetForm(this)"
               class="space-y-4">
             
             <!-- Input field for note title -->
@@ -82,49 +84,86 @@
         </form>
     </div>
 
+    <!-- Container for edit form -->
+    <div id="edit-form-container" class="hidden">
+        <!-- Edit form will be loaded here -->
+    </div>
+
     <!-- List of existing gratitude notes -->
     <div id="notes-list" class="space-y-4">
         {{range .Notes}}
-        <!-- Individual note card -->
-        <div class="bg-white p-6 rounded-lg shadow-md">
-            <div class="flex justify-between items-start">
-                <div class="flex items-center space-x-3">
-                    <!-- Emoji display -->
-                    <span class="text-2xl">{{.Emoji}}</span>
-                    <!-- Note title -->
-                    <h3 class="text-xl font-semibold text-gray-900">{{.Title}}</h3>
-                </div>
-                
-                <!-- Category label with conditional styling -->
-                <span class="px-2 py-1 text-xs font-semibold rounded-full 
-                           {{if eq .Category "personal"}}bg-blue-100 text-blue-800
-                           {{else if eq .Category "work"}}bg-green-100 text-green-800
-                           {{else if eq .Category "family"}}bg-purple-100 text-purple-800
-                           {{else}}bg-yellow-100 text-yellow-800{{end}}">
-                    {{.Category}}
-                </span>
-            </div>
-            
-            <!-- Note content -->
-            <p class="mt-2 text-gray-600">{{.Content}}</p>
-            
-            <!-- Timestamp and action buttons -->
-            <div class="mt-4 flex justify-between items-center text-sm text-gray-500">
-                <span>{{.CreatedAt}}</span>
-                
-                <!-- Edit and delete buttons with HTMX actions -->
-                <div class="space-x-2">
-                    <button hx-get="/gratitude/edit/{{.ID}}"  
-                            hx-target="#edit-form"
-                            class="text-indigo-600 hover:text-indigo-900">Edit</button>
-                    <button hx-delete="/gratitude/{{.ID}}"  
-                            hx-target="#notes-list"
-                            hx-swap="outerHTML"
-                            class="text-red-600 hover:text-red-900">Delete</button>
-                </div>
-            </div>
-        </div>
+        {{template "note-card" .}}
         {{end}}
+    </div>
+</div>
+
+<script>
+function selectEmoji(button) {
+    // Remove highlight from all emoji buttons
+    document.querySelectorAll('.emoji-btn').forEach(btn => {
+        btn.classList.remove('bg-gray-200');
+    });
+    
+    // Add highlight to selected emoji button
+    button.classList.add('bg-gray-200');
+    
+    // Update hidden input with selected emoji
+    document.getElementById('selected-emoji').value = button.getAttribute('data-emoji');
+}
+
+function resetForm(form) {
+    // Reset all form fields
+    form.reset();
+    
+    // Clear emoji selection
+    document.querySelectorAll('.emoji-btn').forEach(btn => {
+        btn.classList.remove('bg-gray-200');
+    });
+    document.getElementById('selected-emoji').value = '';
+}
+</script>
+{{end}}
+
+{{define "note-card"}}
+<!-- Individual note card -->
+<div id="note-{{.ID}}" class="note-card bg-white p-6 rounded-lg shadow-md" data-note-id="{{.ID}}">
+    <div class="flex justify-between items-start">
+        <div class="flex items-center space-x-3">
+            <!-- Emoji display -->
+            <span class="text-2xl">{{.Emoji}}</span>
+            <!-- Note title -->
+            <h3 class="text-xl font-semibold text-gray-900">{{.Title}}</h3>
+        </div>
+        
+        <!-- Category label with conditional styling -->
+        <span class="px-2 py-1 text-xs font-semibold rounded-full 
+                   {{if eq .Category "personal"}}bg-blue-100 text-blue-800
+                   {{else if eq .Category "work"}}bg-green-100 text-green-800
+                   {{else if eq .Category "family"}}bg-purple-100 text-purple-800
+                   {{else}}bg-yellow-100 text-yellow-800{{end}}">
+            {{.Category}}
+        </span>
+    </div>
+    
+    <!-- Note content -->
+    <p class="mt-2 text-gray-600">{{.Content}}</p>
+    
+    <!-- Timestamp and action buttons -->
+    <div class="mt-4 flex justify-between items-center text-sm text-gray-500">
+        <span>{{.CreatedAt}}</span>
+        
+        <!-- Edit and delete buttons with HTMX actions -->
+        <div class="space-x-2">
+            <button hx-get="/gratitude/edit/{{.ID}}"  
+                    hx-target="#edit-form-container"
+                    hx-swap="innerHTML"
+                    onclick="document.getElementById('edit-form-container').classList.remove('hidden')"
+                    class="text-indigo-600 hover:text-indigo-900">Edit</button>
+            <button hx-delete="/gratitude/update/{{.ID}}"  
+                    hx-target="#note-{{.ID}}"
+                    hx-swap="outerHTML"
+                    class="text-red-600 hover:text-red-900">Delete</button>
+        </div>
     </div>
 </div>
 {{end}}

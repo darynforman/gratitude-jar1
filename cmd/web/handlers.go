@@ -5,6 +5,7 @@ import (
 	"log"
 	"net/http"
 	"strconv"
+	"time"
 
 	"github.com/darynforman/gratitude-jar/internal/data"
 )
@@ -40,7 +41,7 @@ func gratitude(w http.ResponseWriter, r *http.Request) {
 	var templateNotes []GratitudeNote
 	for _, note := range notes {
 		templateNotes = append(templateNotes, GratitudeNote{
-			ID:        int(note.ID),
+			ID:        note.ID,
 			Title:     note.Title,
 			Content:   note.Content,
 			Category:  note.Category,
@@ -86,55 +87,156 @@ func createGratitude(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Get form values
-	title := r.FormValue("title")
-	content := r.FormValue("content")
-	category := r.FormValue("category")
-	emoji := r.FormValue("emoji")
-
-	log.Printf("Received form data - Title: %s, Category: %s, Emoji: %s", title, category, emoji)
-
-	if title == "" || content == "" || emoji == "" {
-		log.Printf("Missing required fields - Title: %s, Content: %s, Emoji: %s", title, content, emoji)
-		http.Error(w, "Missing required fields", http.StatusBadRequest)
-		return
+	note := &data.GratitudeNote{
+		Title:     r.PostForm.Get("title"),
+		Content:   r.PostForm.Get("content"),
+		Category:  r.PostForm.Get("category"),
+		Emoji:     r.PostForm.Get("emoji"),
+		CreatedAt: time.Now(),
+		UpdatedAt: time.Now(),
 	}
 
-	// Insert note into database
-	id, err := getGratitudeModel().Insert(title, content, category, emoji)
+	id, err := getGratitudeModel().Insert(note)
 	if err != nil {
 		log.Printf("Error inserting note into database: %v", err)
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 		return
 	}
 
-	log.Printf("Successfully created note with ID: %d", id)
-	http.Redirect(w, r, "/gratitude", http.StatusSeeOther)
-}
-
-// Handles the deletion of gratitude notes
-func deleteGratitude(w http.ResponseWriter, r *http.Request) {
-	// Ensure the request method is DELETE
-	if r.Method != http.MethodDelete {
-		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
-		return
-	}
-
-	// Extract ID from URL
-	idStr := r.URL.Path[len("/gratitude/"):]
-	id, err := strconv.ParseInt(idStr, 10, 64)
+	// Fetch the newly created note
+	note, err = getGratitudeModel().Get(id)
 	if err != nil {
-		http.Error(w, "Invalid ID", http.StatusBadRequest)
-		return
-	}
-
-	// Delete note from database
-	err = getGratitudeModel().Delete(id)
-	if err != nil {
-		log.Printf("Error deleting note: %v", err)
+		log.Printf("Error fetching new note: %v", err)
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 		return
 	}
 
-	w.WriteHeader(http.StatusOK)
+	// Render the new note as HTML
+	w.Header().Set("Content-Type", "text/html")
+	tmpl := template.Must(template.ParseFiles("ui/html/gratitude.tmpl"))
+	if err := tmpl.ExecuteTemplate(w, "note-card", note); err != nil {
+		log.Printf("Error rendering new note: %v", err)
+		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+	}
+}
+
+// Handles both updating and deleting gratitude notes
+func updateGratitude(w http.ResponseWriter, r *http.Request) {
+	log.Printf("Handling update/delete request with method: %s", r.Method)
+	log.Printf("Request URL: %s", r.URL.Path)
+
+	// Extract ID from URL
+	idStr := r.URL.Path[len("/gratitude/update/"):]
+	log.Printf("Extracted ID string: %s", idStr)
+
+	id, err := strconv.Atoi(idStr)
+	if err != nil {
+		log.Printf("Invalid ID: %v", err)
+		http.Error(w, "Invalid ID", http.StatusBadRequest)
+		return
+	}
+	log.Printf("Parsed ID: %d", id)
+
+	// Handle DELETE request
+	if r.Method == http.MethodDelete {
+		log.Printf("Processing DELETE request for note ID: %d", id)
+		err = getGratitudeModel().Delete(id)
+		if err != nil {
+			log.Printf("Error deleting note: %v", err)
+			http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+			return
+		}
+		w.WriteHeader(http.StatusOK)
+		return
+	}
+
+	// Handle PUT request
+	if r.Method != http.MethodPut {
+		log.Printf("Invalid method: %s", r.Method)
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
+	log.Printf("Processing PUT request for note ID: %d", id)
+
+	// Parse form data
+	if err := r.ParseForm(); err != nil {
+		log.Printf("Error parsing form: %v", err)
+		http.Error(w, "Bad Request", http.StatusBadRequest)
+		return
+	}
+
+	// Log all form values
+	log.Printf("Form values received:")
+	for key, values := range r.PostForm {
+		log.Printf("  %s: %v", key, values)
+	}
+
+	// Create updated note
+	note := &data.GratitudeNote{
+		ID:        id,
+		Title:     r.PostForm.Get("title"),
+		Content:   r.PostForm.Get("content"),
+		Category:  r.PostForm.Get("category"),
+		Emoji:     r.PostForm.Get("emoji"),
+		UpdatedAt: time.Now(),
+	}
+	log.Printf("Created note object: %+v", note)
+
+	// Update note in database
+	err = getGratitudeModel().Update(note)
+	if err != nil {
+		log.Printf("Error updating note in database: %v", err)
+		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+		return
+	}
+	log.Printf("Successfully updated note in database")
+
+	// Fetch the updated note
+	updatedNote, err := getGratitudeModel().Get(id)
+	if err != nil {
+		log.Printf("Error fetching updated note: %v", err)
+		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+		return
+	}
+	log.Printf("Fetched updated note: %+v", updatedNote)
+
+	// Render the updated note as HTML
+	w.Header().Set("Content-Type", "text/html")
+	tmpl := template.Must(template.ParseFiles("ui/html/gratitude.tmpl"))
+	if err := tmpl.ExecuteTemplate(w, "note-card", updatedNote); err != nil {
+		log.Printf("Error rendering updated note: %v", err)
+		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+	}
+	log.Printf("Successfully rendered updated note")
+}
+
+// Handles getting a note for editing
+func getNoteForEdit(w http.ResponseWriter, r *http.Request) {
+	log.Printf("Handling get note for edit request")
+
+	// Extract ID from URL
+	idStr := r.URL.Path[len("/gratitude/edit/"):]
+	id, err := strconv.Atoi(idStr)
+	if err != nil {
+		log.Printf("Invalid ID: %v", err)
+		http.Error(w, "Invalid ID", http.StatusBadRequest)
+		return
+	}
+
+	// Get note from database
+	note, err := getGratitudeModel().Get(id)
+	if err != nil {
+		log.Printf("Error fetching note: %v", err)
+		http.Error(w, "Note not found", http.StatusNotFound)
+		return
+	}
+
+	// Render edit form
+	w.Header().Set("Content-Type", "text/html")
+	tmpl := template.Must(template.ParseFiles("ui/html/edit-form.tmpl"))
+	if err := tmpl.ExecuteTemplate(w, "edit-form", note); err != nil {
+		log.Printf("Error rendering edit form: %v", err)
+		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+	}
 }

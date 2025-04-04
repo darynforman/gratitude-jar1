@@ -9,7 +9,7 @@ import (
 )
 
 type GratitudeNote struct {
-	ID        int64
+	ID        int
 	Title     string
 	Content   string
 	Category  string
@@ -30,16 +30,16 @@ func NewGratitudeModel() *GratitudeModel {
 }
 
 // Insert adds a new gratitude note to the database
-func (m *GratitudeModel) Insert(title, content, category, emoji string) (int64, error) {
-	log.Printf("Attempting to insert note with title: %s, category: %s, emoji: %s", title, category, emoji)
+func (m *GratitudeModel) Insert(note *GratitudeNote) (int, error) {
+	log.Printf("Attempting to insert note with title: %s, category: %s, emoji: %s", note.Title, note.Category, note.Emoji)
 
 	query := `
 		INSERT INTO gratitude_notes (title, content, category, emoji, created_at, updated_at)
-		VALUES ($1, $2, $3, $4, NOW(), NOW())
+		VALUES ($1, $2, $3, $4, $5, $6)
 		RETURNING id`
 
-	var id int64
-	err := m.DB.QueryRow(query, title, content, category, emoji).Scan(&id)
+	var id int
+	err := m.DB.QueryRow(query, note.Title, note.Content, note.Category, note.Emoji, note.CreatedAt, note.UpdatedAt).Scan(&id)
 	if err != nil {
 		log.Printf("Error inserting note: %v", err)
 		return 0, err
@@ -49,7 +49,7 @@ func (m *GratitudeModel) Insert(title, content, category, emoji string) (int64, 
 }
 
 // Get retrieves a gratitude note by ID
-func (m *GratitudeModel) Get(id int64) (*GratitudeNote, error) {
+func (m *GratitudeModel) Get(id int) (*GratitudeNote, error) {
 	query := `
 		SELECT id, title, content, category, emoji, created_at, updated_at
 		FROM gratitude_notes
@@ -110,8 +110,36 @@ func (m *GratitudeModel) List() ([]*GratitudeNote, error) {
 }
 
 // Delete removes a gratitude note by ID
-func (m *GratitudeModel) Delete(id int64) error {
+func (m *GratitudeModel) Delete(id int) error {
 	query := `DELETE FROM gratitude_notes WHERE id = $1`
 	_, err := m.DB.Exec(query, id)
 	return err
+}
+
+// Update modifies an existing gratitude note
+func (m *GratitudeModel) Update(note *GratitudeNote) error {
+	log.Printf("Attempting to update note with ID: %d", note.ID)
+
+	query := `
+		UPDATE gratitude_notes 
+		SET title = $1, content = $2, category = $3, emoji = $4, updated_at = $5
+		WHERE id = $6`
+
+	result, err := m.DB.Exec(query, note.Title, note.Content, note.Category, note.Emoji, note.UpdatedAt, note.ID)
+	if err != nil {
+		log.Printf("Error updating note: %v", err)
+		return err
+	}
+
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		return err
+	}
+
+	if rowsAffected == 0 {
+		return sql.ErrNoRows
+	}
+
+	log.Printf("Successfully updated note with ID: %d", note.ID)
+	return nil
 }
