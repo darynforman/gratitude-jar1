@@ -4,26 +4,46 @@ import (
 	"html/template"
 	"log"
 	"net/http"
+	"os"
 	"path/filepath"
 )
 
 // render renders an HTML template with the provided data
 func render(w http.ResponseWriter, tmpl string, data interface{}) {
-	log.Printf("Rendering template: %s", tmpl)
-	// Parse both the base template and the specific page template together
-	templates := template.Must(template.ParseFiles(
-		filepath.Join("ui", "html", "base.tmpl"), // Base layout template (common structure)
-		filepath.Join("ui", "html", tmpl),        // Specific page template
-	))
+	log.Printf("Starting to render template: %s", tmpl)
+
+	basePath := filepath.Join("ui", "html", "base.tmpl")
+	templatePath := filepath.Join("ui", "html", tmpl)
+
+	// Check if template files exist
+	if _, err := os.Stat(basePath); os.IsNotExist(err) {
+		log.Printf("Base template does not exist: %s", basePath)
+		http.Error(w, "Template Not Found", http.StatusInternalServerError)
+		return
+	}
+	if _, err := os.Stat(templatePath); os.IsNotExist(err) {
+		log.Printf("Page template does not exist: %s", templatePath)
+		http.Error(w, "Template Not Found", http.StatusInternalServerError)
+		return
+	}
+
+	log.Printf("Loading templates from: base=%s, page=%s", basePath, templatePath)
+
+	// Parse templates
+	templates, err := template.ParseFiles(basePath, templatePath)
+	if err != nil {
+		log.Printf("Error parsing templates: %v", err)
+		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+		return
+	}
 	log.Printf("Templates parsed successfully")
 
-	// Execute the parsed templates and send the output to the response writer
-	err := templates.Execute(w, data)
-	if err != nil {
-		// Log the error if template execution fails
-		log.Printf("Error executing template: %v", err)
+	// Set content type
+	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 
-		// Send a 500 Internal Server Error response
+	// Execute the base template
+	if err := templates.ExecuteTemplate(w, "base", data); err != nil {
+		log.Printf("Error executing template: %v", err)
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 		return
 	}

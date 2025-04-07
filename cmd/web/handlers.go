@@ -12,6 +12,12 @@ import (
 
 // Handles the home page request
 func home(w http.ResponseWriter, r *http.Request) {
+	// Only handle the root path
+	if r.URL.Path != "/" {
+		http.NotFound(w, r)
+		return
+	}
+
 	// Create a PageData struct with a title for the homepage
 	data := PageData{
 		Title: "Welcome to Gratitude Jar",
@@ -25,9 +31,9 @@ func getGratitudeModel() *data.GratitudeModel {
 	return data.NewGratitudeModel()
 }
 
-// Handles the gratitude page request
-func gratitude(w http.ResponseWriter, r *http.Request) {
-	log.Printf("Handling gratitude page request")
+// Handles viewing all gratitude notes
+func viewNotes(w http.ResponseWriter, r *http.Request) {
+	log.Printf("Handling view notes request")
 
 	// Get notes from database
 	notes, err := getGratitudeModel().List()
@@ -51,10 +57,32 @@ func gratitude(w http.ResponseWriter, r *http.Request) {
 	}
 
 	data := PageData{
-		Title: "Gratitude Notes",
+		Title: "My Gratitude Notes",
 		Notes: templateNotes,
 	}
 	log.Printf("Created PageData with %d notes", len(data.Notes))
+
+	// Check if the request is from HTMX (for partial updates)
+	if r.Header.Get("HX-Request") == "true" {
+		log.Printf("HTMX request detected, rendering partial template")
+		// Load and parse only the notes-list section from view-notes.tmpl
+		tmpl := template.Must(template.ParseFiles("ui/html/view-notes.tmpl"))
+		tmpl.ExecuteTemplate(w, "notes-list", data)
+		return
+	}
+
+	log.Printf("Rendering view notes template")
+	// Otherwise, render the view notes template
+	render(w, "view-notes.tmpl", data)
+}
+
+// Handles the gratitude page request (for adding new notes)
+func gratitude(w http.ResponseWriter, r *http.Request) {
+	log.Printf("Handling gratitude page request")
+
+	data := PageData{
+		Title: "Add Gratitude Note",
+	}
 
 	// Check if the request is from HTMX (for partial updates)
 	if r.Header.Get("HX-Request") == "true" {
@@ -65,9 +93,9 @@ func gratitude(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	log.Printf("Rendering full gratitude template")
-	// Otherwise, render the full gratitude template
-	render(w, "gratitude.tmpl", data)
+	log.Printf("Rendering add note template")
+	// Otherwise, render the add note template
+	render(w, "add-note.tmpl", data)
 }
 
 // Handles form submissions for adding gratitude notes
@@ -96,28 +124,22 @@ func createGratitude(w http.ResponseWriter, r *http.Request) {
 		UpdatedAt: time.Now(),
 	}
 
-	id, err := getGratitudeModel().Insert(note)
+	_, err = getGratitudeModel().Insert(note)
 	if err != nil {
 		log.Printf("Error inserting note into database: %v", err)
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 		return
 	}
 
-	// Fetch the newly created note
-	note, err = getGratitudeModel().Get(id)
-	if err != nil {
-		log.Printf("Error fetching new note: %v", err)
-		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+	// If this is an HTMX request, return a redirect response
+	if r.Header.Get("HX-Request") == "true" {
+		w.Header().Set("HX-Redirect", "/notes")
+		w.WriteHeader(http.StatusOK)
 		return
 	}
 
-	// Render the new note as HTML
-	w.Header().Set("Content-Type", "text/html")
-	tmpl := template.Must(template.ParseFiles("ui/html/gratitude.tmpl"))
-	if err := tmpl.ExecuteTemplate(w, "note-card", note); err != nil {
-		log.Printf("Error rendering new note: %v", err)
-		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
-	}
+	// For regular form submissions, redirect to the notes page
+	http.Redirect(w, r, "/notes", http.StatusSeeOther)
 }
 
 // Handles both updating and deleting gratitude notes
@@ -201,12 +223,23 @@ func updateGratitude(w http.ResponseWriter, r *http.Request) {
 	}
 	log.Printf("Fetched updated note: %+v", updatedNote)
 
+	// Convert to template note
+	templateNote := GratitudeNote{
+		ID:        updatedNote.ID,
+		Title:     updatedNote.Title,
+		Content:   updatedNote.Content,
+		Category:  updatedNote.Category,
+		Emoji:     updatedNote.Emoji,
+		CreatedAt: updatedNote.CreatedAt.Format("2006-01-02"),
+	}
+
 	// Render the updated note as HTML
 	w.Header().Set("Content-Type", "text/html")
-	tmpl := template.Must(template.ParseFiles("ui/html/gratitude.tmpl"))
-	if err := tmpl.ExecuteTemplate(w, "note-card", updatedNote); err != nil {
+	tmpl := template.Must(template.ParseFiles("ui/html/view-notes.tmpl"))
+	if err := tmpl.ExecuteTemplate(w, "note-card", templateNote); err != nil {
 		log.Printf("Error rendering updated note: %v", err)
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+		return
 	}
 	log.Printf("Successfully rendered updated note")
 }
@@ -239,4 +272,31 @@ func getNoteForEdit(w http.ResponseWriter, r *http.Request) {
 		log.Printf("Error rendering edit form: %v", err)
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 	}
+}
+
+// contactHandler handles the contact page
+func contact(w http.ResponseWriter, r *http.Request) {
+	log.Printf("Contact handler called with path: %s and method: %s", r.URL.Path, r.Method)
+
+	// Only handle exact /contact path
+	if r.URL.Path != "/contact" {
+		log.Printf("Invalid contact path: %s", r.URL.Path)
+		http.NotFound(w, r)
+		return
+	}
+
+	// Only handle GET requests
+	if r.Method != http.MethodGet {
+		log.Printf("Invalid method for contact: %s", r.Method)
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
+	data := PageData{
+		Title: "Contact Us",
+	}
+
+	// Render the contact template with the given data
+	render(w, "contact.tmpl", data)
+	log.Printf("Contact page rendered successfully")
 }

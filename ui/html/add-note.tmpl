@@ -1,0 +1,76 @@
+{{define "title"}}Add Gratitude Note{{end}}
+
+{{define "content"}}
+<div class="min-h-screen bg-gradient-to-br from-[#FFB200]/5 to-[#640D5F]/5">
+    <div class="max-w-4xl mx-auto px-4 py-16">
+        <div class="bg-white p-8 rounded-xl shadow-lg">
+            <h2 class="text-2xl font-bold text-gray-800 mb-6">Add a New Gratitude Note</h2>
+            
+            <form hx-post="/gratitude/create"
+                  hx-push-url="true"
+                  class="space-y-6">
+                
+                <div>
+                    <label for="title" class="block text-sm font-medium text-gray-700">Title</label>
+                    <input type="text" id="title" name="title" required
+                           class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                </div>
+
+                <div>
+                    <label for="content" class="block text-sm font-medium text-gray-700">What are you grateful for?</label>
+                    <textarea id="content" name="content" rows="4" required
+                              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"></textarea>
+                </div>
+
+                <div>
+                    <label for="category" class="block text-sm font-medium text-gray-700">Category</label>
+                    <select id="category" name="category" required
+                            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                        <option value="">Select a category</option>
+                        <option value="Family">Family</option>
+                        <option value="Friends">Friends</option>
+                        <option value="Health">Health</option>
+                        <option value="Work">Work</option>
+                        <option value="Nature">Nature</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label for="emoji" class="block text-sm font-medium text-gray-700">Emoji</label>
+                    <div class="mt-1 flex space-x-2">
+                        <button type="button" class="emoji-btn" data-emoji="😊">😊</button>
+                        <button type="button" class="emoji-btn" data-emoji="❤️">❤️</button>
+                        <button type="button" class="emoji-btn" data-emoji="🌟">🌟</button>
+                        <button type="button" class="emoji-btn" data-emoji="🌺">🌺</button>
+                        <button type="button" class="emoji-btn" data-emoji="🎉">🎉</button>
+                    </div>
+                    <input type="hidden" id="emoji" name="emoji" value="😊">
+                </div>
+
+                <div class="flex justify-end">
+                    <button type="submit"
+                            class="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-[#640D5F] hover:bg-[#4A0A45] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#640D5F]">
+                        Add Note
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const emojiButtons = document.querySelectorAll('.emoji-btn');
+        const emojiInput = document.getElementById('emoji');
+        
+        emojiButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                emojiButtons.forEach(btn => btn.classList.remove('ring-2', 'ring-[#640D5F]'));
+                this.classList.add('ring-2', 'ring-[#640D5F]');
+                emojiInput.value = this.dataset.emoji;
+            });
+        });
+    });
+</script>
+{{end}} 

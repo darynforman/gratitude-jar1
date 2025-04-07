@@ -1,9 +1,10 @@
+{{define "base"}}
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{.Title}}</title> <!-- Dynamic page title using templating -->
+    <title>{{.Title}}</title> <!-- Use the Title field from PageData -->
     
     <!-- Include HTMX for dynamic updates without full page reloads -->
     <script src="https://unpkg.com/htmx.org@1.9.10"></script>
@@ -95,7 +96,8 @@
                     <div class="hidden md:flex items-center space-x-6">
                         <a href="/" class="nav-link">Home</a>
                         <a href="/gratitude" class="nav-link">Add Note</a>
-                        <a href="/about" class="nav-link">My Notes</a>
+                        <a href="/notes" class="nav-link">View Notes</a>
+                        <a href="/about" class="nav-link">About</a>
                         <a href="/contact" class="nav-link">Contact</a>
                     </div>
                 </div>
@@ -136,3 +138,4 @@
     </footer>
 </body>
 </html>
+{{end}}

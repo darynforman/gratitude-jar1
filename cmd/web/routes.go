@@ -6,12 +6,14 @@ func routes() http.Handler {
 	mux := http.NewServeMux()
 
 	// Serve static files
-	fileServer := http.FileServer(http.Dir("static"))
+	fileServer := http.FileServer(http.Dir("ui/static"))
 	mux.Handle("/static/", http.StripPrefix("/static/", fileServer))
 
 	// Define routes
+	mux.HandleFunc("/contact", contact)
 	mux.HandleFunc("/", home)
 	mux.HandleFunc("/gratitude", gratitude)
+	mux.HandleFunc("/notes", viewNotes)
 	mux.HandleFunc("/gratitude/create", createGratitude)
 	mux.HandleFunc("/gratitude/edit/", getNoteForEdit)
 	mux.HandleFunc("/gratitude/update/", updateGratitude)

@@ -1,12 +1,12 @@
 {{define "edit-form"}}
-<div id="edit-form" class="bg-white p-6 rounded-lg shadow-md">
+<div id="edit-form-{{.ID}}" class="bg-white p-6 rounded-lg shadow-md mt-4">
     <h2 class="text-2xl font-bold mb-4">Edit Gratitude Note</h2>
     
     <form hx-put="/gratitude/update/{{.ID}}"
           hx-target="#note-{{.ID}}"
           hx-swap="outerHTML"
           hx-on::before-request="console.log('Starting update request for note:', {{.ID}})"
-          hx-on::after-request="console.log('Update request completed'); document.getElementById('edit-form-container').classList.add('hidden')"
+          hx-on::after-request="console.log('Update request completed'); document.getElementById('edit-form-{{.ID}}').remove()"
           hx-on::error="console.error('Error updating note:', event.detail)"
           hx-headers='{"Content-Type": "application/x-www-form-urlencoded"}'
           class="space-y-4">
@@ -73,7 +73,7 @@
                 Save Changes
             </button>
             <button type="button" 
-                    onclick="document.getElementById('edit-form-container').classList.add('hidden')"
+                    onclick="document.getElementById('edit-form-{{.ID}}').remove()"
                     class="flex-1 bg-gray-200 text-gray-800 py-2 px-4 rounded-md hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2">
                 Cancel
             </button>
