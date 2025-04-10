@@ -1,3 +1,5 @@
+// Package main contains HTTP request handlers for the Gratitude Jar application.
+// These handlers process incoming HTTP requests and generate appropriate responses.
 package main
 
 import (
@@ -10,7 +12,8 @@ import (
 	"github.com/darynforman/gratitude-jar/internal/data"
 )
 
-// Handles the home page request
+// home handles requests to the root path ("/").
+// It displays the welcome page of the Gratitude Jar application.
 func home(w http.ResponseWriter, r *http.Request) {
 	// Only handle the root path
 	if r.URL.Path != "/" {
@@ -26,12 +29,14 @@ func home(w http.ResponseWriter, r *http.Request) {
 	render(w, "home.tmpl", data)
 }
 
-// getGratitudeModel returns a new instance of GratitudeModel
+// getGratitudeModel returns a new instance of GratitudeModel.
+// This helper function ensures consistent model initialization across handlers.
 func getGratitudeModel() *data.GratitudeModel {
 	return data.NewGratitudeModel()
 }
 
-// Handles viewing all gratitude notes
+// viewNotes handles requests to view all gratitude notes.
+// It supports both full page loads and HTMX partial updates.
 func viewNotes(w http.ResponseWriter, r *http.Request) {
 	log.Printf("Handling view notes request")
 
@@ -76,7 +81,8 @@ func viewNotes(w http.ResponseWriter, r *http.Request) {
 	render(w, "view-notes.tmpl", data)
 }
 
-// Handles the gratitude page request (for adding new notes)
+// gratitude handles requests to the gratitude page where users can add new notes.
+// It supports both full page loads and HTMX partial updates.
 func gratitude(w http.ResponseWriter, r *http.Request) {
 	log.Printf("Handling gratitude page request")
 
@@ -98,7 +104,8 @@ func gratitude(w http.ResponseWriter, r *http.Request) {
 	render(w, "add-note.tmpl", data)
 }
 
-// Handles form submissions for adding gratitude notes
+// createGratitude handles form submissions for creating new gratitude notes.
+// It processes POST requests and supports both regular form submissions and HTMX requests.
 func createGratitude(w http.ResponseWriter, r *http.Request) {
 	log.Printf("Handling create gratitude note request")
 
@@ -115,6 +122,7 @@ func createGratitude(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Create a new gratitude note from form data
 	note := &data.GratitudeNote{
 		Title:     r.PostForm.Get("title"),
 		Content:   r.PostForm.Get("content"),
@@ -124,6 +132,7 @@ func createGratitude(w http.ResponseWriter, r *http.Request) {
 		UpdatedAt: time.Now(),
 	}
 
+	// Insert the note into the database
 	_, err = getGratitudeModel().Insert(note)
 	if err != nil {
 		log.Printf("Error inserting note into database: %v", err)
@@ -142,7 +151,8 @@ func createGratitude(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/notes", http.StatusSeeOther)
 }
 
-// Handles both updating and deleting gratitude notes
+// updateGratitude handles both updating and deleting gratitude notes.
+// It processes PUT and DELETE requests and supports HTMX partial updates.
 func updateGratitude(w http.ResponseWriter, r *http.Request) {
 	log.Printf("Handling update/delete request with method: %s", r.Method)
 	log.Printf("Request URL: %s", r.URL.Path)
@@ -244,7 +254,8 @@ func updateGratitude(w http.ResponseWriter, r *http.Request) {
 	log.Printf("Successfully rendered updated note")
 }
 
-// Handles getting a note for editing
+// getNoteForEdit handles requests to get a note for editing.
+// It retrieves a specific note by ID and renders it in the edit form.
 func getNoteForEdit(w http.ResponseWriter, r *http.Request) {
 	log.Printf("Handling get note for edit request")
 
@@ -274,7 +285,8 @@ func getNoteForEdit(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-// contactHandler handles the contact page
+// contact handles requests to the contact page.
+// It displays the contact information and form.
 func contact(w http.ResponseWriter, r *http.Request) {
 	log.Printf("Contact handler called with path: %s and method: %s", r.URL.Path, r.Method)
 

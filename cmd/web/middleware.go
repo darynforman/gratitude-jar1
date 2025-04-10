@@ -1,3 +1,6 @@
+// Package main contains middleware functions for the Gratitude Jar application.
+// Middleware functions wrap HTTP handlers to provide additional functionality
+// such as logging, security headers, and panic recovery.
 package main
 
 import (
@@ -6,7 +9,12 @@ import (
 	"time"
 )
 
-// LoggingMiddleware logs the incoming HTTP request and its duration
+// LoggingMiddleware creates a middleware that logs information about each HTTP request.
+// It records:
+// - HTTP method (GET, POST, etc.)
+// - Request URI
+// - Client IP address
+// - Time taken to process the request
 func LoggingMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		start := time.Now() // Record the start time
@@ -25,7 +33,12 @@ func LoggingMiddleware(next http.Handler) http.Handler {
 	})
 }
 
-// SecureHeadersMiddleware adds security-related headers to all responses
+// SecureHeadersMiddleware adds security-related headers to all HTTP responses.
+// These headers help protect against common web vulnerabilities:
+// - X-Content-Type-Options: Prevents MIME type sniffing
+// - X-Frame-Options: Prevents clickjacking attacks
+// - X-XSS-Protection: Enables basic XSS protection
+// - Referrer-Policy: Controls referrer information exposure
 func SecureHeadersMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		// Add security headers to enhance protection against common attacks
@@ -39,7 +52,11 @@ func SecureHeadersMiddleware(next http.Handler) http.Handler {
 	})
 }
 
-// RecoverPanicMiddleware recovers from any panics and returns a 500 Internal Server Error
+// RecoverPanicMiddleware recovers from any panics that occur during request handling.
+// If a panic occurs:
+// 1. The error is logged
+// 2. A 500 Internal Server Error response is sent to the client
+// 3. The application continues running
 func RecoverPanicMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		defer func() {
