@@ -226,19 +226,39 @@ func updateGratitude(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Log all form values
-	log.Printf("Form values received:")
-	for key, values := range r.PostForm {
-		log.Printf("  %s: %v", key, values)
+	// Get form values
+	title := r.PostForm.Get("title")
+	content := r.PostForm.Get("content")
+	category := r.PostForm.Get("category")
+	emoji := r.PostForm.Get("emoji")
+
+	// Validate the form data
+	v := validator.ValidateGratitudeNote(title, content, category, emoji)
+	if !v.ValidData() {
+		// If validation fails, return the errors
+		if r.Header.Get("HX-Request") == "true" {
+			// For HTMX requests, return the errors as JSON
+			w.Header().Set("Content-Type", "application/json")
+			w.WriteHeader(http.StatusBadRequest)
+			json.NewEncoder(w).Encode(v.Errors)
+			return
+		}
+		// For regular requests, render the form with errors
+		data := PageData{
+			Title:  "Edit Gratitude Note",
+			Errors: v.Errors,
+		}
+		render(w, "edit-note.tmpl", data)
+		return
 	}
 
 	// Create updated note
 	note := &data.GratitudeNote{
 		ID:        id,
-		Title:     r.PostForm.Get("title"),
-		Content:   r.PostForm.Get("content"),
-		Category:  r.PostForm.Get("category"),
-		Emoji:     r.PostForm.Get("emoji"),
+		Title:     title,
+		Content:   content,
+		Category:  category,
+		Emoji:     emoji,
 		UpdatedAt: time.Now(),
 	}
 	log.Printf("Created note object: %+v", note)
