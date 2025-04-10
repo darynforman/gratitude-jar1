@@ -5,8 +5,9 @@ package main
 // PageData holds the data that will be passed to the HTML templates.
 // It serves as the main data structure for rendering pages in the application.
 type PageData struct {
-	Title string          // The title of the page to be displayed in the template
-	Notes []GratitudeNote // A slice of GratitudeNote that will be displayed in the template
+	Title  string            // The title of the page to be displayed in the template
+	Notes  []GratitudeNote   // A slice of GratitudeNote that will be displayed in the template
+	Errors map[string]string // Validation errors for form fields
 }
 
 // GratitudeNote represents a single gratitude note in the templates.

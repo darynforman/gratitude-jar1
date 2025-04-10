@@ -3,6 +3,7 @@
 package main
 
 import (
+	"encoding/json"
 	"html/template"
 	"log"
 	"net/http"
@@ -10,6 +11,7 @@ import (
 	"time"
 
 	"github.com/darynforman/gratitude-jar/internal/data"
+	"github.com/darynforman/gratitude-jar/internal/validator"
 )
 
 // home handles requests to the root path ("/").
@@ -122,12 +124,38 @@ func createGratitude(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Get form values
+	title := r.PostForm.Get("title")
+	content := r.PostForm.Get("content")
+	category := r.PostForm.Get("category")
+	emoji := r.PostForm.Get("emoji")
+
+	// Validate the form data
+	v := validator.ValidateGratitudeNote(title, content, category, emoji)
+	if !v.ValidData() {
+		// If validation fails, return the errors
+		if r.Header.Get("HX-Request") == "true" {
+			// For HTMX requests, return the errors as JSON
+			w.Header().Set("Content-Type", "application/json")
+			w.WriteHeader(http.StatusBadRequest)
+			json.NewEncoder(w).Encode(v.Errors)
+			return
+		}
+		// For regular requests, render the form with errors
+		data := PageData{
+			Title:  "Add Gratitude Note",
+			Errors: v.Errors,
+		}
+		render(w, "add-note.tmpl", data)
+		return
+	}
+
 	// Create a new gratitude note from form data
 	note := &data.GratitudeNote{
-		Title:     r.PostForm.Get("title"),
-		Content:   r.PostForm.Get("content"),
-		Category:  r.PostForm.Get("category"),
-		Emoji:     r.PostForm.Get("emoji"),
+		Title:     title,
+		Content:   content,
+		Category:  category,
+		Emoji:     emoji,
 		CreatedAt: time.Now(),
 		UpdatedAt: time.Now(),
 	}
