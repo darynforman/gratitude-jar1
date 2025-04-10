@@ -10,6 +10,16 @@ import (
 	"path/filepath"
 )
 
+var (
+	// templateDir is the directory containing HTML templates
+	templateDir = "ui/html"
+)
+
+// SetTemplateDir sets the template directory for testing
+func SetTemplateDir(dir string) {
+	templateDir = dir
+}
+
 // render renders an HTML template with the provided data.
 // It performs the following tasks:
 // 1. Checks if the required template files exist
@@ -24,9 +34,17 @@ import (
 func render(w http.ResponseWriter, tmpl string, data interface{}) {
 	log.Printf("Starting to render template: %s", tmpl)
 
+	// Get the absolute path to the templates directory
+	absTemplateDir, err := filepath.Abs(templateDir)
+	if err != nil {
+		log.Printf("Error getting template directory: %v", err)
+		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+		return
+	}
+
 	// Construct paths to template files
-	basePath := filepath.Join("ui", "html", "base.tmpl")
-	templatePath := filepath.Join("ui", "html", tmpl)
+	basePath := filepath.Join(absTemplateDir, "base.tmpl")
+	templatePath := filepath.Join(absTemplateDir, tmpl)
 
 	// Check if template files exist
 	if _, err := os.Stat(basePath); os.IsNotExist(err) {
@@ -49,16 +67,15 @@ func render(w http.ResponseWriter, tmpl string, data interface{}) {
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 		return
 	}
-	log.Printf("Templates parsed successfully")
 
-	// Set content type to HTML with UTF-8 encoding
+	// Set content type
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 
-	// Execute the base template with the provided data
-	if err := templates.ExecuteTemplate(w, "base", data); err != nil {
+	// Execute template
+	err = templates.ExecuteTemplate(w, "base", data)
+	if err != nil {
 		log.Printf("Error executing template: %v", err)
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 		return
 	}
-	log.Printf("Template executed successfully")
 }
