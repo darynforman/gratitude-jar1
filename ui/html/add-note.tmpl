@@ -17,33 +17,35 @@
 
             <form hx-post="/gratitude/create"
                   hx-push-url="true"
+                  hx-indicator="#submit-indicator"
+                  hx-target="#form-messages"
+                  hx-swap="innerHTML"
                   class="space-y-8 relative">
                 
+                <!-- Add a div for form messages -->
+                <div id="form-messages" class="text-red-500"></div>
+                
+                <!-- Add a loading indicator -->
+                <div id="submit-indicator" class="htmx-indicator">
+                    <div class="flex items-center justify-center">
+                        <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-[#EC4899]"></div>
+                    </div>
+                </div>
+
                 <div class="group">
                     <label for="title" class="block text-sm font-medium text-gray-700 mb-2 group-focus-within:text-[#EC4899] transition-colors">Title</label>
-                    <input type="text" id="title" name="title" required
+                    <input type="text" id="title" name="title" required minlength="3" maxlength="100"
                            placeholder="What brings you joy today?"
                            class="block w-full rounded-xl border-gray-200 shadow-sm focus:border-[#EC4899] focus:ring-[#EC4899] transition-all duration-200 text-lg py-3 px-4 bg-white/50">
+                    <div class="error-message text-red-500 text-sm mt-1" data-field="title"></div>
                 </div>
 
                 <div class="group">
                     <label for="content" class="block text-sm font-medium text-gray-700 mb-2 group-focus-within:text-[#EC4899] transition-colors">Express Your Gratitude</label>
-                    <textarea id="content" name="content" rows="4" required
+                    <textarea id="content" name="content" rows="4" required minlength="10" maxlength="1000"
                               placeholder="Take a moment to reflect on what you're thankful for..."
                               class="block w-full rounded-xl border-gray-200 shadow-sm focus:border-[#EC4899] focus:ring-[#EC4899] transition-all duration-200 text-lg py-3 px-4 bg-white/50"></textarea>
-                </div>
-
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-4">Choose an Emoji</label>
-                    <div class="flex flex-wrap gap-4 p-4 bg-white/50 rounded-2xl">
-                        <button type="button" class="emoji-btn text-4xl p-4 rounded-xl hover:scale-110 hover:bg-white hover:shadow-xl transition-all duration-300" data-emoji="✨">✨</button>
-                        <button type="button" class="emoji-btn text-4xl p-4 rounded-xl hover:scale-110 hover:bg-white hover:shadow-xl transition-all duration-300" data-emoji="🌟">🌟</button>
-                        <button type="button" class="emoji-btn text-4xl p-4 rounded-xl hover:scale-110 hover:bg-white hover:shadow-xl transition-all duration-300" data-emoji="💫">💫</button>
-                        <button type="button" class="emoji-btn text-4xl p-4 rounded-xl hover:scale-110 hover:bg-white hover:shadow-xl transition-all duration-300" data-emoji="🙏">🙏</button>
-                        <button type="button" class="emoji-btn text-4xl p-4 rounded-xl hover:scale-110 hover:bg-white hover:shadow-xl transition-all duration-300" data-emoji="❤️">❤️</button>
-                        <button type="button" class="emoji-btn text-4xl p-4 rounded-xl hover:scale-110 hover:bg-white hover:shadow-xl transition-all duration-300" data-emoji="🌈">🌈</button>
-                    </div>
-                    <input type="hidden" id="emoji" name="emoji" value="✨">
+                    <div class="error-message text-red-500 text-sm mt-1" data-field="content"></div>
                 </div>
 
                 <div class="group">
@@ -58,6 +60,21 @@
                         <option value="health">🌱 Health & Wellness</option>
                         <option value="experiences">🌟 Experiences</option>
                     </select>
+                    <div class="error-message text-red-500 text-sm mt-1" data-field="category"></div>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-4">Choose an Emoji</label>
+                    <div class="flex flex-wrap gap-4 p-4 bg-white/50 rounded-2xl">
+                        <button type="button" class="emoji-btn text-4xl p-4 rounded-xl hover:scale-110 hover:bg-white hover:shadow-xl transition-all duration-300" data-emoji="✨">✨</button>
+                        <button type="button" class="emoji-btn text-4xl p-4 rounded-xl hover:scale-110 hover:bg-white hover:shadow-xl transition-all duration-300" data-emoji="🌟">🌟</button>
+                        <button type="button" class="emoji-btn text-4xl p-4 rounded-xl hover:scale-110 hover:bg-white hover:shadow-xl transition-all duration-300" data-emoji="💫">💫</button>
+                        <button type="button" class="emoji-btn text-4xl p-4 rounded-xl hover:scale-110 hover:bg-white hover:shadow-xl transition-all duration-300" data-emoji="🙏">🙏</button>
+                        <button type="button" class="emoji-btn text-4xl p-4 rounded-xl hover:scale-110 hover:bg-white hover:shadow-xl transition-all duration-300" data-emoji="❤️">❤️</button>
+                        <button type="button" class="emoji-btn text-4xl p-4 rounded-xl hover:scale-110 hover:bg-white hover:shadow-xl transition-all duration-300" data-emoji="🌈">🌈</button>
+                    </div>
+                    <input type="hidden" id="selected-emoji" name="emoji" value="✨">
+                    <div class="error-message text-red-500 text-sm mt-1" data-field="emoji"></div>
                 </div>
 
                 <div class="flex justify-end pt-6">
@@ -66,7 +83,8 @@
                         <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
                         </svg>
-                        Add Gratitude
+                        <span>Add Gratitude</span>
+                        <span class="htmx-indicator ml-2">...</span>
                     </button>
                 </div>
             </form>
@@ -102,7 +120,7 @@
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     const emojiButtons = document.querySelectorAll('.emoji-btn');
-    const emojiInput = document.getElementById('emoji');
+    const emojiInput = document.getElementById('selected-emoji');
     
     emojiButtons.forEach(button => {
         button.addEventListener('click', function() {
@@ -119,6 +137,51 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Select the first emoji by default
     emojiButtons[0].click();
+
+    // Handle form validation errors
+    const form = document.querySelector('form');
+    form.addEventListener('htmx:afterRequest', function(event) {
+        // Clear previous error messages
+        document.querySelectorAll('.error-message').forEach(el => el.textContent = '');
+        
+        if (event.detail.xhr.status === 400) {
+            try {
+                const errors = JSON.parse(event.detail.xhr.responseText);
+                Object.entries(errors).forEach(([field, message]) => {
+                    const errorDiv = document.querySelector(`.error-message[data-field="${field}"]`);
+                    if (errorDiv) {
+                        errorDiv.textContent = message;
+                        // Add error styling to the input
+                        const input = document.querySelector(`[name="${field}"]`);
+                        if (input) {
+                            input.classList.add('border-red-500', 'ring-red-500');
+                            input.classList.remove('border-gray-200', 'focus:border-[#EC4899]', 'focus:ring-[#EC4899]');
+                        }
+                    }
+                });
+            } catch (e) {
+                console.error('Error parsing validation response:', e);
+            }
+        } else if (event.detail.xhr.status === 200) {
+            // Clear any error styling on success
+            document.querySelectorAll('input, textarea, select').forEach(input => {
+                input.classList.remove('border-red-500', 'ring-red-500');
+                input.classList.add('border-gray-200', 'focus:border-[#EC4899]', 'focus:ring-[#EC4899]');
+            });
+        }
+    });
+
+    // Reset error styling when user starts typing
+    document.querySelectorAll('input, textarea, select').forEach(input => {
+        input.addEventListener('input', function() {
+            this.classList.remove('border-red-500', 'ring-red-500');
+            this.classList.add('border-gray-200', 'focus:border-[#EC4899]', 'focus:ring-[#EC4899]');
+            const errorDiv = document.querySelector(`.error-message[data-field="${this.name}"]`);
+            if (errorDiv) {
+                errorDiv.textContent = '';
+            }
+        });
+    });
 });
 </script>
 {{end}} 

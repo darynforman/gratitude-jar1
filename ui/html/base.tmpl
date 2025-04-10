@@ -43,6 +43,17 @@
             border: 1px solid rgba(255, 255, 255, 0.2);
         }
 
+        /* HTMX Indicators */
+        .htmx-indicator {
+            display: none;
+        }
+        .htmx-request .htmx-indicator {
+            display: inline-block;
+        }
+        .htmx-request.htmx-indicator {
+            display: block;
+        }
+
         /* Gradient text effect */
         .gradient-text {
             background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));

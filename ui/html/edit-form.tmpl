@@ -1,136 +1,131 @@
 {{define "edit-form"}}
-<div id="edit-form-{{.ID}}" class="glass rounded-2xl p-8 mt-6 shadow-xl relative overflow-hidden animate-slide-up">
-    <!-- Decorative Elements -->
-    <div class="absolute -top-20 -right-20 w-40 h-40 bg-gradient-to-br from-[#EC4899]/20 to-[#D91656]/20 rounded-full blur-3xl"></div>
-    <div class="absolute -bottom-20 -left-20 w-40 h-40 bg-gradient-to-tr from-[#EC4899]/20 to-[#D91656]/20 rounded-full blur-3xl"></div>
+<div id="edit-note-{{.ID}}" class="glass rounded-2xl overflow-hidden transform transition-all duration-300">
+    <div class="p-6 relative">
+        <form hx-put="/gratitude/update/{{.ID}}"
+              hx-target="#edit-note-{{.ID}}"
+              hx-swap="outerHTML"
+              class="space-y-6">
+            
+            <div class="group">
+                <label for="title" class="block text-sm font-medium text-gray-700 mb-2 group-focus-within:text-[#EC4899] transition-colors">Title</label>
+                <input type="text" id="title" name="title" required minlength="3" maxlength="100"
+                       value="{{.Title}}"
+                       class="block w-full rounded-xl border-gray-200 shadow-sm focus:border-[#EC4899] focus:ring-[#EC4899] transition-all duration-200 text-lg py-3 px-4 bg-white/50">
+                <div class="error-message text-red-500 text-sm mt-1" data-field="title"></div>
+            </div>
 
-    <div class="flex items-center justify-between mb-8 relative">
-        <h2 class="text-2xl font-bold text-[#EC4899]">Edit Gratitude Note</h2>
-        <button type="button" 
-                onclick="document.getElementById('edit-form-{{.ID}}').remove()"
-                class="p-2 text-gray-500 hover:text-[#D91656] hover:bg-[#D91656]/5 rounded-xl transition-all duration-200">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-            </svg>
-        </button>
-    </div>
-    
-    <form hx-put="/gratitude/update/{{.ID}}"
-          hx-target="#note-{{.ID}}"
-          hx-swap="outerHTML"
-          hx-on::before-request="console.log('Starting update request for note:', {{.ID}})"
-          hx-on::after-request="console.log('Update request completed'); document.getElementById('edit-form-{{.ID}}').remove()"
-          hx-on::error="console.error('Error updating note:', event.detail)"
-          hx-headers='{"Content-Type": "application/x-www-form-urlencoded"}'
-          class="space-y-6 relative">
-        
-        <input type="hidden" name="id" value="{{.ID}}">
-        
-        <div class="group">
-            <label for="title-{{.ID}}" class="block text-sm font-medium text-gray-700 mb-2 group-focus-within:text-[#EC4899] transition-colors">Title</label>
-            <input type="text" id="title-{{.ID}}" name="title" value="{{.Title}}" required
-                   class="block w-full rounded-xl border-gray-200 shadow-sm focus:border-[#EC4899] focus:ring-[#EC4899] transition-all duration-200 text-lg py-3 px-4 bg-white/50">
-        </div>
-        
-        <div class="group">
-            <label for="content-{{.ID}}" class="block text-sm font-medium text-gray-700 mb-2 group-focus-within:text-[#EC4899] transition-colors">Content</label>
-            <textarea id="content-{{.ID}}" name="content" rows="4" required
-                      class="block w-full rounded-xl border-gray-200 shadow-sm focus:border-[#EC4899] focus:ring-[#EC4899] transition-all duration-200 text-lg py-3 px-4 bg-white/50">{{.Content}}</textarea>
-        </div>
+            <div class="group">
+                <label for="content" class="block text-sm font-medium text-gray-700 mb-2 group-focus-within:text-[#EC4899] transition-colors">Express Your Gratitude</label>
+                <textarea id="content" name="content" rows="4" required minlength="10" maxlength="1000"
+                          class="block w-full rounded-xl border-gray-200 shadow-sm focus:border-[#EC4899] focus:ring-[#EC4899] transition-all duration-200 text-lg py-3 px-4 bg-white/50">{{.Content}}</textarea>
+                <div class="error-message text-red-500 text-sm mt-1" data-field="content"></div>
+            </div>
 
-        <div>
-            <label class="block text-sm font-medium text-gray-700 mb-4">Choose an Emoji</label>
-            <div class="flex flex-wrap gap-4 p-4 bg-white/50 rounded-2xl">
-                <button type="button" 
-                        class="emoji-btn text-4xl p-4 rounded-xl hover:scale-110 hover:bg-white hover:shadow-xl transition-all duration-300 {{if eq .Emoji "✨"}}scale-110 bg-white shadow-xl{{end}}"
-                        data-emoji="✨"
-                        onclick="selectEmoji(this, 'edit-selected-emoji')">
-                    ✨
-                </button>
+            <div class="group">
+                <label for="category" class="block text-sm font-medium text-gray-700 mb-2 group-focus-within:text-[#EC4899] transition-colors">Category</label>
+                <select id="category" name="category" required
+                        class="block w-full rounded-xl border-gray-200 shadow-sm focus:border-[#EC4899] focus:ring-[#EC4899] transition-all duration-200 text-lg py-3 px-4 bg-white/50">
+                    <option value="">Select a category</option>
+                    <option value="personal" {{if eq .Category "personal"}}selected{{end}}>✨ Personal Growth</option>
+                    <option value="work" {{if eq .Category "work"}}selected{{end}}>💼 Professional Life</option>
+                    <option value="family" {{if eq .Category "family"}}selected{{end}}>👨‍👩‍👧‍👦 Family & Friends</option>
+                    <option value="achievements" {{if eq .Category "achievements"}}selected{{end}}>🏆 Achievements</option>
+                    <option value="health" {{if eq .Category "health"}}selected{{end}}>🌱 Health & Wellness</option>
+                    <option value="experiences" {{if eq .Category "experiences"}}selected{{end}}>🌟 Experiences</option>
+                </select>
+                <div class="error-message text-red-500 text-sm mt-1" data-field="category"></div>
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-4">Choose an Emoji</label>
+                <div class="flex flex-wrap gap-4 p-4 bg-white/50 rounded-2xl">
+                    <button type="button" class="emoji-btn text-4xl p-4 rounded-xl hover:scale-110 hover:bg-white hover:shadow-xl transition-all duration-300 {{if eq .Emoji "✨"}}scale-110 bg-white shadow-xl{{end}}" data-emoji="✨">✨</button>
+                    <button type="button" class="emoji-btn text-4xl p-4 rounded-xl hover:scale-110 hover:bg-white hover:shadow-xl transition-all duration-300 {{if eq .Emoji "🌟"}}scale-110 bg-white shadow-xl{{end}}" data-emoji="🌟">🌟</button>
+                    <button type="button" class="emoji-btn text-4xl p-4 rounded-xl hover:scale-110 hover:bg-white hover:shadow-xl transition-all duration-300 {{if eq .Emoji "💫"}}scale-110 bg-white shadow-xl{{end}}" data-emoji="💫">💫</button>
+                    <button type="button" class="emoji-btn text-4xl p-4 rounded-xl hover:scale-110 hover:bg-white hover:shadow-xl transition-all duration-300 {{if eq .Emoji "🙏"}}scale-110 bg-white shadow-xl{{end}}" data-emoji="🙏">🙏</button>
+                    <button type="button" class="emoji-btn text-4xl p-4 rounded-xl hover:scale-110 hover:bg-white hover:shadow-xl transition-all duration-300 {{if eq .Emoji "❤️"}}scale-110 bg-white shadow-xl{{end}}" data-emoji="❤️">❤️</button>
+                    <button type="button" class="emoji-btn text-4xl p-4 rounded-xl hover:scale-110 hover:bg-white hover:shadow-xl transition-all duration-300 {{if eq .Emoji "🌈"}}scale-110 bg-white shadow-xl{{end}}" data-emoji="🌈">🌈</button>
+                </div>
+                <input type="hidden" id="selected-emoji" name="emoji" value="{{.Emoji}}">
+                <div class="error-message text-red-500 text-sm mt-1" data-field="emoji"></div>
+            </div>
+
+            <div class="flex justify-end space-x-4 pt-6">
                 <button type="button"
-                        class="emoji-btn text-4xl p-4 rounded-xl hover:scale-110 hover:bg-white hover:shadow-xl transition-all duration-300 {{if eq .Emoji "🌟"}}scale-110 bg-white shadow-xl{{end}}"
-                        data-emoji="🌟"
-                        onclick="selectEmoji(this, 'edit-selected-emoji')">
-                    🌟
+                        hx-get="/gratitude/{{.ID}}"
+                        hx-target="#edit-note-{{.ID}}"
+                        hx-swap="outerHTML"
+                        class="px-6 py-3 text-lg font-medium text-gray-700 bg-gray-100 rounded-xl hover:bg-gray-200 transition-all duration-200">
+                    Cancel
                 </button>
-                <button type="button"
-                        class="emoji-btn text-4xl p-4 rounded-xl hover:scale-110 hover:bg-white hover:shadow-xl transition-all duration-300 {{if eq .Emoji "💫"}}scale-110 bg-white shadow-xl{{end}}"
-                        data-emoji="💫"
-                        onclick="selectEmoji(this, 'edit-selected-emoji')">
-                    💫
-                </button>
-                <button type="button"
-                        class="emoji-btn text-4xl p-4 rounded-xl hover:scale-110 hover:bg-white hover:shadow-xl transition-all duration-300 {{if eq .Emoji "🙏"}}scale-110 bg-white shadow-xl{{end}}"
-                        data-emoji="🙏"
-                        onclick="selectEmoji(this, 'edit-selected-emoji')">
-                    🙏
-                </button>
-                <button type="button"
-                        class="emoji-btn text-4xl p-4 rounded-xl hover:scale-110 hover:bg-white hover:shadow-xl transition-all duration-300 {{if eq .Emoji "❤️"}}scale-110 bg-white shadow-xl{{end}}"
-                        data-emoji="❤️"
-                        onclick="selectEmoji(this, 'edit-selected-emoji')">
-                    ❤️
-                </button>
-                <button type="button"
-                        class="emoji-btn text-4xl p-4 rounded-xl hover:scale-110 hover:bg-white hover:shadow-xl transition-all duration-300 {{if eq .Emoji "🌈"}}scale-110 bg-white shadow-xl{{end}}"
-                        data-emoji="🌈"
-                        onclick="selectEmoji(this, 'edit-selected-emoji')">
-                    🌈
+                <button type="submit"
+                        class="inline-flex items-center px-8 py-4 text-lg font-medium text-white bg-gradient-to-r from-[#EC4899] to-[#D91656] rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200">
+                    <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                    </svg>
+                    Update Note
                 </button>
             </div>
-            <input type="hidden" name="emoji" id="edit-selected-emoji" value="{{.Emoji}}" required>
-        </div>
-        
-        <div class="group">
-            <label for="category-{{.ID}}" class="block text-sm font-medium text-gray-700 mb-2 group-focus-within:text-[#EC4899] transition-colors">Category</label>
-            <select id="category-{{.ID}}" name="category" required
-                    class="block w-full rounded-xl border-gray-200 shadow-sm focus:border-[#EC4899] focus:ring-[#EC4899] transition-all duration-200 text-lg py-3 px-4 bg-white/50">
-                <option value="personal" {{if eq .Category "personal"}}selected{{end}}>✨ Personal Growth</option>
-                <option value="work" {{if eq .Category "work"}}selected{{end}}>💼 Professional Life</option>
-                <option value="family" {{if eq .Category "family"}}selected{{end}}>👨‍👩‍👧‍👦 Family & Friends</option>
-                <option value="achievements" {{if eq .Category "achievements"}}selected{{end}}>🏆 Achievements</option>
-                <option value="health" {{if eq .Category "health"}}selected{{end}}>🌱 Health & Wellness</option>
-                <option value="experiences" {{if eq .Category "experiences"}}selected{{end}}>🌟 Experiences</option>
-            </select>
-        </div>
-        
-        <div class="flex justify-end space-x-4">
-            <button type="button"
-                    onclick="document.getElementById('edit-form-{{.ID}}').remove()"
-                    class="px-6 py-2.5 text-sm font-medium text-gray-700 bg-gray-100 rounded-xl hover:bg-gray-200 transition-all duration-200">
-                Cancel
-            </button>
-            <button type="submit"
-                    class="px-6 py-2.5 text-sm font-medium text-white bg-gradient-to-r from-[#EC4899] to-[#D91656] rounded-xl shadow-md hover:shadow-lg transform hover:-translate-y-0.5 transition-all duration-200">
-                Save Changes
-            </button>
-        </div>
-    </form>
+        </form>
+    </div>
 </div>
 
 <script>
-function selectEmoji(button, inputId) {
-    // Remove active state from all emoji buttons in the same container
-    button.parentElement.querySelectorAll('.emoji-btn').forEach(btn => {
-        btn.classList.remove('scale-110', 'bg-white', 'shadow-xl');
+document.addEventListener('DOMContentLoaded', function() {
+    const emojiButtons = document.querySelectorAll('.emoji-btn');
+    const emojiInput = document.getElementById('selected-emoji');
+    
+    emojiButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            // Remove active state from all emoji buttons
+            emojiButtons.forEach(btn => {
+                btn.classList.remove('scale-110', 'bg-white', 'shadow-xl');
+            });
+            
+            // Add active state to selected emoji button
+            this.classList.add('scale-110', 'bg-white', 'shadow-xl');
+            emojiInput.value = this.dataset.emoji;
+        });
     });
-    
-    // Add active state to selected emoji button
-    button.classList.add('scale-110', 'bg-white', 'shadow-xl');
-    
-    // Update hidden input with selected emoji
-    document.getElementById(inputId).value = button.getAttribute('data-emoji');
-}
+
+    // Handle form validation errors
+    const form = document.querySelector('form');
+    form.addEventListener('htmx:afterRequest', function(event) {
+        // Clear previous error messages
+        document.querySelectorAll('.error-message').forEach(el => el.textContent = '');
+        
+        if (event.detail.xhr.status === 400) {
+            try {
+                const errors = JSON.parse(event.detail.xhr.responseText);
+                Object.entries(errors).forEach(([field, message]) => {
+                    const errorDiv = document.querySelector(`.error-message[data-field="${field}"]`);
+                    if (errorDiv) {
+                        errorDiv.textContent = message;
+                        // Add error styling to the input
+                        const input = document.querySelector(`[name="${field}"]`);
+                        if (input) {
+                            input.classList.add('border-red-500', 'ring-red-500');
+                            input.classList.remove('border-gray-200', 'focus:border-[#EC4899]', 'focus:ring-[#EC4899]');
+                        }
+                    }
+                });
+            } catch (e) {
+                console.error('Error parsing validation response:', e);
+            }
+        }
+    });
+
+    // Reset error styling when user starts typing
+    document.querySelectorAll('input, textarea, select').forEach(input => {
+        input.addEventListener('input', function() {
+            this.classList.remove('border-red-500', 'ring-red-500');
+            this.classList.add('border-gray-200', 'focus:border-[#EC4899]', 'focus:ring-[#EC4899]');
+            const errorDiv = document.querySelector(`.error-message[data-field="${this.name}"]`);
+            if (errorDiv) {
+                errorDiv.textContent = '';
+            }
+        });
+    });
+});
 </script>
-
-<style>
-@keyframes slide-up {
-    from { transform: translateY(20px); opacity: 0; }
-    to { transform: translateY(0); opacity: 1; }
-}
-
-.animate-slide-up {
-    animation: slide-up 0.8s ease-out forwards;
-}
-</style>
 {{end}} 

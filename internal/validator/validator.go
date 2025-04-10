@@ -66,11 +66,12 @@ func MaxLength(value string, n int) bool {
 // Currently valid categories are: personal, work, health, relationships, other
 func ValidCategory(category string) bool {
 	validCategories := map[string]bool{
-		"personal":      true,
-		"work":          true,
-		"health":        true,
-		"relationships": true,
-		"other":         true,
+		"personal":     true,
+		"work":         true,
+		"family":       true,
+		"achievements": true,
+		"health":       true,
+		"experiences":  true,
 	}
 	return validCategories[category]
 }

@@ -25,13 +25,13 @@
             <div class="flex space-x-2">
                 <button hx-get="/gratitude/edit/{{.ID}}"
                         hx-target="#note-{{.ID}}"
-                        hx-swap="afterend"
+                        hx-swap="outerHTML"
                         class="p-2 text-gray-500 hover:text-[#EC4899] hover:bg-[#EC4899]/5 rounded-xl transition-all duration-200">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
                     </svg>
                 </button>
-                <button hx-delete="/gratitude/delete/{{.ID}}"
+                <button hx-delete="/gratitude/update/{{.ID}}"
                         hx-target="#note-{{.ID}}"
                         hx-swap="outerHTML"
                         hx-confirm="Are you sure you want to delete this note?"
