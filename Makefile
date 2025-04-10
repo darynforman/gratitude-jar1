@@ -7,7 +7,7 @@ GOVET=go vet
 GOBUILD=$(GO) build
 GOTEST=$(GO) test
 GORUN=$(GO) run
-GOFILES=$(shell find . -name '*.go' -not -path "./vendor/*")
+GOFILES=$(shell find . -name '*.go' -not -path "./vendor/*" -not -name "*_test.go")
 GOFMTFILES=$(shell find . -name '*.go' -not -path "./vendor/*" -not -path "./node_modules/*")
 
 # Build flags
@@ -26,7 +26,7 @@ build:
 # Run the application
 run:
 	@echo "Running..."
-	$(GORUN) ./cmd/web/*.go
+	$(GORUN) $(shell find ./cmd/web -name '*.go' -not -name '*_test.go')
 
 # Run tests
 test:
