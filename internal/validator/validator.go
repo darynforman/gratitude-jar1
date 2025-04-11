@@ -79,9 +79,24 @@ func ValidCategory(category string) bool {
 // ValidEmoji checks if the emoji string is valid.
 // This is a simple check that verifies the string is not too long
 // and contains at least one emoji character.
-func ValidEmoji(emoji string) bool {
-	// Basic emoji validation - can be enhanced with more specific checks
-	return len(emoji) <= 4 && len(emoji) > 0
+func (v *Validator) ValidEmoji(emoji string) bool {
+	// Emojis can be 1-8 characters long (including variation selectors)
+	if len(emoji) < 1 || len(emoji) > 8 {
+		return false
+	}
+	// Check if the string contains at least one emoji character
+	for _, r := range emoji {
+		if r >= 0x1F300 && r <= 0x1F9FF { // Basic emoji range
+			return true
+		}
+		if r >= 0x2600 && r <= 0x26FF { // Misc symbols
+			return true
+		}
+		if r >= 0x2700 && r <= 0x27BF { // Dingbats
+			return true
+		}
+	}
+	return false
 }
 
 // ValidateGratitudeNote validates a gratitude note's fields.
@@ -107,7 +122,7 @@ func ValidateGratitudeNote(title, content, category, emoji string) *Validator {
 	v.Check(ValidCategory(category), "category", "Please select a valid category")
 
 	// Validate emoji
-	v.Check(ValidEmoji(emoji), "emoji", "Please select a valid emoji")
+	v.Check(v.ValidEmoji(emoji), "emoji", "Please select a valid emoji")
 
 	return v
 }
