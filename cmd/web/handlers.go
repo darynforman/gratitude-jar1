@@ -187,6 +187,9 @@ func updateGratitude(w http.ResponseWriter, r *http.Request) {
 
 	// Extract ID from URL
 	idStr := r.URL.Path[len("/gratitude/update/"):]
+	if r.Method == http.MethodDelete {
+		idStr = r.URL.Path[len("/gratitude/delete/"):]
+	}
 	log.Printf("Extracted ID string: %s", idStr)
 
 	id, err := strconv.Atoi(idStr)
@@ -206,6 +209,7 @@ func updateGratitude(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 			return
 		}
+		// Return empty response for HTMX to remove the element
 		w.WriteHeader(http.StatusOK)
 		return
 	}

@@ -5,15 +5,15 @@
     <!-- Hero Section -->
     <div class="max-w-4xl mx-auto px-4 py-16">
         <div class="text-center mb-12 relative">
-            <h2 class="text-6xl font-bold text-[#EC4899] mb-4 animate-fade-in">Express Gratitude</h2>
+            <h2 class="text-6xl font-bold text-primary-600 mb-4 animate-fade-in">Express Gratitude</h2>
             <p class="text-xl text-gray-600 animate-fade-in-delayed">Capture the moments that make life beautiful</p>
         </div>
 
         <!-- Main Form Card -->
         <div class="glass rounded-3xl p-8 shadow-2xl relative overflow-hidden animate-slide-up">
             <!-- Decorative Elements -->
-            <div class="absolute -top-20 -right-20 w-40 h-40 bg-gradient-to-br from-[#EC4899]/30 to-[#D91656]/30 rounded-full blur-3xl"></div>
-            <div class="absolute -bottom-20 -left-20 w-40 h-40 bg-gradient-to-tr from-[#EC4899]/30 to-[#D91656]/30 rounded-full blur-3xl"></div>
+            <div class="absolute -top-20 -right-20 w-40 h-40 bg-gradient-to-br from-primary-400/30 to-primary-600/30 rounded-full blur-3xl"></div>
+            <div class="absolute -bottom-20 -left-20 w-40 h-40 bg-gradient-to-tr from-primary-400/30 to-primary-600/30 rounded-full blur-3xl"></div>
 
             <form hx-post="/gratitude/create"
                   hx-push-url="true"
@@ -28,30 +28,30 @@
                 <!-- Add a loading indicator -->
                 <div id="submit-indicator" class="htmx-indicator">
                     <div class="flex items-center justify-center">
-                        <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-[#EC4899]"></div>
+                        <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-500"></div>
                     </div>
                 </div>
 
                 <div class="group">
-                    <label for="title" class="block text-sm font-medium text-gray-700 mb-2 group-focus-within:text-[#EC4899] transition-colors">Title</label>
+                    <label for="title" class="block text-sm font-medium text-gray-700 mb-2 group-focus-within:text-primary-600 transition-colors">Title</label>
                     <input type="text" id="title" name="title" required minlength="3" maxlength="100"
                            placeholder="What brings you joy today?"
-                           class="block w-full rounded-xl border-gray-200 shadow-sm focus:border-[#EC4899] focus:ring-[#EC4899] transition-all duration-200 text-lg py-3 px-4 bg-white/50">
+                           class="input-field block w-full rounded-xl border-gray-200 shadow-sm focus:border-primary-500 focus:ring-primary-500 transition-all duration-200 text-lg py-3 px-4 bg-white/50">
                     <div class="error-message text-red-500 text-sm mt-1" data-field="title"></div>
                 </div>
 
                 <div class="group">
-                    <label for="content" class="block text-sm font-medium text-gray-700 mb-2 group-focus-within:text-[#EC4899] transition-colors">Express Your Gratitude</label>
+                    <label for="content" class="block text-sm font-medium text-gray-700 mb-2 group-focus-within:text-primary-600 transition-colors">Express Your Gratitude</label>
                     <textarea id="content" name="content" rows="4" required minlength="10" maxlength="1000"
                               placeholder="Take a moment to reflect on what you're thankful for..."
-                              class="block w-full rounded-xl border-gray-200 shadow-sm focus:border-[#EC4899] focus:ring-[#EC4899] transition-all duration-200 text-lg py-3 px-4 bg-white/50"></textarea>
+                              class="input-field block w-full rounded-xl border-gray-200 shadow-sm focus:border-primary-500 focus:ring-primary-500 transition-all duration-200 text-lg py-3 px-4 bg-white/50"></textarea>
                     <div class="error-message text-red-500 text-sm mt-1" data-field="content"></div>
                 </div>
 
                 <div class="group">
-                    <label for="category" class="block text-sm font-medium text-gray-700 mb-2 group-focus-within:text-[#EC4899] transition-colors">Category</label>
+                    <label for="category" class="block text-sm font-medium text-gray-700 mb-2 group-focus-within:text-primary-600 transition-colors">Category</label>
                     <select id="category" name="category" required
-                            class="block w-full rounded-xl border-gray-200 shadow-sm focus:border-[#EC4899] focus:ring-[#EC4899] transition-all duration-200 text-lg py-3 px-4 bg-white/50">
+                            class="input-field block w-full rounded-xl border-gray-200 shadow-sm focus:border-primary-500 focus:ring-primary-500 transition-all duration-200 text-lg py-3 px-4 bg-white/50">
                         <option value="">Select a category</option>
                         <option value="personal">✨ Personal Growth</option>
                         <option value="work">💼 Professional Life</option>
@@ -65,13 +65,13 @@
 
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-4">Choose an Emoji</label>
-                    <div class="flex flex-wrap gap-4 p-4 bg-white/50 rounded-2xl">
-                        <button type="button" class="emoji-btn text-4xl p-4 rounded-xl hover:scale-110 hover:bg-white hover:shadow-xl transition-all duration-300" data-emoji="✨">✨</button>
-                        <button type="button" class="emoji-btn text-4xl p-4 rounded-xl hover:scale-110 hover:bg-white hover:shadow-xl transition-all duration-300" data-emoji="🌟">🌟</button>
-                        <button type="button" class="emoji-btn text-4xl p-4 rounded-xl hover:scale-110 hover:bg-white hover:shadow-xl transition-all duration-300" data-emoji="💫">💫</button>
-                        <button type="button" class="emoji-btn text-4xl p-4 rounded-xl hover:scale-110 hover:bg-white hover:shadow-xl transition-all duration-300" data-emoji="🙏">🙏</button>
-                        <button type="button" class="emoji-btn text-4xl p-4 rounded-xl hover:scale-110 hover:bg-white hover:shadow-xl transition-all duration-300" data-emoji="❤️">❤️</button>
-                        <button type="button" class="emoji-btn text-4xl p-4 rounded-xl hover:scale-110 hover:bg-white hover:shadow-xl transition-all duration-300" data-emoji="🌈">🌈</button>
+                    <div class="emoji-grid grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-4 p-4 bg-white/50 rounded-xl">
+                        <button type="button" class="emoji-btn text-4xl p-4 rounded-lg hover:scale-110 hover:bg-primary-50 transition-all duration-300" data-emoji="✨" title="Sparkles">✨</button>
+                        <button type="button" class="emoji-btn text-4xl p-4 rounded-lg hover:scale-110 hover:bg-primary-50 transition-all duration-300" data-emoji="🌟" title="Glowing Star">🌟</button>
+                        <button type="button" class="emoji-btn text-4xl p-4 rounded-lg hover:scale-110 hover:bg-primary-50 transition-all duration-300" data-emoji="💫" title="Dizzy">💫</button>
+                        <button type="button" class="emoji-btn text-4xl p-4 rounded-lg hover:scale-110 hover:bg-primary-50 transition-all duration-300" data-emoji="🙏" title="Folded Hands">🙏</button>
+                        <button type="button" class="emoji-btn text-4xl p-4 rounded-lg hover:scale-110 hover:bg-primary-50 transition-all duration-300" data-emoji="❤️" title="Red Heart">❤️</button>
+                        <button type="button" class="emoji-btn text-4xl p-4 rounded-lg hover:scale-110 hover:bg-primary-50 transition-all duration-300" data-emoji="🌈" title="Rainbow">🌈</button>
                     </div>
                     <input type="hidden" id="selected-emoji" name="emoji" value="✨">
                     <div class="error-message text-red-500 text-sm mt-1" data-field="emoji"></div>
@@ -79,7 +79,7 @@
 
                 <div class="flex justify-end pt-6">
                     <button type="submit"
-                            class="inline-flex items-center px-8 py-4 text-lg font-medium text-white bg-gradient-to-r from-[#EC4899] to-[#D91656] rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200">
+                            class="btn-primary inline-flex items-center px-8 py-4 text-lg font-medium text-white rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200">
                         <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
                         </svg>
@@ -115,6 +115,11 @@
 .animate-slide-up {
     animation: slide-up 0.8s ease-out forwards;
 }
+
+.emoji-btn.active {
+    background: rgba(14, 165, 233, 0.2);
+    transform: scale(1.1);
+}
 </style>
 
 <script>
@@ -124,13 +129,13 @@ document.addEventListener('DOMContentLoaded', function() {
     
     emojiButtons.forEach(button => {
         button.addEventListener('click', function() {
-            // Remove active state from all emoji buttons
+            // Remove active class from all buttons
             emojiButtons.forEach(btn => {
-                btn.classList.remove('scale-110', 'bg-white', 'shadow-xl');
+                btn.classList.remove('active');
             });
             
-            // Add active state to selected emoji button
-            this.classList.add('scale-110', 'bg-white', 'shadow-xl');
+            // Add active class to clicked button
+            this.classList.add('active');
             emojiInput.value = this.dataset.emoji;
         });
     });
@@ -155,7 +160,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         const input = document.querySelector(`[name="${field}"]`);
                         if (input) {
                             input.classList.add('border-red-500', 'ring-red-500');
-                            input.classList.remove('border-gray-200', 'focus:border-[#EC4899]', 'focus:ring-[#EC4899]');
+                            input.classList.remove('border-gray-200', 'focus:border-primary-500', 'focus:ring-primary-500');
                         }
                     }
                 });
@@ -166,7 +171,7 @@ document.addEventListener('DOMContentLoaded', function() {
             // Clear any error styling on success
             document.querySelectorAll('input, textarea, select').forEach(input => {
                 input.classList.remove('border-red-500', 'ring-red-500');
-                input.classList.add('border-gray-200', 'focus:border-[#EC4899]', 'focus:ring-[#EC4899]');
+                input.classList.add('border-gray-200', 'focus:border-primary-500', 'focus:ring-primary-500');
             });
         }
     });
@@ -175,7 +180,7 @@ document.addEventListener('DOMContentLoaded', function() {
     document.querySelectorAll('input, textarea, select').forEach(input => {
         input.addEventListener('input', function() {
             this.classList.remove('border-red-500', 'ring-red-500');
-            this.classList.add('border-gray-200', 'focus:border-[#EC4899]', 'focus:ring-[#EC4899]');
+            this.classList.add('border-gray-200', 'focus:border-primary-500', 'focus:ring-primary-500');
             const errorDiv = document.querySelector(`.error-message[data-field="${this.name}"]`);
             if (errorDiv) {
                 errorDiv.textContent = '';

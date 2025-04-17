@@ -1,290 +1,249 @@
+{{define "title"}}Welcome to Gratitude Jar{{end}}
+
 {{define "content"}}
-<!-- Main container with a max width and centered alignment -->
-<div class="max-w-4xl mx-auto">
-    <!-- Hero Section -->
-    <div class="text-center mb-16 relative">
-        <!-- Floating elements for visual interest -->
-        <div class="absolute -top-8 -left-8 w-24 h-24 bg-[#EC4899]/10 rounded-full blur-2xl"></div>
-        <div class="absolute -bottom-8 -right-8 w-32 h-32 bg-[#EC4899]/10 rounded-full blur-2xl"></div>
-        
-        <!-- Main hero content -->
-        <div class="relative z-10">
-            <!-- Logo Container with enhanced hover effect -->
-            <div class="mb-8 transform hover:scale-105 transition-all duration-500">
-                <div class="relative">
-                    <!-- Background glow effect -->
-                    <div class="absolute inset-0 bg-gradient-to-br from-[#EC4899]/10 via-[#D91656]/5 to-[#EC4899]/10 rounded-3xl blur-3xl"></div>
-                    
-                    <!-- SVG Logo -->
-                    <div class="relative z-10 mx-auto w-72 md:w-96 lg:w-[28rem]">
-                        <div class="text-[#EC4899] font-medium tracking-wide text-3xl md:text-4xl mb-6">EST. 2025</div>
-                        <svg viewBox="0 0 400 500" class="w-full h-auto drop-shadow-2xl" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <!-- Glass Reflection Effect -->
-                            <defs>
-                                <linearGradient id="glassGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                                    <stop offset="0%" style="stop-color:#FFFFFF;stop-opacity:0.2"/>
-                                    <stop offset="50%" style="stop-color:#FFFFFF;stop-opacity:0.1"/>
-                                    <stop offset="100%" style="stop-color:#FFFFFF;stop-opacity:0.2"/>
-                                </linearGradient>
-                                <filter id="glow">
-                                    <feGaussianBlur stdDeviation="4" result="coloredBlur"/>
-                                    <feMerge>
-                                        <feMergeNode in="coloredBlur"/>
-                                        <feMergeNode in="SourceGraphic"/>
-                                    </feMerge>
-                                </filter>
-                            </defs>
-
-                            <!-- Jar Body with Curved Sides -->
-                            <path d="M80 120 
-                                    C80 120, 320 120, 320 120
-                                    L300 460 
-                                    C300 470, 100 470, 100 460
-                                    L80 120" 
-                                  class="stroke-[#EC4899] fill-white/30"
-                                  stroke-width="14"/>
-                            
-                            <!-- Glass Reflection -->
-                            <path d="M100 140
-                                    C100 140, 280 140, 280 140
-                                    L265 440
-                                    C265 450, 115 450, 115 440
-                                    L100 140" 
-                                  fill="url(#glassGradient)"
-                                  stroke="none"/>
-
-                            <!-- Jar Lid Base -->
-                            <path d="M60 120 L340 120 L340 90 L60 90 Z"
-                                  class="stroke-[#EC4899] fill-white/40"
-                                  stroke-width="14"/>
-                            
-                            <!-- Jar Thread with Better Curve -->
-                            <path d="M70 90 
-                                    C70 70, 140 65, 200 65 
-                                    C260 65, 330 70, 330 90"
-                                  class="stroke-[#EC4899]"
-                                  stroke-width="14"
-                                  stroke-linecap="round"
-                                  fill="none"/>
-
-                            <!-- Decorative Ring -->
-                            <ellipse cx="200" cy="90" rx="135" ry="8"
-                                    class="stroke-[#EC4899] fill-none"
-                                    stroke-width="6"/>
-
-                            <!-- Animated Notes with Enhanced Style -->
-                            <g class="animate-float-1" filter="url(#glow)">
-                                <rect x="120" y="200" width="70" height="50" rx="10"
-                                      class="fill-[#EC4899]/30 stroke-[#EC4899]/50"
-                                      stroke-width="3"/>
-                                <path d="M130 220 L180 220 M130 235 L170 235"
-                                      stroke="#EC4899"
-                                      stroke-width="3"
-                                      stroke-opacity="0.3"/>
-                            </g>
-                            <g class="animate-float-2" filter="url(#glow)">
-                                <rect x="220" y="280" width="70" height="50" rx="10"
-                                      class="fill-[#EC4899]/30 stroke-[#EC4899]/50"
-                                      stroke-width="3"/>
-                                <path d="M230 300 L280 300 M230 315 L270 315"
-                                      stroke="#EC4899"
-                                      stroke-width="3"
-                                      stroke-opacity="0.3"/>
-                            </g>
-                            <g class="animate-float-3" filter="url(#glow)">
-                                <rect x="150" y="350" width="70" height="50" rx="10"
-                                      class="fill-[#EC4899]/30 stroke-[#EC4899]/50"
-                                      stroke-width="3"/>
-                                <path d="M160 370 L210 370 M160 385 L200 385"
-                                      stroke="#EC4899"
-                                      stroke-width="3"
-                                      stroke-opacity="0.3"/>
-                            </g>
-
-                            <!-- Sparkle Effects -->
-                            <g class="animate-twinkle">
-                                <circle cx="100" cy="200" r="4" class="fill-[#EC4899]/60"/>
-                                <circle cx="280" cy="300" r="3" class="fill-[#EC4899]/60"/>
-                                <circle cx="180" cy="420" r="3" class="fill-[#EC4899]/60"/>
-                                <circle cx="290" cy="180" r="4" class="fill-[#EC4899]/60"/>
-                                <circle cx="140" cy="380" r="3" class="fill-[#EC4899]/60"/>
-                            </g>
-                        </svg>
-                        <div class="text-4xl md:text-5xl font-bold text-[#EC4899] mt-8 tracking-tight">Gratitude Jar</div>
+<!-- Reset any default margins and ensure full width -->
+<div class="w-full min-h-screen overflow-x-hidden">
+    <!-- Full Screen Hero Section -->
+    <div class="relative w-full min-h-screen bg-gradient-to-br from-blue-600 to-blue-500">
+        <!-- Navigation -->
+        <div class="absolute top-0 left-0 right-0 z-10">
+            <div class="max-w-7xl mx-auto px-6 py-6">
+                <div class="flex justify-between items-center">
+                    <h1 class="text-2xl font-bold text-white">Gratitude Jar</h1>
+                    <div class="flex items-center space-x-6">
+                        <a href="/about" class="text-white hover:text-blue-100 transition-colors">About</a>
+                        <a href="/gratitude" 
+                           class="px-6 py-2 bg-white text-blue-600 rounded-full font-medium hover:bg-opacity-90 transition-all">
+                            Get Started
+                        </a>
                     </div>
                 </div>
             </div>
-            
-            <!-- Inspirational Quote with enhanced typography -->
-            <div class="max-w-2xl mx-auto mt-24">
-                <p class="text-2xl md:text-3xl text-gray-700 mb-6 font-serif italic animate-slide-up">
-                    "Feeling gratitude and not expressing it is like wrapping a present and not giving it."
-                </p>
-                <p class="text-gray-500 animate-slide-up-delayed">- William Arthur Ward</p>
+        </div>
+
+        <!-- Main Content -->
+        <div class="min-h-screen flex items-center">
+            <div class="max-w-7xl mx-auto px-6 w-full grid md:grid-cols-2 gap-12 items-center">
+                <!-- Left Column -->
+                <div class="relative z-10">
+                    <h2 class="text-5xl md:text-7xl font-bold text-white leading-tight mb-6">
+                        Be inspired.<br>
+                        Stay grateful.
+                    </h2>
+                    <p class="text-xl text-blue-100 mb-12">
+                        See how gratitude transforms your daily life with our beautiful digital journaling experience.
+                    </p>
+                    <div class="flex flex-col sm:flex-row gap-4">
+                        <a href="/gratitude" 
+                           class="group inline-flex items-center justify-center px-8 py-3 text-lg font-medium bg-white text-blue-600 rounded-full hover:bg-opacity-95 transition-all">
+                            Start Your Journey
+                            <svg class="w-5 h-5 ml-2 transform group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
+                            </svg>
+                        </a>
+                        <a href="/about" 
+                           class="inline-flex items-center justify-center px-8 py-3 text-lg font-medium border border-white text-white rounded-full hover:bg-white/10 transition-all">
+                            Learn More
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Right Column - Animated Notes -->
+                <div class="relative hidden md:block h-[600px]">
+                    <!-- Main Container -->
+                    <div class="relative w-full h-full">
+                        <!-- Large Note -->
+                        <div class="absolute right-0 top-1/2 -translate-y-1/2 w-[400px] h-[300px] bg-white/10 backdrop-blur-sm rounded-2xl animate-float-main"></div>
+                        
+                        <!-- Floating Notes -->
+                        <div class="absolute inset-0">
+                            <!-- Note 1 -->
+                            <div class="absolute right-12 top-20 w-32 h-24 bg-white/10 backdrop-blur-sm rounded-xl animate-float-1">
+                                <div class="absolute inset-0 flex items-center justify-center text-white/50 text-4xl">🌟</div>
+                            </div>
+                            
+                            <!-- Note 2 -->
+                            <div class="absolute right-24 top-1/2 w-28 h-28 bg-white/10 backdrop-blur-sm rounded-xl animate-float-2">
+                                <div class="absolute inset-0 flex items-center justify-center text-white/50 text-4xl">💭</div>
+                            </div>
+                            
+                            <!-- Note 3 -->
+                            <div class="absolute right-36 bottom-32 w-36 h-24 bg-white/10 backdrop-blur-sm rounded-xl animate-float-3">
+                                <div class="absolute inset-0 flex items-center justify-center text-white/50 text-4xl">✨</div>
+                            </div>
+                            
+                            <!-- Note 4 -->
+                            <div class="absolute right-48 top-32 w-24 h-24 bg-white/10 backdrop-blur-sm rounded-xl animate-float-4">
+                                <div class="absolute inset-0 flex items-center justify-center text-white/50 text-4xl">💫</div>
+                            </div>
+                            
+                            <!-- Note 5 -->
+                            <div class="absolute right-16 bottom-24 w-28 h-28 bg-white/10 backdrop-blur-sm rounded-xl animate-float-5">
+                                <div class="absolute inset-0 flex items-center justify-center text-white/50 text-4xl">🌈</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
-            
-            <!-- Call-to-Action Button -->
-            <div class="mt-8 animate-slide-up-delayed">
-                <a href="/gratitude" 
-                   class="inline-flex items-center px-8 py-4 rounded-full text-lg font-medium text-white bg-gradient-to-r from-[#EC4899] to-[#D91656] hover:from-[#D91656] hover:to-[#EC4899] transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1">
-                    Begin Your Gratitude Journey
-                    <svg class="w-5 h-5 ml-2 transform group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/>
-                    </svg>
-                </a>
-            </div>
+        </div>
+
+        <!-- Decorative Lines -->
+        <div class="absolute inset-0 pointer-events-none overflow-hidden">
+            <!-- Left side curves -->
+            <svg class="absolute left-0 h-full w-1/3 -translate-x-1/4" viewBox="0 0 400 800" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M400,0 Q300,200 200,400 Q100,600 100,800" 
+                      stroke="#EC4899" 
+                      stroke-width="1" 
+                      stroke-opacity="0.2"
+                      fill="none"/>
+                <path d="M350,0 Q250,200 150,400 Q50,600 50,800" 
+                      stroke="#EC4899" 
+                      stroke-width="1" 
+                      stroke-opacity="0.2"
+                      fill="none"/>
+            </svg>
+        </div>
+
+        <!-- Background Decorative Elements -->
+        <div class="absolute top-0 left-0 right-0 bottom-0 overflow-hidden pointer-events-none">
+            <div class="absolute top-0 right-0 w-[800px] h-[800px] bg-blue-400 rounded-full opacity-10 transform translate-x-1/2 -translate-y-1/2"></div>
+            <div class="absolute bottom-0 left-0 w-[800px] h-[800px] bg-blue-400 rounded-full opacity-10 transform -translate-x-1/2 translate-y-1/2"></div>
         </div>
     </div>
+</div>
 
-    <!-- Features Grid -->
-    <div class="grid md:grid-cols-3 gap-8 mb-16">
-        <!-- Feature 1 -->
-        <div class="bg-white p-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 border-t-4 border-[#FFB200] transform hover:-translate-y-1">
-            <div class="text-center">
-                <div class="w-12 h-12 bg-[#FFB200]/10 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <svg class="w-6 h-6 text-[#FFB200]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
-                    </svg>
-                </div>
-                <h3 class="text-xl font-semibold text-gray-800 mb-2">Write Daily</h3>
-                <p class="text-gray-600">Capture moments of gratitude in your personal digital jar</p>
-            </div>
+<!-- Features Section -->
+<div id="features" class="py-24 bg-gray-50">
+    <div class="max-w-7xl mx-auto px-4">
+        <div class="text-center mb-16">
+            <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">Why Choose Gratitude Jar?</h2>
+            <p class="text-xl text-gray-600 max-w-3xl mx-auto">Discover how our thoughtfully designed features help you cultivate a lasting gratitude practice.</p>
         </div>
 
-        <!-- Feature 2 -->
-        <div class="bg-white p-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 border-t-4 border-[#D91656] transform hover:-translate-y-1">
-            <div class="text-center">
-                <div class="w-12 h-12 bg-[#D91656]/10 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <svg class="w-6 h-6 text-[#D91656]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
+        <div class="grid md:grid-cols-3 gap-8">
+            <!-- Feature Cards with hover effects -->
+            <div class="bg-white rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
+                <div class="w-16 h-16 bg-blue-100 rounded-2xl flex items-center justify-center mb-6">
+                    <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
                     </svg>
                 </div>
-                <h3 class="text-xl font-semibold text-gray-800 mb-2">Share Joy</h3>
-                <p class="text-gray-600">Spread positivity by sharing your gratitude with others</p>
+                <h3 class="text-xl font-bold text-gray-900 mb-4">Daily Journaling</h3>
+                <p class="text-gray-600">Build a meaningful practice with our intuitive journaling interface. Capture your moments of gratitude effortlessly.</p>
             </div>
-        </div>
 
-        <!-- Feature 3 -->
-        <div class="bg-white p-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 border-t-4 border-[#640D5F] transform hover:-translate-y-1">
-            <div class="text-center">
-                <div class="w-12 h-12 bg-[#640D5F]/10 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <svg class="w-6 h-6 text-[#640D5F]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            <div class="bg-white rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
+                <div class="w-16 h-16 bg-blue-100 rounded-2xl flex items-center justify-center mb-6">
+                    <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
                     </svg>
                 </div>
-                <h3 class="text-xl font-semibold text-gray-800 mb-2">Grow Together</h3>
-                <p class="text-gray-600">Build a community of grateful hearts</p>
+                <h3 class="text-xl font-bold text-gray-900 mb-4">Track Progress</h3>
+                <p class="text-gray-600">Visualize your gratitude journey with beautiful insights and analytics. Watch your practice grow over time.</p>
             </div>
-        </div>
-    </div>
 
-    <!-- Impact Section -->
-    <div class="bg-gradient-to-br from-[#EC4899]/5 via-[#D91656]/5 to-[#EC4899]/5 p-8 rounded-2xl shadow-lg mb-16">
-        <div class="text-center">
-            <h2 class="text-3xl font-bold text-gray-800 mb-6">The Power of Gratitude</h2>
-            <div class="grid md:grid-cols-2 gap-8">
-                <div class="space-y-4">
-                    <div class="flex items-start space-x-4">
-                        <div class="w-8 h-8 bg-[#FFB200]/10 rounded-full flex items-center justify-center flex-shrink-0">
-                            <svg class="w-4 h-4 text-[#FFB200]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
-                            </svg>
-                        </div>
-                        <p class="text-gray-700">Enhances emotional well-being</p>
-                    </div>
-                    <div class="flex items-start space-x-4">
-                        <div class="w-8 h-8 bg-[#FFB200]/10 rounded-full flex items-center justify-center flex-shrink-0">
-                            <svg class="w-4 h-4 text-[#FFB200]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
-                            </svg>
-                        </div>
-                        <p class="text-gray-700">Strengthens relationships</p>
-                    </div>
+            <div class="bg-white rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
+                <div class="w-16 h-16 bg-blue-100 rounded-2xl flex items-center justify-center mb-6">
+                    <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/>
+                    </svg>
                 </div>
-                <div class="space-y-4">
-                    <div class="flex items-start space-x-4">
-                        <div class="w-8 h-8 bg-[#FFB200]/10 rounded-full flex items-center justify-center flex-shrink-0">
-                            <svg class="w-4 h-4 text-[#FFB200]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
-                            </svg>
-                        </div>
-                        <p class="text-gray-700">Improves sleep quality</p>
-                    </div>
-                    <div class="flex items-start space-x-4">
-                        <div class="w-8 h-8 bg-[#FFB200]/10 rounded-full flex items-center justify-center flex-shrink-0">
-                            <svg class="w-4 h-4 text-[#FFB200]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
-                            </svg>
-                        </div>
-                        <p class="text-gray-700">Boosts self-esteem</p>
-                    </div>
-                </div>
+                <h3 class="text-xl font-bold text-gray-900 mb-4">Community</h3>
+                <p class="text-gray-600">Connect with like-minded individuals and share your gratitude journey. Inspire and be inspired.</p>
             </div>
         </div>
     </div>
 </div>
 
+<!-- Stats Section with Gradient Border -->
+<div class="py-24">
+    <div class="max-w-7xl mx-auto px-4">
+        <div class="grid md:grid-cols-3 gap-8">
+            <div class="text-center">
+                <div class="text-4xl font-bold text-gray-900 mb-2">10,000+</div>
+                <div class="text-gray-600">Daily Entries</div>
+            </div>
+            <div class="text-center">
+                <div class="text-4xl font-bold text-gray-900 mb-2">85%</div>
+                <div class="text-gray-600">Report Better Wellbeing</div>
+            </div>
+            <div class="text-center">
+                <div class="text-4xl font-bold text-gray-900 mb-2">30+</div>
+                <div class="text-gray-600">Countries Reached</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Final CTA Section -->
+<div class="bg-gradient-to-br from-blue-600 to-indigo-600 py-24">
+    <div class="max-w-4xl mx-auto px-4 text-center">
+        <h2 class="text-3xl md:text-4xl font-bold text-white mb-6">Start Your Gratitude Journey Today</h2>
+        <p class="text-xl text-blue-100 mb-8">Join thousands of people who have discovered the transformative power of daily gratitude.</p>
+        <a href="/gratitude" 
+           class="inline-flex items-center px-8 py-4 text-lg font-medium bg-white text-blue-600 rounded-xl hover:bg-opacity-90 transition-all shadow-lg">
+            Begin Now
+            <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/>
+            </svg>
+        </a>
+    </div>
+</div>
+
 <!-- Enhanced Animations -->
 <style>
+    @keyframes float-main {
+        0%, 100% { transform: translateY(-50%) translateX(0) rotate(0deg); }
+        50% { transform: translateY(-50%) translateX(-10px) rotate(1deg); }
+    }
+
     @keyframes float-1 {
-        0%, 100% { transform: translateY(0); }
-        50% { transform: translateY(-10px); }
+        0%, 100% { transform: translate(0, 0) rotate(0deg); }
+        50% { transform: translate(-10px, -15px) rotate(-5deg); }
     }
     
     @keyframes float-2 {
-        0%, 100% { transform: translateY(0); }
-        50% { transform: translateY(-15px); }
+        0%, 100% { transform: translate(0, 0) rotate(0deg); }
+        50% { transform: translate(10px, -20px) rotate(5deg); }
     }
     
     @keyframes float-3 {
-        0%, 100% { transform: translateY(0); }
-        50% { transform: translateY(-8px); }
+        0%, 100% { transform: translate(0, 0) rotate(0deg); }
+        50% { transform: translate(-15px, -10px) rotate(-3deg); }
+    }
+
+    @keyframes float-4 {
+        0%, 100% { transform: translate(0, 0) rotate(0deg); }
+        50% { transform: translate(15px, -25px) rotate(8deg); }
+    }
+
+    @keyframes float-5 {
+        0%, 100% { transform: translate(0, 0) rotate(0deg); }
+        50% { transform: translate(-5px, -15px) rotate(-6deg); }
     }
     
-    @keyframes twinkle {
-        0%, 100% { opacity: 0.4; }
-        50% { opacity: 1; }
+    .animate-float-main {
+        animation: float-main 6s ease-in-out infinite;
     }
-    
+
     .animate-float-1 {
         animation: float-1 4s ease-in-out infinite;
-        transform-origin: center;
     }
     
     .animate-float-2 {
         animation: float-2 5s ease-in-out infinite;
-        transform-origin: center;
     }
     
     .animate-float-3 {
         animation: float-3 4.5s ease-in-out infinite;
-        transform-origin: center;
     }
-    
-    .animate-twinkle {
-        animation: twinkle 2s ease-in-out infinite;
+
+    .animate-float-4 {
+        animation: float-4 5.5s ease-in-out infinite;
     }
-    
-    @keyframes fade-in {
-        from { opacity: 0; }
-        to { opacity: 1; }
-    }
-    
-    @keyframes slide-up {
-        from { transform: translateY(20px); opacity: 0; }
-        to { transform: translateY(0); opacity: 1; }
-    }
-    
-    .animate-fade-in {
-        animation: fade-in 1s ease-out;
-    }
-    
-    .animate-slide-up {
-        animation: slide-up 1s ease-out;
-    }
-    
-    .animate-slide-up-delayed {
-        animation: slide-up 1s ease-out 0.3s both;
+
+    .animate-float-5 {
+        animation: float-3 6s ease-in-out infinite;
     }
 </style>
 {{end}}

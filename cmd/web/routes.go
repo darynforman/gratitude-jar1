@@ -29,6 +29,7 @@ func routes() http.Handler {
 	mux.HandleFunc("/gratitude/create", createGratitude)  // Create new gratitude entry
 	mux.HandleFunc("/gratitude/edit/", getNoteForEdit)    // Edit existing gratitude entry
 	mux.HandleFunc("/gratitude/update/", updateGratitude) // Update existing gratitude entry
+	mux.HandleFunc("/gratitude/delete/", updateGratitude) // Delete existing gratitude entry
 
 	// Chain middleware in the correct order
 	// The order is important as each middleware wraps the next one
