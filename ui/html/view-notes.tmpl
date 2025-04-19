@@ -1,57 +1,68 @@
 {{define "title"}}My Gratitude Notes{{end}}
 
 {{define "note-card"}}
-<div id="note-{{.ID}}" class="glass rounded-xl overflow-hidden shadow-card hover:shadow-card-hover transition-all duration-300">
-    <div class="p-6">
-        <div class="flex items-start justify-between mb-4">
-            <div class="flex items-center space-x-3">
-                <span class="text-3xl">{{.Emoji}}</span>
-                <div>
-                    <h3 class="text-lg font-semibold text-gray-900">{{.Title}}</h3>
-                    <span class="text-sm text-gray-500">{{.Category}}</span>
-                </div>
-            </div>
-            <div class="flex space-x-2">
-                <button hx-get="/gratitude/edit/{{.ID}}"
-                        hx-target="#note-{{.ID}}"
-                        hx-swap="outerHTML"
-                        class="p-2 text-gray-500 hover:text-primary-600 hover:bg-primary-50 rounded-lg transition-all duration-200">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
-                    </svg>
-                </button>
-                <button hx-delete="/gratitude/delete/{{.ID}}"
-                        hx-target="#note-{{.ID}}"
-                        hx-swap="outerHTML"
-                        hx-confirm="Are you sure you want to delete this note?"
-                        class="p-2 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all duration-200">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
-                    </svg>
-                </button>
+<div id="note-{{.ID}}" class="note-card bg-white/95 backdrop-blur-lg rounded-2xl p-6 shadow-xl transition-all duration-300">
+    <div class="flex items-center justify-between mb-4">
+        <div class="flex items-center space-x-4">
+            <span class="text-3xl">{{.Emoji}}</span>
+            <div>
+                <h3 class="font-medium text-gray-900">{{.Title}}</h3>
+                <p class="text-sm text-gray-500">{{.CreatedAt}}</p>
             </div>
         </div>
-        <p class="text-gray-600 mb-4">{{.Content}}</p>
-        <div class="flex items-center justify-between text-sm text-gray-500">
-            <span>{{.CreatedAt}}</span>
+        <div class="flex space-x-2">
+            <button hx-get="/gratitude/edit/{{.ID}}"
+                    hx-target="#note-{{.ID}}"
+                    hx-swap="outerHTML"
+                    class="p-2 text-gray-500 hover:text-[#9C6FFF] hover:bg-[#9C6FFF]/10 rounded-lg transition-all duration-200">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                </svg>
+            </button>
+            <button hx-delete="/notes/{{.ID}}"
+                    hx-target="#note-{{.ID}}"
+                    hx-swap="outerHTML"
+                    hx-confirm="Are you sure you want to delete this note?"
+                    class="p-2 text-gray-500 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all duration-200">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                </svg>
+            </button>
         </div>
     </div>
+    <p class="text-gray-600 mb-4">{{.Content}}</p>
+    <span class="px-3 py-1 text-sm font-medium text-[#9C6FFF] bg-[#9C6FFF]/10 rounded-full">
+        {{.Category}}
+    </span>
 </div>
 {{end}}
 
 {{define "content"}}
-<div class="min-h-screen bg-gradient-to-br from-blue-600 to-blue-500 py-12">
-    <!-- Background Decorative Elements -->
-    <div class="absolute top-0 left-0 right-0 bottom-0 overflow-hidden pointer-events-none">
-        <div class="absolute top-0 right-0 w-[800px] h-[800px] bg-blue-400 rounded-full opacity-10 transform translate-x-1/2 -translate-y-1/2"></div>
-        <div class="absolute bottom-0 left-0 w-[800px] h-[800px] bg-blue-400 rounded-full opacity-10 transform -translate-x-1/2 translate-y-1/2"></div>
+<div class="min-h-screen bg-gradient-to-br from-[#E558FF] via-[#9C6FFF] to-[#76A1FF] pt-32 relative overflow-hidden">
+    <!-- Decorative Circles -->
+    <div class="absolute top-0 left-0 w-[800px] h-[800px] bg-white/10 rounded-full blur-3xl transform -translate-x-1/2 -translate-y-1/2 animate-pulse"></div>
+    <div class="absolute bottom-0 right-0 w-[1000px] h-[1000px] bg-white/10 rounded-full blur-3xl transform translate-x-1/3 translate-y-1/3 animate-pulse delay-700"></div>
+    <div class="absolute top-1/2 left-1/2 w-[600px] h-[600px] bg-white/5 rounded-full blur-3xl transform -translate-x-1/2 -translate-y-1/2 animate-pulse delay-1000"></div>
+
+    <!-- Polka Dots -->
+    <div class="absolute inset-0 overflow-hidden pointer-events-none">
+        <div class="polka-dot"></div>
+        <div class="polka-dot"></div>
+        <div class="polka-dot"></div>
+        <div class="polka-dot"></div>
+        <div class="polka-dot"></div>
+        <div class="polka-dot"></div>
+        <div class="polka-dot"></div>
+        <div class="polka-dot"></div>
     </div>
 
-    <div class="max-w-7xl mx-auto px-6 relative z-10">
+    <div class="max-w-7xl mx-auto px-6 relative">
         <div class="flex justify-between items-center mb-12">
             <h1 class="text-4xl font-bold text-white">My Gratitude Notes</h1>
             <a href="/gratitude" 
-               class="inline-flex items-center px-6 py-3 bg-white text-blue-600 rounded-xl font-medium hover:bg-white/90 transition-all duration-300 shadow-lg">
+               class="inline-flex items-center px-6 py-3 rounded-xl font-medium transition-all duration-300 shadow-lg
+                      bg-gradient-to-r from-[#FF8A3B] to-[#FF5858] text-white
+                      hover:opacity-90 transform hover:scale-105">
                 <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
                 </svg>
@@ -59,84 +70,60 @@
             </a>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div id="notes-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {{range .Notes}}
-            <div class="note-card glass rounded-2xl p-6 backdrop-blur-sm bg-white/10" data-note-id="{{.ID}}">
-                <div class="flex justify-between items-start mb-4">
-                    <div class="flex items-center space-x-3">
-                        <span class="text-3xl">{{.Emoji}}</span>
-                        <div>
-                            <h3 class="text-xl font-semibold text-white">{{.Title}}</h3>
-                            <span class="text-sm text-white/70">{{.Category}}</span>
-                        </div>
-                    </div>
-                    <div class="flex space-x-2">
-                        <button hx-get="/gratitude/edit/{{.ID}}"
-                                hx-target="#note-{{.ID}}"
-                                hx-swap="outerHTML"
-                                class="p-2 text-white/70 hover:text-white hover:bg-white/10 rounded-lg transition-all duration-200">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
-                            </svg>
-                        </button>
-                        <button hx-delete="/gratitude/delete/{{.ID}}"
-                                hx-target="#note-{{.ID}}"
-                                hx-swap="outerHTML"
-                                hx-confirm="Are you sure you want to delete this note?"
-                                class="p-2 text-white/70 hover:text-white hover:bg-white/10 rounded-lg transition-all duration-200">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
-                            </svg>
-                        </button>
-                    </div>
-                </div>
-                <p class="text-white/90 mb-4">{{.Content}}</p>
-                <div class="text-sm text-white/70">{{.CreatedAt}}</div>
-            </div>
+                {{template "note-card" .}}
             {{end}}
         </div>
     </div>
 </div>
 
 <style>
-@keyframes float {
-    0%, 100% { transform: translate(0, 0) rotate(0deg); }
-    50% { transform: translate(0, -10px) rotate(1deg); }
+@keyframes float-dots {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-20px); }
+}
+
+@keyframes float-note {
+    0% { transform: translateY(0) rotate(0deg); }
+    50% { transform: translateY(-10px) rotate(2deg); }
+    100% { transform: translateY(0) rotate(0deg); }
 }
 
 .note-card {
-    animation: float 6s ease-in-out infinite;
-    animation-delay: calc(var(--animation-order) * 0.1s);
+    animation: float-note 6s ease-in-out infinite;
+    animation-delay: calc(var(--animation-order, 0) * 1s);
+    transform-origin: center center;
 }
 
 .note-card:nth-child(3n+1) {
-    --animation-order: 1;
+    --animation-order: 0;
 }
 
 .note-card:nth-child(3n+2) {
+    --animation-order: 1;
+}
+
+.note-card:nth-child(3n+3) {
     --animation-order: 2;
 }
 
-.note-card:nth-child(3n) {
-    --animation-order: 3;
+.polka-dot {
+    position: absolute;
+    width: 40px;
+    height: 40px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 50%;
+    animation: float-dots 8s ease-in-out infinite;
 }
 
-.glass {
-    backdrop-filter: blur(12px);
-}
-
-@keyframes fade-in {
-    from { opacity: 0; transform: translateY(20px); }
-    to { opacity: 1; transform: translateY(0); }
-}
-
-.note-card {
-    animation: fade-in 0.6s ease-out forwards, float 6s ease-in-out infinite;
-    opacity: 0;
-}
-
-.note-card:nth-child(n) {
-    animation-delay: calc(var(--animation-order) * 0.1s), calc(var(--animation-order) * 0.1s + 0.6s);
-}
+.polka-dot:nth-child(1) { top: 10%; left: 10%; animation-delay: 0s; }
+.polka-dot:nth-child(2) { top: 20%; left: 45%; animation-delay: 0.5s; }
+.polka-dot:nth-child(3) { top: 15%; left: 80%; animation-delay: 1s; }
+.polka-dot:nth-child(4) { top: 40%; left: 25%; animation-delay: 1.5s; }
+.polka-dot:nth-child(5) { top: 50%; left: 60%; animation-delay: 2s; }
+.polka-dot:nth-child(6) { top: 60%; left: 15%; animation-delay: 2.5s; }
+.polka-dot:nth-child(7) { top: 70%; left: 70%; animation-delay: 3s; }
+.polka-dot:nth-child(8) { top: 80%; left: 35%; animation-delay: 3.5s; }
 </style>
 {{end}} 

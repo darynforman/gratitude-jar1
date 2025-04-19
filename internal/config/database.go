@@ -17,7 +17,7 @@ func InitDB() error {
 	dbHost := getEnvOrDefault("DB_HOST", "localhost")
 	dbPort := getEnvOrDefault("DB_PORT", "5432")
 	dbUser := getEnvOrDefault("DB_USER", "gratitude_user")
-	dbPassword := getEnvOrDefault("DB_PASSWORD", "password")
+	dbPassword := getEnvOrDefault("DB_PASSWORD", "gratitude123")
 	dbName := getEnvOrDefault("DB_NAME", "gratitude_jar")
 
 	log.Printf("Connecting to database with host=%s port=%s user=%s dbname=%s", dbHost, dbPort, dbUser, dbName)

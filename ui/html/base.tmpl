@@ -1,147 +1,85 @@
 {{define "base"}}
-<!doctype html>
-<html lang='en'>
+<!DOCTYPE html>
+<html lang="en">
     <head>
-        <meta charset='utf-8'>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>{{template "title" .}} - Gratitude Jar</title>
-        <meta name='viewport' content='width=device-width, initial-scale=1'>
-        <script src="https://unpkg.com/htmx.org@1.9.6"></script>
+        
+        <!-- Tailwind CSS -->
         <script src="https://cdn.tailwindcss.com"></script>
-        <link rel="preconnect" href="https://fonts.googleapis.com">
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
         <script>
             tailwind.config = {
                 theme: {
                     extend: {
                         colors: {
-                            primary: {
-                                50: '#f0f9ff',
-                                100: '#e0f2fe',
-                                200: '#bae6fd',
-                                300: '#7dd3fc',
-                                400: '#38bdf8',
-                                500: '#0ea5e9',
-                                600: '#0284c7',
-                                700: '#0369a1',
-                                800: '#075985',
-                                900: '#0c4a6e',
-                            },
-                            secondary: {
-                                50: '#f8fafc',
-                                100: '#f1f5f9',
-                                200: '#e2e8f0',
-                                300: '#cbd5e1',
-                                400: '#94a3b8',
-                                500: '#64748b',
-                                600: '#475569',
-                                700: '#334155',
-                                800: '#1e293b',
-                                900: '#0f172a',
+                            brand: {
+                                purple: '#E558FF',
+                                blue: '#76A1FF'
                             }
-                        },
-                        fontFamily: {
-                            sans: ['Inter', 'sans-serif'],
-                        },
-                        boxShadow: {
-                            'card': '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
-                            'card-hover': '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)',
-                        },
-                        borderRadius: {
-                            'xl': '1rem',
-                            '2xl': '1.5rem',
                         }
                     }
                 }
             }
         </script>
+
+        <!-- HTMX -->
+        <script src="https://unpkg.com/htmx.org@1.9.10"></script>
+
+        <!-- Custom Styles -->
         <style>
+            @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
+            
             body {
-                margin: 0;
-                padding: 0;
-                width: 100%;
-                overflow-x: hidden;
-                font-family: 'Inter', sans-serif;
-                background-color: #f8fafc;
-                color: #1e293b;
+                font-family: 'Plus Jakarta Sans', sans-serif;
             }
-            .glass {
-                background: rgba(255, 255, 255, 0.95);
-                backdrop-filter: blur(10px);
-                border: 1px solid rgba(255, 255, 255, 0.2);
+
+            .nav-link {
+                font-weight: 500;
+                transition: color 0.2s ease;
             }
-            .btn-primary {
-                background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);
-                transition: all 0.3s ease;
-            }
-            .btn-primary:hover {
-                transform: translateY(-1px);
-                box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-            }
-            .btn-secondary {
-                background: #f1f5f9;
-                color: #475569;
-                transition: all 0.3s ease;
-            }
-            .btn-secondary:hover {
-                background: #e2e8f0;
-            }
-            .input-field {
-                transition: all 0.3s ease;
-            }
-            .input-field:focus {
-                box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.1);
-            }
-            .emoji-btn {
-                transition: all 0.2s ease;
-            }
-            .emoji-btn:hover {
-                transform: scale(1.1);
-                background: rgba(14, 165, 233, 0.1);
-            }
-            .emoji-btn.active {
-                background: rgba(14, 165, 233, 0.2);
-                transform: scale(1.1);
+
+            .nav-link:hover {
+                color: #E558FF;
             }
         </style>
-        {{block "styles" .}}{{end}}
     </head>
-    <body class="w-full m-0 p-0">
-        <header class="bg-white shadow-sm">
+    <body>
+        <!-- Navigation -->
+        <header class="fixed top-0 left-0 right-0 bg-white z-50">
             <nav class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div class="flex justify-between h-16">
-                    <div class="flex">
-                        <div class="flex-shrink-0 flex items-center">
-                            <a href="/" class="text-2xl font-bold text-primary-600">Gratitude Journal</a>
-                        </div>
-                        <div class="hidden sm:ml-6 sm:flex sm:space-x-8">
-                            <a href="/" class="border-primary-500 text-gray-900 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
-                                Home
-                            </a>
-                            <a href="/notes" class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
-                                My Notes
-                            </a>
-                            <a href="/gratitude" class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
-                                Add Note
-                            </a>
-                        </div>
+                <div class="flex items-center justify-between h-16">
+                    <!-- Logo -->
+                    <a href="/" class="flex items-center space-x-2">
+                        <span class="text-2xl">✨</span>
+                        <span class="text-xl font-semibold text-brand-purple">
+                            Gratitude Jar
+                        </span>
+                    </a>
+
+                    <!-- Navigation Links -->
+                    <div class="flex items-center space-x-8">
+                        <a href="/" class="nav-link {{if eq .Title "Welcome to Gratitude Jar"}}text-brand-purple{{else}}text-gray-600{{end}}">
+                            Home
+                        </a>
+                        <a href="/notes" class="nav-link {{if eq .Title "My Gratitude Notes"}}text-brand-purple{{else}}text-gray-600{{end}}">
+                            My Notes
+                        </a>
+                        <a href="/gratitude" class="nav-link {{if eq .Title "Add Gratitude Note"}}text-brand-purple{{else}}text-gray-600{{end}}">
+                            Add Note
+                        </a>
+                        <a href="/about" class="nav-link {{if eq .Title "About"}}text-brand-purple{{else}}text-gray-600{{end}}">
+                            About
+                        </a>
                     </div>
                 </div>
             </nav>
         </header>
 
-        <main class="w-full">
+        <!-- Main Content -->
+        <main>
             {{template "content" .}}
         </main>
-
-        <footer class="bg-white mt-12">
-            <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
-                <p class="text-center text-gray-500 text-sm">
-                    &copy; 2024 Gratitude Journal. All rights reserved.
-                </p>
-            </div>
-        </footer>
-        {{block "scripts" .}}{{end}}
     </body>
 </html>
 {{end}}

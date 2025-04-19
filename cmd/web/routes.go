@@ -22,14 +22,13 @@ func routes() http.Handler {
 
 	// Define application routes
 	// Each route is mapped to its corresponding handler function
-	mux.HandleFunc("/contact", contact)                   // Contact page
-	mux.HandleFunc("/", home)                             // Home page
-	mux.HandleFunc("/gratitude", gratitude)               // Gratitude list page
-	mux.HandleFunc("/notes", viewNotes)                   // View all notes
-	mux.HandleFunc("/gratitude/create", createGratitude)  // Create new gratitude entry
-	mux.HandleFunc("/gratitude/edit/", getNoteForEdit)    // Edit existing gratitude entry
-	mux.HandleFunc("/gratitude/update/", updateGratitude) // Update existing gratitude entry
-	mux.HandleFunc("/gratitude/delete/", updateGratitude) // Delete existing gratitude entry
+	mux.HandleFunc("/contact", contact)                  // Contact page
+	mux.HandleFunc("/", home)                            // Home page
+	mux.HandleFunc("/gratitude", gratitude)              // Gratitude list page
+	mux.HandleFunc("/notes", viewNotes)                  // View all notes
+	mux.HandleFunc("/gratitude/create", createGratitude) // Create new gratitude entry
+	mux.HandleFunc("/gratitude/edit/", getNoteForEdit)   // Get edit form for a note
+	mux.HandleFunc("/notes/", updateGratitude)           // Handle PUT and DELETE requests for notes
 
 	// Chain middleware in the correct order
 	// The order is important as each middleware wraps the next one

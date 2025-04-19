@@ -1,201 +1,202 @@
+{{define "title"}}Add Gratitude Note{{end}}
+
 {{define "content"}}
-<div class="min-h-screen bg-gray-50 py-12">
-    <div class="max-w-2xl mx-auto px-6">
-        <!-- Header -->
-        <div class="text-center mb-12">
-            <h1 class="text-4xl font-bold text-gray-900 mb-2">Express Gratitude</h1>
-            <p class="text-lg text-gray-600">Capture the moments that make life beautiful</p>
+<div class="min-h-screen bg-gradient-to-br from-[#E558FF] via-[#9C6FFF] to-[#76A1FF] pt-32 relative overflow-hidden">
+    <!-- Decorative Circles -->
+    <div class="absolute top-0 left-0 w-[800px] h-[800px] bg-white/10 rounded-full blur-3xl transform -translate-x-1/2 -translate-y-1/2 animate-pulse"></div>
+    <div class="absolute bottom-0 right-0 w-[1000px] h-[1000px] bg-white/10 rounded-full blur-3xl transform translate-x-1/3 translate-y-1/3 animate-pulse delay-700"></div>
+    <div class="absolute top-1/2 left-1/2 w-[600px] h-[600px] bg-white/5 rounded-full blur-3xl transform -translate-x-1/2 -translate-y-1/2 animate-pulse delay-1000"></div>
+
+    <!-- Polka Dots -->
+    <div class="absolute inset-0 overflow-hidden pointer-events-none">
+        <div class="polka-dot"></div>
+        <div class="polka-dot"></div>
+        <div class="polka-dot"></div>
+        <div class="polka-dot"></div>
+        <div class="polka-dot"></div>
+        <div class="polka-dot"></div>
+        <div class="polka-dot"></div>
+        <div class="polka-dot"></div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="max-w-3xl mx-auto px-4 relative">
+        <div class="text-center mb-8">
+            <h2 class="text-3xl font-medium text-white mb-2">What are you grateful for today? ✨</h2>
         </div>
 
         <!-- Main Form Card -->
-        <div class="bg-white rounded-3xl p-8 shadow-lg">
-            <!-- Form submission handled by HTMX -->
+        <div class="bg-white/95 backdrop-blur-lg rounded-3xl p-8 shadow-2xl relative overflow-hidden">
             <form hx-post="/gratitude/create" 
-                  hx-target="#notes-list"
+                  hx-target="#notes-container"
                   hx-swap="afterbegin"
-                  hx-trigger="submit"
-                  hx-on::after-request="resetForm(this)"
-                  class="space-y-8">
+                  hx-indicator="#submit-indicator"
+                  class="space-y-6">
                 
-                <!-- Input field for note title -->
-                <div>
-                    <label for="title" class="block text-sm font-medium text-gray-700 mb-2">Title</label>
+                <!-- Title Input -->
+                <div class="group">
                     <input type="text" 
-                           id="title" 
                            name="title" 
+                           id="title"
                            required
-                           placeholder="What brings you joy today?"
-                           class="w-full rounded-xl border border-gray-200 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-gray-900 text-lg py-3 px-4">
-                </div>
-                
-                <!-- Textarea for note content -->
-                <div>
-                    <label for="content" class="block text-sm font-medium text-gray-700 mb-2">Express Your Gratitude</label>
-                    <textarea id="content" 
-                              name="content" 
-                              rows="4" 
-                              required
-                              placeholder="Take a moment to reflect on what you're thankful for..."
-                              class="w-full rounded-xl border border-gray-200 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-gray-900 text-lg py-3 px-4"></textarea>
+                           minlength="3"
+                           maxlength="100"
+                           placeholder="Title of Your Gratitude"
+                           class="block w-full rounded-xl border-2 border-gray-100 py-4 px-6 text-lg
+                                  bg-white/80 focus:border-[#9C6FFF] focus:ring-[#9C6FFF] 
+                                  transition-all duration-200 placeholder-gray-400">
                 </div>
 
-                <!-- Category Selection -->
-                <div>
-                    <label for="category" class="block text-sm font-medium text-gray-700 mb-2">Category</label>
-                    <select id="category" 
-                            name="category"
+                <!-- Content Input -->
+                <div class="group">
+                    <textarea name="content" 
+                             id="content"
+                             required
+                             minlength="10"
+                             maxlength="1000"
+                             rows="4"
+                             placeholder="Express Your Gratitude"
+                             class="block w-full rounded-xl border-2 border-gray-100 py-4 px-6 text-lg
+                                    bg-white/80 focus:border-[#9C6FFF] focus:ring-[#9C6FFF] 
+                                    transition-all duration-200 placeholder-gray-400 resize-none"></textarea>
+                </div>
+
+                <!-- Category Select -->
+                <div class="group">
+                    <select name="category" 
+                            id="category"
                             required
-                            class="w-full rounded-xl border border-gray-200 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-gray-900 text-lg py-3 px-4">
-                        <option value="" disabled selected>Select a category</option>
+                            class="block w-full rounded-xl border-2 border-gray-100 py-4 px-6 text-lg
+                                   bg-white/80 focus:border-[#9C6FFF] focus:ring-[#9C6FFF] 
+                                   transition-all duration-200">
+                        <option value="">Choose a category</option>
                         <option value="personal">✨ Personal Growth</option>
-                        <option value="work">💼 Work</option>
-                        <option value="family">👨‍👩‍👧‍👦 Family</option>
-                        <option value="achievements">🏆 Achievements</option>
-                        <option value="health">🌱 Health</option>
+                        <option value="work">💼 Professional Life</option>
+                        <option value="family">👨‍👩‍👧‍👦 Family & Friends</option>
+                        <option value="health">🌱 Health & Wellness</option>
                         <option value="experiences">🌟 Experiences</option>
+                        <option value="other">✨ Other Blessings</option>
                     </select>
                 </div>
 
                 <!-- Emoji Selection -->
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-4">Choose an Emoji</label>
-                    <div class="grid grid-cols-6 gap-4">
-                        <button type="button" 
-                                class="emoji-btn aspect-square flex items-center justify-center text-3xl p-4 rounded-xl border border-gray-200 bg-white hover:bg-gray-50 transition-all duration-300"
-                                data-emoji="✨"
-                                onclick="selectEmoji(this)">
-                            ✨
-                        </button>
-                        <button type="button"
-                                class="emoji-btn aspect-square flex items-center justify-center text-3xl p-4 rounded-xl border border-gray-200 bg-white hover:bg-gray-50 transition-all duration-300"
-                                data-emoji="🌟"
-                                onclick="selectEmoji(this)">
-                            🌟
-                        </button>
-                        <button type="button"
-                                class="emoji-btn aspect-square flex items-center justify-center text-3xl p-4 rounded-xl border border-gray-200 bg-white hover:bg-gray-50 transition-all duration-300"
-                                data-emoji="💫"
-                                onclick="selectEmoji(this)">
-                            💫
-                        </button>
-                        <button type="button"
-                                class="emoji-btn aspect-square flex items-center justify-center text-3xl p-4 rounded-xl border border-gray-200 bg-white hover:bg-gray-50 transition-all duration-300"
-                                data-emoji="🙏"
-                                onclick="selectEmoji(this)">
-                            🙏
-                        </button>
-                        <button type="button"
-                                class="emoji-btn aspect-square flex items-center justify-center text-3xl p-4 rounded-xl border border-gray-200 bg-white hover:bg-gray-50 transition-all duration-300"
-                                data-emoji="❤️"
-                                onclick="selectEmoji(this)">
-                            ❤️
-                        </button>
-                        <button type="button"
-                                class="emoji-btn aspect-square flex items-center justify-center text-3xl p-4 rounded-xl border border-gray-200 bg-white hover:bg-gray-50 transition-all duration-300"
-                                data-emoji="🌈"
-                                onclick="selectEmoji(this)">
-                            🌈
-                        </button>
-                    </div>
+                    <label class="block text-sm font-medium text-gray-600 mb-3">Choose an Emoji</label>
                     <input type="hidden" name="emoji" id="selected-emoji" required>
+                    <div class="grid grid-cols-6 gap-3 p-4 bg-white/80 rounded-xl border-2 border-gray-100">
+                        {{range $emoji := .Emojis}}
+                        <button type="button"
+                                class="emoji-btn aspect-square rounded-lg text-2xl
+                                       hover:scale-110 hover:bg-[#9C6FFF]/10 
+                                       transition-all duration-300"
+                                data-emoji="{{$emoji}}">
+                            {{$emoji}}
+                        </button>
+                        {{end}}
+                    </div>
                 </div>
-                
-                <!-- Submit button -->
-                <button type="submit" 
-                        class="w-full bg-blue-500 text-white py-4 px-6 rounded-xl font-medium hover:bg-blue-600 transition-all duration-300 flex items-center justify-center space-x-2">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
-                    </svg>
-                    <span>Add Gratitude</span>
-                </button>
+
+                <!-- Submit Button -->
+                <div class="flex justify-end pt-6">
+                    <button type="submit"
+                            class="inline-flex items-center px-8 py-4 text-lg font-medium text-white 
+                                   rounded-xl shadow-lg bg-gradient-to-r from-[#FF8A3B] to-[#FF5858] 
+                                   hover:opacity-90 transform hover:scale-105 transition-all duration-300
+                                   relative">
+                        <span>Add Gratitude</span>
+                        <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
+                        </svg>
+                        <div id="submit-indicator" 
+                             class="htmx-indicator absolute inset-0 bg-black/20 rounded-xl flex items-center justify-center">
+                            <svg class="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                            </svg>
+                        </div>
+                    </button>
+                </div>
             </form>
         </div>
 
-        <!-- Notes List -->
-        <div id="notes-list" class="mt-8 space-y-4">
+        <!-- Notes Container -->
+        <div id="notes-container" class="mt-12 space-y-6">
             {{range .Notes}}
-            {{template "note-card" .}}
+            <div class="bg-white/95 backdrop-blur-lg rounded-2xl p-6 shadow-xl transform hover:-translate-y-1 transition-all duration-300">
+                <div class="flex items-center justify-between mb-4">
+                    <div class="flex items-center space-x-4">
+                        <span class="text-3xl">{{.Emoji}}</span>
+                        <div>
+                            <h3 class="font-medium text-gray-900">{{.Title}}</h3>
+                            <p class="text-sm text-gray-500">{{.CreatedAt.Format "Jan 02, 2006"}}</p>
+                        </div>
+                    </div>
+                    <span class="px-3 py-1 text-sm font-medium text-[#9C6FFF] bg-[#9C6FFF]/10 rounded-full">
+                        {{.Category}}
+                    </span>
+                </div>
+                <p class="text-gray-600">{{.Content}}</p>
+            </div>
             {{end}}
         </div>
     </div>
 </div>
 
 <style>
+@keyframes float-dots {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-20px); }
+}
+
+.polka-dot {
+    position: absolute;
+    width: 40px;
+    height: 40px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 50%;
+    animation: float-dots 8s ease-in-out infinite;
+}
+
+.polka-dot:nth-child(1) { top: 10%; left: 10%; animation-delay: 0s; }
+.polka-dot:nth-child(2) { top: 20%; left: 45%; animation-delay: 0.5s; }
+.polka-dot:nth-child(3) { top: 15%; left: 80%; animation-delay: 1s; }
+.polka-dot:nth-child(4) { top: 40%; left: 25%; animation-delay: 1.5s; }
+.polka-dot:nth-child(5) { top: 50%; left: 60%; animation-delay: 2s; }
+.polka-dot:nth-child(6) { top: 60%; left: 15%; animation-delay: 2.5s; }
+.polka-dot:nth-child(7) { top: 70%; left: 70%; animation-delay: 3s; }
+.polka-dot:nth-child(8) { top: 80%; left: 35%; animation-delay: 3.5s; }
+
 .emoji-btn.active {
-    background-color: #EFF6FF;
-    border-color: #3B82F6;
-    transform: scale(1.05);
+    background: rgba(156, 111, 255, 0.2);
+    transform: scale(1.1);
 }
 
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateY(10px); }
-    to { opacity: 1; transform: translateY(0); }
+.htmx-indicator {
+    display: none;
 }
-
-.note-card {
-    animation: fadeIn 0.3s ease-out forwards;
+.htmx-request .htmx-indicator {
+    display: flex;
 }
 </style>
 
 <script>
-function selectEmoji(button) {
-    // Remove highlight from all emoji buttons
-    document.querySelectorAll('.emoji-btn').forEach(btn => {
-        btn.classList.remove('active');
+document.addEventListener('DOMContentLoaded', function() {
+    const emojiButtons = document.querySelectorAll('.emoji-btn');
+    const emojiInput = document.getElementById('selected-emoji');
+    
+    emojiButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            // Remove active class from all buttons
+            emojiButtons.forEach(btn => btn.classList.remove('active'));
+            
+            // Add active class to clicked button
+            this.classList.add('active');
+            emojiInput.value = this.dataset.emoji;
+        });
     });
-    
-    // Add highlight to selected emoji button
-    button.classList.add('active');
-    
-    // Update hidden input with selected emoji
-    document.getElementById('selected-emoji').value = button.getAttribute('data-emoji');
-}
 
-function resetForm(form) {
-    // Reset all form fields
-    form.reset();
-    
-    // Clear emoji selection
-    document.querySelectorAll('.emoji-btn').forEach(btn => {
-        btn.classList.remove('active');
-    });
-    document.getElementById('selected-emoji').value = '';
-}
+    // Select the first emoji by default
+    emojiButtons[0].click();
+});
 </script>
-{{end}}
-
-{{define "note-card"}}
-<div id="note-{{.ID}}" class="note-card bg-white rounded-xl p-6 shadow-sm border border-gray-200" data-note-id="{{.ID}}">
-    <div class="flex justify-between items-start mb-4">
-        <div class="flex items-center space-x-3">
-            <span class="text-3xl">{{.Emoji}}</span>
-            <div>
-                <h3 class="text-xl font-semibold text-gray-900">{{.Title}}</h3>
-                <span class="text-sm text-gray-500">{{.Category}}</span>
-            </div>
-        </div>
-        <div class="flex space-x-2">
-            <button hx-get="/gratitude/edit/{{.ID}}"
-                    hx-target="#edit-form-container"
-                    hx-swap="innerHTML"
-                    onclick="document.getElementById('edit-form-container').classList.remove('hidden')"
-                    class="p-2 text-gray-500 hover:text-blue-600 transition-colors">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
-                </svg>
-            </button>
-            <button hx-delete="/gratitude/delete/{{.ID}}"
-                    hx-target="#note-{{.ID}}"
-                    hx-swap="outerHTML"
-                    hx-confirm="Are you sure you want to delete this note?"
-                    class="p-2 text-gray-500 hover:text-red-600 transition-colors">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
-                </svg>
-            </button>
-        </div>
-    </div>
-    <p class="text-gray-600 mb-4">{{.Content}}</p>
-    <div class="text-sm text-gray-500">{{.CreatedAt}}</div>
-</div>
 {{end}}

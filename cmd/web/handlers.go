@@ -89,7 +89,8 @@ func gratitude(w http.ResponseWriter, r *http.Request) {
 	log.Printf("Handling gratitude page request")
 
 	data := PageData{
-		Title: "Add Gratitude Note",
+		Title:  "Add Gratitude Note",
+		Emojis: []string{"✨", "🌟", "💫", "🙏", "❤️", "🌈", "🌞", "🌺", "🎉", "💝", "🌱", "⭐"},
 	}
 
 	// Check if the request is from HTMX (for partial updates)
@@ -101,9 +102,9 @@ func gratitude(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	log.Printf("Rendering add note template")
-	// Otherwise, render the add note template
-	render(w, "add-note.tmpl", data)
+	log.Printf("Rendering gratitude template")
+	// Otherwise, render the gratitude template
+	render(w, "gratitude.tmpl", data)
 }
 
 // createGratitude handles form submissions for creating new gratitude notes.
@@ -186,10 +187,7 @@ func updateGratitude(w http.ResponseWriter, r *http.Request) {
 	log.Printf("Request URL: %s", r.URL.Path)
 
 	// Extract ID from URL
-	idStr := r.URL.Path[len("/gratitude/update/"):]
-	if r.Method == http.MethodDelete {
-		idStr = r.URL.Path[len("/gratitude/delete/"):]
-	}
+	idStr := r.URL.Path[len("/notes/"):]
 	log.Printf("Extracted ID string: %s", idStr)
 
 	id, err := strconv.Atoi(idStr)
