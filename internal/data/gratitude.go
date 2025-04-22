@@ -2,144 +2,110 @@ package data
 
 import (
 	"database/sql"
-	"log"
 	"time"
-
-	"github.com/darynforman/gratitude-jar/internal/config"
 )
 
+// GratitudeNote represents a gratitude note in the database
 type GratitudeNote struct {
 	ID        int
 	Title     string
 	Content   string
 	Category  string
 	Emoji     string
+	UserID    int
 	CreatedAt time.Time
 	UpdatedAt time.Time
 }
 
+// GratitudeModel wraps a database connection pool
 type GratitudeModel struct {
 	DB *sql.DB
 }
 
 // NewGratitudeModel creates a new GratitudeModel instance
-func NewGratitudeModel() *GratitudeModel {
-	return &GratitudeModel{
-		DB: config.DB,
-	}
+func NewGratitudeModel(db *sql.DB) *GratitudeModel {
+	return &GratitudeModel{DB: db}
 }
 
-// Insert adds a new gratitude note to the database
-func (m *GratitudeModel) Insert(note *GratitudeNote) (int, error) {
-	log.Printf("Attempting to insert note with title: %s, category: %s, emoji: %s", note.Title, note.Category, note.Emoji)
-
-	query := `
-		INSERT INTO gratitude_notes (title, content, category, emoji, created_at, updated_at)
-		VALUES ($1, $2, $3, $4, $5, $6)
-		RETURNING id`
-
-	var id int
-	err := m.DB.QueryRow(query, note.Title, note.Content, note.Category, note.Emoji, note.CreatedAt, note.UpdatedAt).Scan(&id)
+// GetAll returns all gratitude notes for the current user
+func (m *GratitudeModel) GetAll(userID int) ([]GratitudeNote, error) {
+	query := `SELECT id, title, content, category, emoji, created_at, updated_at 
+	          FROM gratitude_notes 
+	          WHERE user_id = $1 
+	          ORDER BY created_at DESC`
+	rows, err := m.DB.Query(query, userID)
 	if err != nil {
-		log.Printf("Error inserting note: %v", err)
-		return 0, err
+		return nil, err
 	}
-	log.Printf("Successfully inserted note with ID: %d", id)
-	return id, nil
+	defer rows.Close()
+
+	var notes []GratitudeNote
+	for rows.Next() {
+		var note GratitudeNote
+		err := rows.Scan(&note.ID, &note.Title, &note.Content, &note.Category, &note.Emoji, &note.CreatedAt, &note.UpdatedAt)
+		if err != nil {
+			return nil, err
+		}
+		notes = append(notes, note)
+	}
+	return notes, nil
 }
 
-// Get retrieves a gratitude note by ID
+// Get returns a single gratitude note by ID
 func (m *GratitudeModel) Get(id int) (*GratitudeNote, error) {
-	query := `
-		SELECT id, title, content, category, emoji, created_at, updated_at
-		FROM gratitude_notes
-		WHERE id = $1`
-
+	query := `SELECT id, title, content, category, emoji, user_id, created_at, updated_at 
+	          FROM gratitude_notes 
+	          WHERE id = $1`
 	note := &GratitudeNote{}
-	err := m.DB.QueryRow(query, id).Scan(
-		&note.ID,
-		&note.Title,
-		&note.Content,
-		&note.Category,
-		&note.Emoji,
-		&note.CreatedAt,
-		&note.UpdatedAt,
-	)
+	err := m.DB.QueryRow(query, id).Scan(&note.ID, &note.Title, &note.Content, &note.Category, &note.Emoji, &note.UserID, &note.CreatedAt, &note.UpdatedAt)
 	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, nil
+		}
 		return nil, err
 	}
 	return note, nil
 }
 
-// List retrieves all gratitude notes, ordered by creation date
-func (m *GratitudeModel) List() ([]*GratitudeNote, error) {
-	log.Printf("Attempting to list all notes")
-
-	query := `
-		SELECT id, title, content, category, emoji, created_at, updated_at
-		FROM gratitude_notes
-		ORDER BY created_at DESC`
-
-	rows, err := m.DB.Query(query)
-	if err != nil {
-		log.Printf("Error querying notes: %v", err)
-		return nil, err
-	}
-	defer rows.Close()
-
-	var notes []*GratitudeNote
-	for rows.Next() {
-		note := &GratitudeNote{}
-		err := rows.Scan(
-			&note.ID,
-			&note.Title,
-			&note.Content,
-			&note.Category,
-			&note.Emoji,
-			&note.CreatedAt,
-			&note.UpdatedAt,
-		)
-		if err != nil {
-			log.Printf("Error scanning note: %v", err)
-			return nil, err
-		}
-		notes = append(notes, note)
-	}
-	log.Printf("Successfully retrieved %d notes", len(notes))
-	return notes, nil
-}
-
-// Delete removes a gratitude note by ID
-func (m *GratitudeModel) Delete(id int) error {
-	query := `DELETE FROM gratitude_notes WHERE id = $1`
-	_, err := m.DB.Exec(query, id)
+// Insert creates a new gratitude note
+func (m *GratitudeModel) Insert(note *GratitudeNote) error {
+	query := `INSERT INTO gratitude_notes (title, content, category, emoji, user_id, created_at, updated_at) 
+	          VALUES ($1, $2, $3, $4, $5, $6, $7) 
+	          RETURNING id`
+	err := m.DB.QueryRow(
+		query,
+		note.Title,
+		note.Content,
+		note.Category,
+		note.Emoji,
+		note.UserID,
+		note.CreatedAt,
+		note.UpdatedAt,
+	).Scan(&note.ID)
 	return err
 }
 
 // Update modifies an existing gratitude note
 func (m *GratitudeModel) Update(note *GratitudeNote) error {
-	log.Printf("Attempting to update note with ID: %d", note.ID)
+	query := `UPDATE gratitude_notes 
+	          SET title = $1, content = $2, category = $3, emoji = $4, updated_at = $5 
+	          WHERE id = $6 AND user_id = $7`
+	_, err := m.DB.Exec(
+		query,
+		note.Title,
+		note.Content,
+		note.Category,
+		note.Emoji,
+		note.UpdatedAt,
+		note.ID,
+		note.UserID,
+	)
+	return err
+}
 
-	query := `
-		UPDATE gratitude_notes 
-		SET title = $1, content = $2, category = $3, emoji = $4, updated_at = $5
-		WHERE id = $6`
-
-	result, err := m.DB.Exec(query, note.Title, note.Content, note.Category, note.Emoji, note.UpdatedAt, note.ID)
-	if err != nil {
-		log.Printf("Error updating note: %v", err)
-		return err
-	}
-
-	rowsAffected, err := result.RowsAffected()
-	if err != nil {
-		return err
-	}
-
-	if rowsAffected == 0 {
-		return sql.ErrNoRows
-	}
-
-	log.Printf("Successfully updated note with ID: %d", note.ID)
-	return nil
+// Delete removes a gratitude note
+func (m *GratitudeModel) Delete(id, userID int) error {
+	query := `DELETE FROM gratitude_notes WHERE id = $1 AND user_id = $2`
+	_, err := m.DB.Exec(query, id, userID)
+	return err
 }

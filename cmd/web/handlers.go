@@ -10,8 +10,11 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/darynforman/gratitude-jar/internal/data"
-	"github.com/darynforman/gratitude-jar/internal/validator"
+	"github.com/darynforman/gratitude-jar1/internal/config"
+	"github.com/darynforman/gratitude-jar1/internal/data"
+	"github.com/darynforman/gratitude-jar1/internal/session"
+	"github.com/darynforman/gratitude-jar1/internal/validator"
+	"golang.org/x/crypto/bcrypt"
 )
 
 // home handles requests to the root path ("/").
@@ -28,13 +31,21 @@ func home(w http.ResponseWriter, r *http.Request) {
 		Title: "Welcome to Gratitude Jar",
 	}
 	// Render the home template with the given data
-	render(w, "home.tmpl", data)
+	render(w, r, "home.tmpl", data)
 }
 
-// getGratitudeModel returns a new instance of GratitudeModel.
-// This helper function ensures consistent model initialization across handlers.
+// getGratitudeModel returns a new GratitudeModel instance with the current database connection
 func getGratitudeModel() *data.GratitudeModel {
-	return data.NewGratitudeModel()
+	return &data.GratitudeModel{
+		DB: config.DB,
+	}
+}
+
+// getUserModel returns a new UserModel instance with the current database connection
+func getUserModel() *data.UserModel {
+	return &data.UserModel{
+		DB: app.DB,
+	}
 }
 
 // viewNotes handles requests to view all gratitude notes.
@@ -42,30 +53,25 @@ func getGratitudeModel() *data.GratitudeModel {
 func viewNotes(w http.ResponseWriter, r *http.Request) {
 	log.Printf("Handling view notes request")
 
+	// Get user info from session
+	userID := session.Manager.GetInt(r.Context(), "userID")
+
 	// Get notes from database
-	notes, err := getGratitudeModel().List()
+	notes, err := getGratitudeModel().GetAll(userID)
 	if err != nil {
 		log.Printf("Error fetching notes: %v", err)
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 		return
 	}
 
-	// Convert database notes to template notes
-	var templateNotes []GratitudeNote
-	for _, note := range notes {
-		templateNotes = append(templateNotes, GratitudeNote{
-			ID:        note.ID,
-			Title:     note.Title,
-			Content:   note.Content,
-			Category:  note.Category,
-			Emoji:     note.Emoji,
-			CreatedAt: note.CreatedAt.Format("2006-01-02"),
-		})
-	}
+	// Get user role from session
+	role := session.Manager.GetString(r.Context(), "role")
 
 	data := PageData{
-		Title: "My Gratitude Notes",
-		Notes: templateNotes,
+		Title:           "My Gratitude Notes",
+		Notes:           notes,
+		IsAuthenticated: userID > 0,
+		UserRole:        role,
 	}
 	log.Printf("Created PageData with %d notes", len(data.Notes))
 
@@ -80,7 +86,7 @@ func viewNotes(w http.ResponseWriter, r *http.Request) {
 
 	log.Printf("Rendering view notes template")
 	// Otherwise, render the view notes template
-	render(w, "view-notes.tmpl", data)
+	render(w, r, "notes.tmpl", data)
 }
 
 // gratitude handles requests to the gratitude page where users can add new notes.
@@ -104,7 +110,7 @@ func gratitude(w http.ResponseWriter, r *http.Request) {
 
 	log.Printf("Rendering gratitude template")
 	// Otherwise, render the gratitude template
-	render(w, "gratitude.tmpl", data)
+	render(w, r, "gratitude.tmpl", data)
 }
 
 // createGratitude handles form submissions for creating new gratitude notes.
@@ -147,7 +153,7 @@ func createGratitude(w http.ResponseWriter, r *http.Request) {
 			Title:  "Add Gratitude Note",
 			Errors: v.Errors,
 		}
-		render(w, "add-note.tmpl", data)
+		render(w, r, "add-note.tmpl", data)
 		return
 	}
 
@@ -162,7 +168,7 @@ func createGratitude(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Insert the note into the database
-	_, err = getGratitudeModel().Insert(note)
+	err = getGratitudeModel().Insert(note)
 	if err != nil {
 		log.Printf("Error inserting note into database: %v", err)
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
@@ -186,6 +192,14 @@ func updateGratitude(w http.ResponseWriter, r *http.Request) {
 	log.Printf("Handling update/delete request with method: %s", r.Method)
 	log.Printf("Request URL: %s", r.URL.Path)
 
+	// Get user info from session
+	userID := session.Manager.GetInt(r.Context(), "userID")
+	if userID == 0 {
+		log.Printf("No user ID found in session")
+		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		return
+	}
+
 	// Extract ID from URL
 	idStr := r.URL.Path[len("/notes/"):]
 	log.Printf("Extracted ID string: %s", idStr)
@@ -201,7 +215,7 @@ func updateGratitude(w http.ResponseWriter, r *http.Request) {
 	// Handle DELETE request
 	if r.Method == http.MethodDelete {
 		log.Printf("Processing DELETE request for note ID: %d", id)
-		err = getGratitudeModel().Delete(id)
+		err = getGratitudeModel().Delete(id, userID)
 		if err != nil {
 			log.Printf("Error deleting note: %v", err)
 			http.Error(w, "Internal Server Error", http.StatusInternalServerError)
@@ -250,7 +264,7 @@ func updateGratitude(w http.ResponseWriter, r *http.Request) {
 			Title:  "Edit Gratitude Note",
 			Errors: v.Errors,
 		}
-		render(w, "edit-note.tmpl", data)
+		render(w, r, "edit-note.tmpl", data)
 		return
 	}
 
@@ -335,6 +349,153 @@ func getNoteForEdit(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// registerHandler handles user registration (GET shows form, POST processes registration).
+func registerHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method == http.MethodGet {
+		data := PageData{Title: "Register"}
+		render(w, r, "register.tmpl", data)
+		return
+	}
+	if r.Method == http.MethodPost {
+		err := r.ParseForm()
+		if err != nil {
+			http.Error(w, "Bad Request", http.StatusBadRequest)
+			return
+		}
+		username := r.FormValue("username")
+		email := r.FormValue("email")
+		password := r.FormValue("password")
+		confirmPassword := r.FormValue("confirm_password")
+
+		errors := map[string]string{}
+		if username == "" {
+			errors["username"] = "Username is required"
+		}
+		if email == "" {
+			errors["email"] = "Email is required"
+		}
+		if password == "" {
+			errors["password"] = "Password is required"
+		}
+		if password != confirmPassword {
+			errors["confirm_password"] = "Passwords do not match"
+		}
+
+		userModel := getUserModel()
+		if user, _ := userModel.GetByUsername(username); user != nil {
+			errors["username"] = "Username already taken"
+		}
+		if user, _ := userModel.GetByEmail(email); user != nil {
+			errors["email"] = "Email already registered"
+		}
+
+		if len(errors) > 0 {
+			data := PageData{Title: "Register", Errors: errors, Form: map[string]string{"Username": username, "Email": email}}
+			render(w, r, "register.tmpl", data)
+			return
+		}
+
+		hash, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
+		if err != nil {
+			http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+			return
+		}
+
+		// Insert new user
+		err = userModel.Insert(username, email, string(hash), "user")
+		if err != nil {
+			// Show the actual error for debugging
+			data := PageData{Title: "Register", Errors: map[string]string{"generic": "Registration failed: " + err.Error()}, Form: map[string]string{"Username": username, "Email": email}}
+			render(w, r, "register.tmpl", data)
+			return
+		}
+
+		http.Redirect(w, r, "/user/login", http.StatusSeeOther)
+		return
+	}
+	http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)
+}
+
+// loginHandler handles user login (GET shows form, POST processes login).
+func loginHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method == http.MethodGet {
+		// If this is an HTMX request, return just the navigation
+		if r.Header.Get("HX-Request") == "true" {
+			// Get user info from session
+			userID := session.Manager.GetInt(r.Context(), "userID")
+			role := session.Manager.GetString(r.Context(), "role")
+
+			data := PageData{
+				Title:           "Navigation",
+				IsAuthenticated: userID > 0,
+				UserRole:        role,
+			}
+			render(w, r, "partials/nav.tmpl", data)
+			return
+		}
+
+		// For regular requests, show the login form
+		data := PageData{Title: "Login"}
+		render(w, r, "login.tmpl", data)
+		return
+	}
+	if r.Method == http.MethodPost {
+		err := r.ParseForm()
+		if err != nil {
+			http.Error(w, "Bad Request", http.StatusBadRequest)
+			return
+		}
+		username := r.FormValue("username")
+		password := r.FormValue("password")
+
+		userModel := getUserModel()
+		user, err := userModel.GetByUsername(username)
+		if err != nil || user == nil {
+			data := PageData{Title: "Login", Errors: map[string]string{"generic": "Invalid username or password"}}
+			render(w, r, "login.tmpl", data)
+			return
+		}
+		if bcrypt.CompareHashAndPassword([]byte(user.PasswordHash), []byte(password)) != nil {
+			data := PageData{Title: "Login", Errors: map[string]string{"generic": "Invalid username or password"}}
+			render(w, r, "login.tmpl", data)
+			return
+		}
+
+		// Start session
+		err = session.Manager.RenewToken(r.Context())
+		if err != nil {
+			log.Printf("[Login] Failed to renew session token: %v", err)
+			http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+			return
+		}
+
+		// Set session values
+		session.Manager.Put(r.Context(), "userID", user.ID)
+		session.Manager.Put(r.Context(), "role", user.Role)
+		session.Manager.Put(r.Context(), "flash", "Successfully logged in!")
+
+		// Check if this is an HTMX request
+		if r.Header.Get("HX-Request") == "true" {
+			// Set HX-Redirect header for successful login
+			w.Header().Set("HX-Redirect", "/")
+			// Also trigger navigation update
+			w.Header().Set("HX-Trigger", "loginSuccess")
+			return
+		}
+
+		// For regular requests, redirect to home page
+		http.Redirect(w, r, "/", http.StatusSeeOther)
+		return
+	}
+	http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)
+}
+
+// logoutHandler logs out the user by destroying the session.
+func logoutHandler(w http.ResponseWriter, r *http.Request) {
+	session.Manager.Destroy(r.Context())
+	http.Redirect(w, r, "/user/login", http.StatusSeeOther)
+}
+
 // contact handles requests to the contact page.
 // It displays the contact information and form.
 func contact(w http.ResponseWriter, r *http.Request) {
@@ -359,6 +520,6 @@ func contact(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Render the contact template with the given data
-	render(w, "contact.tmpl", data)
+	render(w, r, "contact.tmpl", data)
 	log.Printf("Contact page rendered successfully")
 }

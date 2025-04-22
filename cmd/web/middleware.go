@@ -9,6 +9,30 @@ import (
 	"time"
 )
 
+// RequireLogin ensures the user is logged in, otherwise redirects to login
+func RequireLogin(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		userID, _ := GetLoggedInUser(r)
+		if userID == 0 {
+			http.Redirect(w, r, "/user/login", http.StatusSeeOther)
+			return
+		}
+		next.ServeHTTP(w, r)
+	})
+}
+
+// RequireAdmin ensures the user is an admin, otherwise returns 403
+func RequireAdmin(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		_, role := GetLoggedInUser(r)
+		if role != "admin" {
+			http.Error(w, "Forbidden", http.StatusForbidden)
+			return
+		}
+		next.ServeHTTP(w, r)
+	})
+}
+
 // LoggingMiddleware creates a middleware that logs information about each HTTP request.
 // It records:
 // - HTTP method (GET, POST, etc.)

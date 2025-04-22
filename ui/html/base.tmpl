@@ -58,19 +58,8 @@
                     </a>
 
                     <!-- Navigation Links -->
-                    <div class="flex items-center space-x-8">
-                        <a href="/" class="nav-link {{if eq .Title "Welcome to Gratitude Jar"}}text-brand-purple{{else}}text-gray-600{{end}}">
-                            Home
-                        </a>
-                        <a href="/notes" class="nav-link {{if eq .Title "My Gratitude Notes"}}text-brand-purple{{else}}text-gray-600{{end}}">
-                            My Notes
-                        </a>
-                        <a href="/gratitude" class="nav-link {{if eq .Title "Add Gratitude Note"}}text-brand-purple{{else}}text-gray-600{{end}}">
-                            Add Note
-                        </a>
-                        <a href="/about" class="nav-link {{if eq .Title "About"}}text-brand-purple{{else}}text-gray-600{{end}}">
-                            About
-                        </a>
+                    <div id="nav-content" hx-get="/user/login" hx-trigger="loginSuccess from:body" hx-swap="innerHTML">
+                        {{template "nav" .}}
                     </div>
                 </div>
             </nav>

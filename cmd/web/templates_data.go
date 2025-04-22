@@ -2,13 +2,19 @@
 // This package defines the data models used in HTML templates and provides functions for managing gratitude notes.
 package main
 
-// PageData holds the data that will be passed to the HTML templates.
-// It serves as the main data structure for rendering pages in the application.
+import "github.com/darynforman/gratitude-jar1/internal/data"
+
+// PageData holds data passed to templates
 type PageData struct {
-	Title  string            // The title of the page to be displayed in the template
-	Notes  []GratitudeNote   // A slice of GratitudeNote that will be displayed in the template
-	Errors map[string]string // Validation errors for form fields
-	Emojis []string          // Available emojis for gratitude note creation
+	Title           string               // The title of the page to be displayed in the template
+	Notes           []data.GratitudeNote // A slice of GratitudeNote that will be displayed in the template
+	Errors          map[string]string    // Validation errors for form fields
+	Emojis          []string             // Available emojis for gratitude note creation
+	Form            map[string]string    // Form values for re-populating registration/login
+	IsAuthenticated bool                 // Indicates whether the user is authenticated
+	UserRole        string               // The role of the authenticated user
+	Flash           string               // Flash messages for user feedback
+	SuccessMessage  string               // Success message for form submissions
 }
 
 // GratitudeNote represents a single gratitude note in the templates.

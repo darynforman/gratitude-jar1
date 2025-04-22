@@ -1,7 +1,11 @@
 // Package main contains the HTTP route configuration for the Gratitude Jar application.
 package main
 
-import "net/http"
+import (
+	"net/http"
+
+	"github.com/darynforman/gratitude-jar1/internal/auth"
+)
 
 // routes sets up all HTTP routes for the application and configures middleware.
 // It returns an http.Handler that can be used to start the server.
@@ -22,17 +26,28 @@ func routes() http.Handler {
 
 	// Define application routes
 	// Each route is mapped to its corresponding handler function
-	mux.HandleFunc("/contact", contact)                  // Contact page
-	mux.HandleFunc("/", home)                            // Home page
-	mux.HandleFunc("/gratitude", gratitude)              // Gratitude list page
-	mux.HandleFunc("/notes", viewNotes)                  // View all notes
-	mux.HandleFunc("/gratitude/create", createGratitude) // Create new gratitude entry
-	mux.HandleFunc("/gratitude/edit/", getNoteForEdit)   // Get edit form for a note
-	mux.HandleFunc("/notes/", updateGratitude)           // Handle PUT and DELETE requests for notes
+	mux.HandleFunc("/contact", contact) // Contact page
+	mux.HandleFunc("/", home)           // Home page
+	// Protected routes
+	mux.Handle("/gratitude", auth.RequireLogin(http.HandlerFunc(gratitude)))
+	mux.Handle("/notes", auth.RequireLogin(http.HandlerFunc(viewNotes)))
+	mux.Handle("/gratitude/create", auth.RequireLogin(http.HandlerFunc(createGratitude)))
+	mux.Handle("/gratitude/edit/", auth.RequireLogin(http.HandlerFunc(getNoteForEdit)))
+	mux.Handle("/notes/", auth.RequireLogin(http.HandlerFunc(updateGratitude)))
+
+	// Admin routes
+	mux.Handle("/admin", auth.RequireRole("admin", http.HandlerFunc(adminDashboard)))
+	mux.Handle("/analytics", auth.RequireRole("admin", http.HandlerFunc(viewAnalytics)))
+
+	// Auth routes
+	mux.HandleFunc("/register", registerHandler)
+	mux.HandleFunc("/user/login", loginHandler)
+	mux.HandleFunc("/logout", logoutHandler)
 
 	// Chain middleware in the correct order
 	// The order is important as each middleware wraps the next one
 	handler := LoggingMiddleware(mux)          // Log all requests
+	handler = RateLimitMiddleware(handler)     // Rate limiting
 	handler = SecureHeadersMiddleware(handler) // Add security headers
 	handler = RecoverPanicMiddleware(handler)  // Recover from panics
 

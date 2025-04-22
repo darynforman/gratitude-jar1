@@ -1,0 +1,104 @@
+<!-- Edit Form Card -->
+<div id="note-{{.ID}}" class="bg-white/95 backdrop-blur-lg rounded-2xl p-6 shadow-xl transition-all duration-300">
+    <form hx-put="/notes/{{.ID}}"
+          hx-target="#note-{{.ID}}"
+          hx-swap="outerHTML"
+          class="space-y-4">
+        <!-- Title Input -->
+        <div class="group">
+            <input type="text" 
+                   name="title" 
+                   id="title"
+                   required
+                   minlength="3"
+                   maxlength="100"
+                   value="{{.Title}}"
+                   class="block w-full rounded-xl border-2 border-gray-100 py-3 px-4 text-lg
+                          bg-white/80 focus:border-[#9C6FFF] focus:ring-[#9C6FFF] 
+                          transition-all duration-200 placeholder-gray-400">
+        </div>
+
+        <!-- Content Input -->
+        <div class="group">
+            <textarea name="content" 
+                     id="content"
+                     required
+                     minlength="10"
+                     maxlength="1000"
+                     rows="4"
+                     class="block w-full rounded-xl border-2 border-gray-100 py-3 px-4 text-lg
+                            bg-white/80 focus:border-[#9C6FFF] focus:ring-[#9C6FFF] 
+                            transition-all duration-200 placeholder-gray-400 resize-none">{{.Content}}</textarea>
+        </div>
+
+        <!-- Category Select -->
+        <div class="group">
+            <select name="category" 
+                    id="category"
+                    required
+                    class="block w-full rounded-xl border-2 border-gray-100 py-3 px-4 text-lg
+                           bg-white/80 focus:border-[#9C6FFF] focus:ring-[#9C6FFF] 
+                           transition-all duration-200">
+                <option value="personal" {{if eq .Category "personal"}}selected{{end}}>✨ Personal Growth</option>
+                <option value="work" {{if eq .Category "work"}}selected{{end}}>💼 Professional Life</option>
+                <option value="family" {{if eq .Category "family"}}selected{{end}}>👨‍👩‍👧‍👦 Family & Friends</option>
+                <option value="health" {{if eq .Category "health"}}selected{{end}}>🌱 Health & Wellness</option>
+                <option value="experiences" {{if eq .Category "experiences"}}selected{{end}}>🌟 Experiences</option>
+                <option value="other" {{if eq .Category "other"}}selected{{end}}>✨ Other Blessings</option>
+            </select>
+        </div>
+
+        <!-- Emoji Selection -->
+        <div>
+            <label class="block text-sm font-medium text-gray-600 mb-2">Choose an Emoji</label>
+            <input type="hidden" name="emoji" id="selected-emoji" value="{{.Emoji}}" required>
+            <div class="grid grid-cols-6 gap-2">
+                {{$currentEmoji := .Emoji}}
+                {{range $emoji := .Emojis}}
+                <button type="button"
+                        class="emoji-btn w-12 h-12 rounded-xl flex items-center justify-center text-2xl
+                               hover:bg-[#9C6FFF]/20 transition-all duration-200
+                               {{if eq $emoji $currentEmoji}}active{{end}}"
+                        data-emoji="{{$emoji}}">
+                    {{$emoji}}
+                </button>
+                {{end}}
+            </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="flex justify-end space-x-3 pt-4">
+            <button type="button"
+                    hx-get="/notes"
+                    hx-target="#notes-container"
+                    class="px-4 py-2 text-gray-600 hover:text-gray-800 font-medium rounded-lg
+                           hover:bg-gray-100 transition-all duration-200">
+                Cancel
+            </button>
+            <button type="submit"
+                    class="px-6 py-2 text-white font-medium rounded-lg
+                           bg-gradient-to-r from-[#9C6FFF] to-[#76A1FF]
+                           hover:opacity-90 transition-all duration-200">
+                Save Changes
+            </button>
+        </div>
+    </form>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const emojiButtons = document.querySelectorAll('.emoji-btn');
+    const emojiInput = document.getElementById('selected-emoji');
+    
+    emojiButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            // Remove active class from all buttons
+            emojiButtons.forEach(btn => btn.classList.remove('active'));
+            
+            // Add active class to clicked button
+            this.classList.add('active');
+            emojiInput.value = this.dataset.emoji;
+        });
+    });
+});
+</script>

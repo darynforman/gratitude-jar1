@@ -9,6 +9,16 @@ import (
 	"testing"
 )
 
+// SetTemplateDir is a test helper to set the template directory
+func SetTemplateDir(dir string) {
+	testTemplateDir = dir
+}
+
+// GetTestTemplateDir is a test helper to get the current template directory
+func GetTestTemplateDir() string {
+	return testTemplateDir
+}
+
 // setupTestEnvironment sets up the test environment
 func setupTestEnvironment(t *testing.T) {
 	// Get the absolute path to the project root

@@ -1,0 +1,49 @@
+{{ define "title" }}Register{{ end }}
+{{ define "content" }}
+<div class="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#E558FF] via-[#9C6FFF] to-[#76A1FF] py-24 px-4">
+  <div class="w-full max-w-md p-8 space-y-6 bg-white/95 rounded-2xl shadow-xl backdrop-blur-lg">
+    <div class="flex flex-col items-center mb-6">
+      <span class="text-4xl mb-2">📝</span>
+      <h2 class="text-3xl font-bold text-gray-900">Create Your Account</h2>
+      <p class="text-gray-500 mt-2 text-center">Join the Gratitude Jar community and start your daily gratitude journey!</p>
+    </div>
+    {{ if .Errors.generic }}
+      <div class="mb-4 text-red-600">{{ .Errors.generic }}</div>
+    {{ end }}
+    {{ if .Errors.username }}
+      <div class="mb-2 text-red-600">{{ .Errors.username }}</div>
+    {{ end }}
+    {{ if .Errors.email }}
+      <div class="mb-2 text-red-600">{{ .Errors.email }}</div>
+    {{ end }}
+    {{ if .Errors.password }}
+      <div class="mb-2 text-red-600">{{ .Errors.password }}</div>
+    {{ end }}
+    {{ if .Errors.confirm_password }}
+      <div class="mb-2 text-red-600">{{ .Errors.confirm_password }}</div>
+    {{ end }}
+    <form method="POST" action="/register" class="space-y-4">
+      <div>
+        <label for="username" class="block text-sm font-medium">Username</label>
+        <input id="username" name="username" type="text" required class="w-full px-3 py-2 border rounded focus:outline-none focus:ring focus:border-blue-300" value="{{ .Form.Username }}">
+      </div>
+      <div>
+        <label for="email" class="block text-sm font-medium">Email</label>
+        <input id="email" name="email" type="email" required class="w-full px-3 py-2 border rounded focus:outline-none focus:ring focus:border-blue-300" value="{{ .Form.Email }}">
+      </div>
+      <div>
+        <label for="password" class="block text-sm font-medium">Password</label>
+        <input id="password" name="password" type="password" required class="w-full px-3 py-2 border rounded focus:outline-none focus:ring focus:border-blue-300">
+      </div>
+      <div>
+        <label for="confirm_password" class="block text-sm font-medium">Confirm Password</label>
+        <input id="confirm_password" name="confirm_password" type="password" required class="w-full px-3 py-2 border rounded focus:outline-none focus:ring focus:border-blue-300">
+      </div>
+      <button type="submit" class="w-full py-2 text-white bg-blue-600 rounded hover:bg-blue-700">Register</button>
+    </form>
+    <div class="mt-4 text-center">
+      <a href="/user/login" class="text-blue-600 hover:underline">Already have an account? Login</a>
+    </div>
+  </div>
+</div>
+{{ end }}

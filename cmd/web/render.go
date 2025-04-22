@@ -3,78 +3,61 @@
 package main
 
 import (
-	"html/template"
 	"log"
 	"net/http"
-	"os"
 	"path/filepath"
+	"time"
+
+	"github.com/darynforman/gratitude-jar1/internal/session"
 )
 
-var (
-	// templateDir is the directory containing HTML templates
-	templateDir = "ui/html"
-)
-
-// SetTemplateDir sets the template directory for testing
-func SetTemplateDir(dir string) {
-	templateDir = dir
-}
-
-// render renders an HTML template with the provided data.
-// It performs the following tasks:
-// 1. Checks if the required template files exist
-// 2. Loads and parses the base template and page template
-// 3. Sets the appropriate content type header
-// 4. Executes the template with the provided data
-//
-// Parameters:
-// - w: The HTTP response writer
-// - tmpl: The name of the template file to render (without path)
-// - data: The data to pass to the template
-func render(w http.ResponseWriter, tmpl string, data interface{}) {
-	log.Printf("Starting to render template: %s", tmpl)
-
-	// Get the absolute path to the templates directory
-	absTemplateDir, err := filepath.Abs(templateDir)
+// render renders a template with the given data
+func render(w http.ResponseWriter, r *http.Request, name string, data PageData) {
+	// Get the template from the cache
+	tmpl, err := getTemplate(name)
 	if err != nil {
-		log.Printf("Error getting template directory: %v", err)
+		log.Printf("Template %s not found in cache: %v", name, err)
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 		return
 	}
 
-	// Construct paths to template files
-	basePath := filepath.Join(absTemplateDir, "base.tmpl")
-	templatePath := filepath.Join(absTemplateDir, tmpl)
+	// Add session data to the template data
+	userID := session.Manager.GetInt(r.Context(), "userID")
+	role := session.Manager.GetString(r.Context(), "role")
+	flash := session.Manager.PopString(r.Context(), "flash")
 
-	// Check if template files exist
-	if _, err := os.Stat(basePath); os.IsNotExist(err) {
-		log.Printf("Base template does not exist: %s", basePath)
-		http.Error(w, "Template Not Found", http.StatusInternalServerError)
+	// Create a new data struct that includes session data
+	templateData := struct {
+		PageData
+		IsAuthenticated bool
+		UserID          int
+		UserRole        string
+		Flash           string
+		CurrentYear     int
+	}{
+		PageData:        data,
+		IsAuthenticated: userID > 0,
+		UserID:          userID,
+		UserRole:        role,
+		Flash:           flash,
+		CurrentYear:     time.Now().Year(),
+	}
+
+	// For partial templates, execute without base template
+	if filepath.Dir(name) == "partials" {
+		err := tmpl.Execute(w, templateData)
+		if err != nil {
+			log.Printf("Error executing partial template %s: %v", name, err)
+			http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+			return
+		}
 		return
 	}
-	if _, err := os.Stat(templatePath); os.IsNotExist(err) {
-		log.Printf("Page template does not exist: %s", templatePath)
-		http.Error(w, "Template Not Found", http.StatusInternalServerError)
-		return
-	}
 
-	log.Printf("Loading templates from: base=%s, page=%s", basePath, templatePath)
-
-	// Parse templates
-	templates, err := template.ParseFiles(basePath, templatePath)
+	// For full pages, execute with base template
+	err = tmpl.ExecuteTemplate(w, "base", templateData)
 	if err != nil {
-		log.Printf("Error parsing templates: %v", err)
-		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
-		return
-	}
-
-	// Set content type
-	w.Header().Set("Content-Type", "text/html; charset=utf-8")
-
-	// Execute template
-	err = templates.ExecuteTemplate(w, "base", data)
-	if err != nil {
-		log.Printf("Error executing template: %v", err)
+		log.Printf("Error executing template %s: %v", name, err)
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 		return
 	}

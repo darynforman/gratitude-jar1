@@ -1,7 +1,7 @@
 {{define "title"}}Welcome to Gratitude Jar{{end}}
 
 {{define "content"}}
-<div class="min-h-screen bg-gradient-to-br from-[#E558FF] via-[#9C6FFF] to-[#76A1FF] pt-32 relative overflow-hidden">
+<div class="min-h-screen bg-gradient-to-br from-[#E558FF] via-[#9C6FFF] to-[#76A1FF] pt-24 relative overflow-hidden">
     <!-- Decorative Circles -->
     <div class="absolute top-0 left-0 w-[800px] h-[800px] bg-white/10 rounded-full blur-3xl transform -translate-x-1/2 -translate-y-1/2 animate-pulse"></div>
     <div class="absolute bottom-0 right-0 w-[1000px] h-[1000px] bg-white/10 rounded-full blur-3xl transform translate-x-1/3 translate-y-1/3 animate-pulse delay-700"></div>
@@ -39,23 +39,40 @@
                 </p>
 
                 <div class="flex flex-col sm:flex-row gap-4 animate-fade-in-up delay-400">
-                    <a href="/gratitude" 
-                       class="inline-flex items-center px-8 py-4 rounded-full text-white font-semibold 
-                              bg-gradient-to-r from-[#FF8A3B] to-[#FF5858] hover:opacity-90
-                              transform hover:scale-105 transition-all duration-300 shadow-lg">
-                        Start Your Journey
-                        <span class="ml-2">✨</span>
-                    </a>
-                    <a href="/about" 
-                       class="inline-flex items-center px-8 py-4 rounded-full font-semibold 
-                              bg-white/20 text-white hover:bg-white/30
-                              transform hover:scale-105 transition-all duration-300 backdrop-blur-sm">
-                        Learn More
-                        <span class="ml-2">💭</span>
-                    </a>
+                    {{if .IsAuthenticated}}
+                        <a href="/gratitude" 
+                           class="inline-flex items-center px-8 py-4 rounded-full text-white font-semibold 
+                                  bg-gradient-to-r from-[#FF8A3B] to-[#FF5858] hover:opacity-90
+                                  transform hover:scale-105 transition-all duration-300 shadow-lg">
+                            Add Note
+                            <span class="ml-2">✨</span>
+                        </a>
+                        <a href="/notes" 
+                           class="inline-flex items-center px-8 py-4 rounded-full font-semibold 
+                                  bg-white/20 text-white hover:bg-white/30
+                                  transform hover:scale-105 transition-all duration-300 backdrop-blur-sm">
+                            View Notes
+                            <span class="ml-2">📝</span>
+                        </a>
+                    {{else}}
+                        <a href="/register" 
+                           class="inline-flex items-center px-8 py-4 rounded-full text-white font-semibold 
+                                  bg-gradient-to-r from-[#FF8A3B] to-[#FF5858] hover:opacity-90
+                                  transform hover:scale-105 transition-all duration-300 shadow-lg">
+                            Get Started
+                            <span class="ml-2">✨</span>
+                        </a>
+                        <a href="/about" 
+                           class="inline-flex items-center px-8 py-4 rounded-full font-semibold 
+                                  bg-white/20 text-white hover:bg-white/30
+                                  transform hover:scale-105 transition-all duration-300 backdrop-blur-sm">
+                            Learn More
+                            <span class="ml-2">💭</span>
+                        </a>
+                    {{end}}
                 </div>
             </div>
-
+                            
             <!-- Right Column - Floating Notes -->
             <div class="relative h-[600px] mt-8 lg:mt-0">
                 <!-- Note 1 -->
@@ -73,7 +90,7 @@
                         Personal
                     </span>
                 </div>
-
+                            
                 <!-- Note 2 -->
                 <div class="note-card absolute top-1/3 right-0 w-72
                             bg-white/95 backdrop-blur-lg rounded-2xl p-6 shadow-xl">
