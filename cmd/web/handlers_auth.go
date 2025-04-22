@@ -112,21 +112,31 @@ func (app *application) login(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/", http.StatusSeeOther)
 }
 
-func (app *application) logout(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodPost {
-		app.errorResponse(w, r, http.StatusMethodNotAllowed, "Method not allowed")
-		return
-	}
-
+// logoutHandler logs out the user by destroying the session.
+func (app *application) logoutHandler(w http.ResponseWriter, r *http.Request) {
+	// Destroy the session
 	err := session.Manager.Destroy(r.Context())
 	if err != nil {
-		app.errorResponse(w, r, http.StatusInternalServerError, "Session error")
+		log.Printf("[Logout] Failed to destroy session: %v", err)
+		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 		return
 	}
 
-	app.jsonResponse(w, http.StatusOK, map[string]string{
-		"message": "Successfully logged out",
-	})
+	// Check if this is an HTMX request
+	if r.Header.Get("HX-Request") == "true" {
+		// Set HX-Redirect header to redirect to home page
+		w.Header().Set("HX-Redirect", "/")
+		// Return updated navigation
+		data := PageData{
+			Title:           "Navigation",
+			IsAuthenticated: false,
+		}
+		render(w, r, "partials/nav.tmpl", data)
+		return
+	}
+
+	// For regular requests, redirect to home page
+	http.Redirect(w, r, "/", http.StatusSeeOther)
 }
 
 func (app *application) register(w http.ResponseWriter, r *http.Request) {

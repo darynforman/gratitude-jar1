@@ -184,24 +184,11 @@ func createGratitude(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// If this is an HTMX request, return the new note HTML
+	// If this is an HTMX request, return the thank you message
 	if r.Header.Get("HX-Request") == "true" {
-		// Get the newly created note
-		createdNote, err := getGratitudeModel().Get(note.ID)
-		if err != nil {
-			log.Printf("Error fetching created note: %v", err)
-			http.Error(w, "Internal Server Error", http.StatusInternalServerError)
-			return
-		}
-		// Render the note card template
-		tmpl, err := getTemplate("notes.tmpl")
-		if err != nil {
-			log.Printf("Error getting template: %v", err)
-			http.Error(w, "Internal Server Error", http.StatusInternalServerError)
-			return
-		}
-		// Execute the note-card template
-		if err := tmpl.ExecuteTemplate(w, "note-card", createdNote); err != nil {
+		// Render the thank you message template
+		tmpl := template.Must(template.ParseFiles("ui/html/partials/thank-you-message.tmpl"))
+		if err := tmpl.ExecuteTemplate(w, "thank-you-message", nil); err != nil {
 			log.Printf("Error executing template: %v", err)
 			http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 			return

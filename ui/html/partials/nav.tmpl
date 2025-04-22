@@ -13,12 +13,23 @@
         <a href="/about" class="nav-link {{if eq .Title "About"}}text-brand-purple{{else}}text-gray-600{{end}}">
             About
         </a>
+        <button 
+            hx-post="/logout"
+            hx-trigger="click"
+            hx-target="#nav-content"
+            hx-swap="innerHTML"
+            class="nav-link text-gray-600 hover:text-red-500 transition-colors duration-200">
+            Logout
+        </button>
     {{else}}
         <a href="/" class="nav-link {{if eq .Title "Welcome to Gratitude Jar"}}text-brand-purple{{else}}text-gray-600{{end}}">
             Home
         </a>
         <a href="/about" class="nav-link {{if eq .Title "About"}}text-brand-purple{{else}}text-gray-600{{end}}">
             About
+        </a>
+        <a href="/user/login" class="nav-link text-gray-600">
+            Sign In
         </a>
     {{end}}
 </div>

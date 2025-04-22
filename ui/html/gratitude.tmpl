@@ -28,10 +28,11 @@
         <!-- Main Form Card -->
         <div class="bg-white/95 backdrop-blur-lg rounded-3xl p-8 shadow-2xl relative overflow-hidden">
             <form hx-post="/gratitude/create" 
-                  hx-target="#notes-container"
-                  hx-swap="afterbegin"
+                  hx-target="#message-container"
+                  hx-swap="beforeend"
                   hx-indicator="#submit-indicator"
-                  class="space-y-6">
+                  class="space-y-6"
+                  hx-on::after-request="this.reset()">
                 
                 <!-- Title Input -->
                 <div class="group">
@@ -118,6 +119,9 @@
                 </div>
             </form>
         </div>
+
+        <!-- Message Container for Thank You Messages -->
+        <div id="message-container" class="fixed top-0 right-0 z-50 p-4"></div>
 
         <!-- Notes Container -->
         <div id="notes-container" class="mt-12 space-y-6">

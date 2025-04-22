@@ -1,0 +1,11 @@
+{{define "thank-you-message"}}
+<div id="thank-you-message" 
+     class="fixed top-4 right-4 bg-white/95 backdrop-blur-lg rounded-xl p-6 shadow-xl transform transition-all duration-500 flex items-center space-x-4"
+     _="on load wait 4s then add .opacity-0 wait 500ms then remove me">
+    <span class="text-3xl">✨</span>
+    <div>
+        <h3 class="font-medium text-gray-900">Thank you!</h3>
+        <p class="text-sm text-gray-600">Your gratitude note has been added.</p>
+    </div>
+</div>
+{{end}}

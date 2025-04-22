@@ -42,7 +42,7 @@ func routes() http.Handler {
 	// Auth routes
 	mux.HandleFunc("/register", registerHandler)
 	mux.HandleFunc("/user/login", loginHandler)
-	mux.HandleFunc("/logout", logoutHandler)
+	mux.HandleFunc("/logout", app.logoutHandler)
 
 	// Chain middleware in the correct order
 	// The order is important as each middleware wraps the next one
