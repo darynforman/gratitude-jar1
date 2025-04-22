@@ -43,6 +43,22 @@
                 color: #E558FF;
             }
         </style>
+
+        <!-- Form Clearing Script -->
+        <script>
+            document.addEventListener('htmx:afterSwap', function(evt) {
+                // Check if the swapped content contains a form
+                const forms = evt.detail.target.querySelectorAll('form');
+                forms.forEach(form => {
+                    form.reset();
+                    // Clear input values explicitly
+                    const inputs = form.querySelectorAll('input');
+                    inputs.forEach(input => {
+                        input.value = '';
+                    });
+                });
+            });
+        </script>
     </head>
     <body>
         <!-- Navigation -->

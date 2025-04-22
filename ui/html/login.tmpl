@@ -23,7 +23,10 @@
               hx-post="/user/login" 
               hx-trigger="submit"
               hx-target="this"
-              hx-swap="outerHTML">
+              hx-swap="outerHTML"
+              hx-reset="true"
+              hx-preserve="false"
+              autocomplete="off" data-form-type="other">
             <!-- Error Messages -->
             {{with .Errors}}
                 <div class="rounded-md bg-red-50 p-4 mb-4">
@@ -70,8 +73,12 @@
                             </svg>
                         </div>
                         <input id="username" name="username" type="text" required 
-                            class="appearance-none rounded-lg relative block w-full px-3 py-2.5 pl-10 border border-gray-200 placeholder-gray-400 text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#9C6FFF] focus:border-[#9C6FFF] transition-colors duration-200 sm:text-sm"
-                            placeholder="Enter your username">
+                            class="pl-10 focus:ring-[#9C6FFF] focus:border-[#9C6FFF] block w-full sm:text-sm border-gray-300 rounded-lg transition-colors duration-200"
+                            placeholder="Enter your username"
+                            autocomplete="new-username"
+                            data-lpignore="true"
+                            data-form-type="other"
+                            spellcheck="false">
                     </div>
                 </div>
 
@@ -85,8 +92,12 @@
                             </svg>
                         </div>
                         <input id="password" name="password" type="password" required 
-                            class="appearance-none rounded-lg relative block w-full px-3 py-2.5 pl-10 border border-gray-200 placeholder-gray-400 text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#9C6FFF] focus:border-[#9C6FFF] transition-colors duration-200 sm:text-sm"
-                            placeholder="••••••••">
+                            class="pl-10 focus:ring-[#9C6FFF] focus:border-[#9C6FFF] block w-full sm:text-sm border-gray-300 rounded-lg transition-colors duration-200"
+                            placeholder="••••••••"
+                            autocomplete="new-password"
+                            data-lpignore="true"
+                            data-form-type="other"
+                            spellcheck="false">
                     </div>
                 </div>
             </div>
@@ -111,9 +122,9 @@
             <!-- Submit Button -->
             <div>
                 <button type="submit" 
-                    class="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-lg text-white bg-gradient-to-r from-[#9C6FFF] to-[#76A1FF] hover:from-[#8A5AFF] hover:to-[#6491FF] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#9C6FFF] transition-all duration-200 shadow-lg shadow-[#9C6FFF]/20">
+                    class="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-lg text-white bg-gradient-to-r from-[#9C6FFF] to-[#76A1FF] hover:from-[#8A5AE8] hover:to-[#6990E8] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#9C6FFF] transition-all duration-200">
                     <span class="absolute left-0 inset-y-0 flex items-center pl-3">
-                        <svg class="h-5 w-5 text-white/70 group-hover:text-white transition-colors duration-200" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                        <svg class="h-5 w-5 text-white/70 group-hover:text-white/90 transition-colors duration-200" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
                             <path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd" />
                         </svg>
                     </span>
