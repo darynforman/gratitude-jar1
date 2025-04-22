@@ -200,9 +200,13 @@ func updateGratitude(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Extract ID from URL
+	// Extract ID from URL or form
 	idStr := r.URL.Path[len("/notes/"):]
-	log.Printf("Extracted ID string: %s", idStr)
+	if idStr == "" {
+		// Try to get ID from form data
+		idStr = r.FormValue("id")
+	}
+	log.Printf("ID string: %s", idStr)
 
 	id, err := strconv.Atoi(idStr)
 	if err != nil {
@@ -275,6 +279,7 @@ func updateGratitude(w http.ResponseWriter, r *http.Request) {
 		Content:   content,
 		Category:  category,
 		Emoji:     emoji,
+		UserID:    userID,
 		UpdatedAt: time.Now(),
 	}
 	log.Printf("Created note object: %+v", note)
@@ -297,21 +302,19 @@ func updateGratitude(w http.ResponseWriter, r *http.Request) {
 	}
 	log.Printf("Fetched updated note: %+v", updatedNote)
 
-	// Convert to template note
-	templateNote := GratitudeNote{
-		ID:        updatedNote.ID,
-		Title:     updatedNote.Title,
-		Content:   updatedNote.Content,
-		Category:  updatedNote.Category,
-		Emoji:     updatedNote.Emoji,
-		CreatedAt: updatedNote.CreatedAt.Format("2006-01-02"),
-	}
-
 	// Render the updated note as HTML
 	w.Header().Set("Content-Type", "text/html")
-	tmpl := template.Must(template.ParseFiles("ui/html/view-notes.tmpl"))
-	if err := tmpl.ExecuteTemplate(w, "note-card", templateNote); err != nil {
-		log.Printf("Error rendering updated note: %v", err)
+	// Format the updated note for display
+	// Get the template from cache and render it
+	tmpl, err := getTemplate("notes.tmpl")
+	if err != nil {
+		log.Printf("Error getting template: %v", err)
+		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+		return
+	}
+	// Execute the note-card template
+	if err := tmpl.ExecuteTemplate(w, "note-card", updatedNote); err != nil {
+		log.Printf("Error executing template: %v", err)
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 		return
 	}
