@@ -157,12 +157,21 @@ func createGratitude(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Get user ID from session
+	userID := session.Manager.GetInt(r.Context(), "userID")
+	if userID == 0 {
+		log.Printf("No user ID found in session")
+		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		return
+	}
+
 	// Create a new gratitude note from form data
 	note := &data.GratitudeNote{
 		Title:     title,
 		Content:   content,
 		Category:  category,
 		Emoji:     emoji,
+		UserID:    userID,
 		CreatedAt: time.Now(),
 		UpdatedAt: time.Now(),
 	}
@@ -175,10 +184,28 @@ func createGratitude(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// If this is an HTMX request, return a redirect response
+	// If this is an HTMX request, return the new note HTML
 	if r.Header.Get("HX-Request") == "true" {
-		w.Header().Set("HX-Redirect", "/notes")
-		w.WriteHeader(http.StatusOK)
+		// Get the newly created note
+		createdNote, err := getGratitudeModel().Get(note.ID)
+		if err != nil {
+			log.Printf("Error fetching created note: %v", err)
+			http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+			return
+		}
+		// Render the note card template
+		tmpl, err := getTemplate("notes.tmpl")
+		if err != nil {
+			log.Printf("Error getting template: %v", err)
+			http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+			return
+		}
+		// Execute the note-card template
+		if err := tmpl.ExecuteTemplate(w, "note-card", createdNote); err != nil {
+			log.Printf("Error executing template: %v", err)
+			http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+			return
+		}
 		return
 	}
 
