@@ -75,24 +75,15 @@ func (app *application) login(w http.ResponseWriter, r *http.Request) {
 
 	log.Printf("[Login] User authenticated successfully - ID: %d, Role: %s", user.ID, user.Role)
 
-	// Start session
-	err = session.Manager.RenewToken(r.Context())
-	if err != nil {
-		log.Printf("[Login] Failed to renew session token: %v", err)
-		app.errorResponse(w, r, http.StatusInternalServerError, "Session error")
-		return
-	}
-	log.Printf("[Login] Session token renewed successfully")
-
 	// Set session values
-	session.Manager.Put(r.Context(), "userID", user.ID)
-	session.Manager.Put(r.Context(), "role", user.Role)
-	session.Manager.Put(r.Context(), "flash", "Successfully logged in!")
+	session.Manager.Put(r, "userID", user.ID)
+	session.Manager.Put(r, "role", user.Role)
+	session.Manager.Put(r, "flash", "Successfully logged in!")
 	log.Printf("[Login] Session values set - userID: %d, role: %s", user.ID, user.Role)
 
 	// Verify session values were set
-	verifyUserID := session.Manager.GetInt(r.Context(), "userID")
-	verifyRole := session.Manager.GetString(r.Context(), "role")
+	verifyUserID := session.Manager.GetInt(r, "userID")
+	verifyRole := session.Manager.GetString(r, "role")
 	log.Printf("[Login] Verifying session values - userID: %d, role: %s", verifyUserID, verifyRole)
 
 	// Check if this is an HTMX request
@@ -115,12 +106,7 @@ func (app *application) login(w http.ResponseWriter, r *http.Request) {
 // logoutHandler logs out the user by destroying the session.
 func (app *application) logoutHandler(w http.ResponseWriter, r *http.Request) {
 	// Destroy the session
-	err := session.Manager.Destroy(r.Context())
-	if err != nil {
-		log.Printf("[Logout] Failed to destroy session: %v", err)
-		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
-		return
-	}
+	session.Manager.Destroy(r)
 
 	// Check if this is an HTMX request
 	if r.Header.Get("HX-Request") == "true" {

@@ -29,7 +29,7 @@ func startServer(app *application) {
 	mux := routes()
 
 	// Wrap mux with SCS session middleware
-	handler := session.Manager.LoadAndSave(mux)
+	handler := session.Manager.Enable(mux)
 
 	// Start the HTTP server on port 4000
 	log.Println("Starting server on :4000...")

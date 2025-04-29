@@ -1,0 +1,1 @@
+-- Empty down migration for add_email_to_users_table 

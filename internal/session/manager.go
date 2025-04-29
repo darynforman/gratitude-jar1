@@ -4,21 +4,26 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/alexedwards/scs/v2"
+	"github.com/golangcollege/sessions"
 )
 
-var Manager *scs.SessionManager
+var Manager *sessions.Session
 
 func init() {
-	Manager = scs.New()
+	Manager = sessions.New([]byte("your-secret-key"))
 	Manager.Lifetime = 24 * time.Hour
-	Manager.Cookie.HttpOnly = true
-	Manager.Cookie.Secure = false // Set to true in production with HTTPS
+	Manager.Secure = false // Set to true in production with HTTPS
 }
 
 // GetLoggedInUser returns the user ID and role from the session, or 0, "" if not logged in
 func GetLoggedInUser(r *http.Request) (int, string) {
-	userID := Manager.GetInt(r.Context(), "userID")
-	role := Manager.GetString(r.Context(), "role")
+	userID, ok := Manager.Get(r, "userID").(int)
+	if !ok {
+		userID = 0
+	}
+	role, ok := Manager.Get(r, "role").(string)
+	if !ok {
+		role = ""
+	}
 	return userID, role
 }

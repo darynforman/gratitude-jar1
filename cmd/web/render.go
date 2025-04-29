@@ -22,9 +22,9 @@ func render(w http.ResponseWriter, r *http.Request, name string, data PageData) 
 	}
 
 	// Add session data to the template data
-	userID := session.Manager.GetInt(r.Context(), "userID")
-	role := session.Manager.GetString(r.Context(), "role")
-	flash := session.Manager.PopString(r.Context(), "flash")
+	userID := session.Manager.GetInt(r, "userID")
+	role := session.Manager.GetString(r, "role")
+	flash := session.Manager.PopString(r, "flash")
 
 	// Create a new data struct that includes session data
 	templateData := struct {

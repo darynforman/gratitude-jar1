@@ -54,7 +54,7 @@ func viewNotes(w http.ResponseWriter, r *http.Request) {
 	log.Printf("Handling view notes request")
 
 	// Get user info from session
-	userID := session.Manager.GetInt(r.Context(), "userID")
+	userID := session.Manager.GetInt(r, "userID")
 
 	// Get notes from database
 	notes, err := getGratitudeModel().GetAll(userID)
@@ -65,7 +65,7 @@ func viewNotes(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Get user role from session
-	role := session.Manager.GetString(r.Context(), "role")
+	role := session.Manager.GetString(r, "role")
 
 	data := PageData{
 		Title:           "My Gratitude Notes",
@@ -158,7 +158,7 @@ func createGratitude(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Get user ID from session
-	userID := session.Manager.GetInt(r.Context(), "userID")
+	userID := session.Manager.GetInt(r, "userID")
 	if userID == 0 {
 		log.Printf("No user ID found in session")
 		http.Error(w, "Unauthorized", http.StatusUnauthorized)
@@ -207,7 +207,7 @@ func updateGratitude(w http.ResponseWriter, r *http.Request) {
 	log.Printf("Request URL: %s", r.URL.Path)
 
 	// Get user info from session
-	userID := session.Manager.GetInt(r.Context(), "userID")
+	userID := session.Manager.GetInt(r, "userID")
 	if userID == 0 {
 		log.Printf("No user ID found in session")
 		http.Error(w, "Unauthorized", http.StatusUnauthorized)
@@ -439,8 +439,8 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 		// If this is an HTMX request, return just the navigation
 		if r.Header.Get("HX-Request") == "true" {
 			// Get user info from session
-			userID := session.Manager.GetInt(r.Context(), "userID")
-			role := session.Manager.GetString(r.Context(), "role")
+			userID := session.Manager.GetInt(r, "userID")
+			role := session.Manager.GetString(r, "role")
 
 			data := PageData{
 				Title:           "Navigation",
@@ -478,18 +478,10 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		// Start session
-		err = session.Manager.RenewToken(r.Context())
-		if err != nil {
-			log.Printf("[Login] Failed to renew session token: %v", err)
-			http.Error(w, "Internal Server Error", http.StatusInternalServerError)
-			return
-		}
-
 		// Set session values
-		session.Manager.Put(r.Context(), "userID", user.ID)
-		session.Manager.Put(r.Context(), "role", user.Role)
-		session.Manager.Put(r.Context(), "flash", "Successfully logged in!")
+		session.Manager.Put(r, "userID", user.ID)
+		session.Manager.Put(r, "role", user.Role)
+		session.Manager.Put(r, "flash", "Successfully logged in!")
 
 		// Check if this is an HTMX request
 		if r.Header.Get("HX-Request") == "true" {
@@ -509,7 +501,7 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 
 // logoutHandler logs out the user by destroying the session.
 func logoutHandler(w http.ResponseWriter, r *http.Request) {
-	session.Manager.Destroy(r.Context())
+	session.Manager.Destroy(r)
 	http.Redirect(w, r, "/user/login", http.StatusSeeOther)
 }
 
