@@ -4,6 +4,7 @@ package validator
 
 import (
 	"strings"
+	"unicode"
 	"unicode/utf8"
 )
 
@@ -123,6 +124,72 @@ func ValidateGratitudeNote(title, content, category, emoji string) *Validator {
 
 	// Validate emoji
 	v.Check(v.ValidEmoji(emoji), "emoji", "Please select a valid emoji")
+
+	return v
+}
+
+// ValidatePassword checks if a password meets security requirements:
+// - Minimum length of 8 characters
+// - At least one uppercase letter
+// - At least one lowercase letter
+// - At least one number
+// - At least one special character
+func ValidatePassword(password string) *Validator {
+	v := NewValidator()
+
+	// Check minimum length
+	v.Check(MinLength(password, 8), "password", "Password must be at least 8 characters long")
+
+	// Check for required character types
+	var (
+		hasUpper   bool
+		hasLower   bool
+		hasNumber  bool
+		hasSpecial bool
+	)
+
+	for _, char := range password {
+		switch {
+		case unicode.IsUpper(char):
+			hasUpper = true
+		case unicode.IsLower(char):
+			hasLower = true
+		case unicode.IsNumber(char):
+			hasNumber = true
+		case unicode.IsPunct(char) || unicode.IsSymbol(char):
+			hasSpecial = true
+		}
+	}
+
+	v.Check(hasUpper, "password", "Password must contain at least one uppercase letter")
+	v.Check(hasLower, "password", "Password must contain at least one lowercase letter")
+	v.Check(hasNumber, "password", "Password must contain at least one number")
+	v.Check(hasSpecial, "password", "Password must contain at least one special character")
+
+	return v
+}
+
+// ValidateRegistration validates all registration form fields
+func ValidateRegistration(username, email, password, confirmPassword string) *Validator {
+	v := NewValidator()
+
+	// Validate username
+	v.Check(NotBlank(username), "username", "Username cannot be blank")
+	v.Check(MinLength(username, 3), "username", "Username must be at least 3 characters long")
+	v.Check(MaxLength(username, 30), "username", "Username cannot be more than 30 characters long")
+
+	// Validate email
+	v.Check(NotBlank(email), "email", "Email cannot be blank")
+	v.Check(strings.Contains(email, "@"), "email", "Email must be a valid email address")
+
+	// Validate password
+	passwordValidator := ValidatePassword(password)
+	for field, msg := range passwordValidator.Errors {
+		v.AddError(field, msg)
+	}
+
+	// Validate password confirmation
+	v.Check(password == confirmPassword, "confirm_password", "Passwords do not match")
 
 	return v
 }

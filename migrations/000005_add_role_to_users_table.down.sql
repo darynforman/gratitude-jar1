@@ -1,1 +1,0 @@
--- Empty down migration for add_role_to_users_table 

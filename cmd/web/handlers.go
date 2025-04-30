@@ -36,16 +36,12 @@ func home(w http.ResponseWriter, r *http.Request) {
 
 // getGratitudeModel returns a new GratitudeModel instance with the current database connection
 func getGratitudeModel() *data.GratitudeModel {
-	return &data.GratitudeModel{
-		DB: config.DB,
-	}
+	return data.NewModels(config.DB).Gratitudes
 }
 
 // getUserModel returns a new UserModel instance with the current database connection
 func getUserModel() *data.UserModel {
-	return &data.UserModel{
-		DB: app.DB,
-	}
+	return data.NewModels(config.DB).Users
 }
 
 // viewNotes handles requests to view all gratitude notes.
@@ -369,7 +365,10 @@ func getNoteForEdit(w http.ResponseWriter, r *http.Request) {
 // registerHandler handles user registration (GET shows form, POST processes registration).
 func registerHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method == http.MethodGet {
-		data := PageData{Title: "Register"}
+		data := PageData{
+			Title: "Register",
+			Form:  map[string]string{}, // Explicitly set empty form data
+		}
 		render(w, r, "register.tmpl", data)
 		return
 	}
@@ -384,30 +383,27 @@ func registerHandler(w http.ResponseWriter, r *http.Request) {
 		password := r.FormValue("password")
 		confirmPassword := r.FormValue("confirm_password")
 
-		errors := map[string]string{}
-		if username == "" {
-			errors["username"] = "Username is required"
-		}
-		if email == "" {
-			errors["email"] = "Email is required"
-		}
-		if password == "" {
-			errors["password"] = "Password is required"
-		}
-		if password != confirmPassword {
-			errors["confirm_password"] = "Passwords do not match"
-		}
+		// Validate all registration fields
+		v := validator.ValidateRegistration(username, email, password, confirmPassword)
 
+		// Check for existing username/email
 		userModel := getUserModel()
 		if user, _ := userModel.GetByUsername(username); user != nil {
-			errors["username"] = "Username already taken"
+			v.AddError("username", "Username already taken")
 		}
 		if user, _ := userModel.GetByEmail(email); user != nil {
-			errors["email"] = "Email already registered"
+			v.AddError("email", "Email already registered")
 		}
 
-		if len(errors) > 0 {
-			data := PageData{Title: "Register", Errors: errors, Form: map[string]string{"Username": username, "Email": email}}
+		if !v.ValidData() {
+			data := PageData{
+				Title:  "Register",
+				Errors: v.Errors,
+				Form: map[string]string{
+					"username": username,
+					"email":    email,
+				},
+			}
 			render(w, r, "register.tmpl", data)
 			return
 		}
@@ -421,12 +417,20 @@ func registerHandler(w http.ResponseWriter, r *http.Request) {
 		// Insert new user
 		err = userModel.Insert(username, email, string(hash), "user")
 		if err != nil {
-			// Show the actual error for debugging
-			data := PageData{Title: "Register", Errors: map[string]string{"generic": "Registration failed: " + err.Error()}, Form: map[string]string{"Username": username, "Email": email}}
+			data := PageData{
+				Title:  "Register",
+				Errors: map[string]string{"generic": "Registration failed: " + err.Error()},
+				Form: map[string]string{
+					"username": username,
+					"email":    email,
+				},
+			}
 			render(w, r, "register.tmpl", data)
 			return
 		}
 
+		// Set flash message for successful registration
+		session.Manager.Put(r, "flash", "Registration successful! Please log in.")
 		http.Redirect(w, r, "/user/login", http.StatusSeeOther)
 		return
 	}
@@ -451,8 +455,11 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		// For regular requests, show the login form
-		data := PageData{Title: "Login"}
+		// For regular requests, show the login form with empty form data
+		data := PageData{
+			Title: "Login",
+			Form:  map[string]string{}, // Explicitly set empty form data
+		}
 		render(w, r, "login.tmpl", data)
 		return
 	}
@@ -465,15 +472,63 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 		username := r.FormValue("username")
 		password := r.FormValue("password")
 
-		userModel := getUserModel()
-		user, err := userModel.GetByUsername(username)
-		if err != nil || user == nil {
-			data := PageData{Title: "Login", Errors: map[string]string{"generic": "Invalid username or password"}}
+		// Validate input fields
+		v := validator.NewValidator()
+		v.Check(validator.NotBlank(username), "username", "Username is required")
+
+		// Validate password format
+		if validator.NotBlank(password) {
+			passwordValidator := validator.ValidatePassword(password)
+			if !passwordValidator.ValidData() {
+				v.AddError("password", "Invalid password format")
+			}
+		} else {
+			v.AddError("password", "Password is required")
+		}
+
+		// If there are validation errors
+		if !v.ValidData() {
+			errorMessage := "Please check your username and password format"
+			if r.Header.Get("HX-Request") == "true" {
+				// For HTMX requests, render just the error message template
+				tmpl := template.Must(template.ParseFiles("ui/html/login.tmpl"))
+				tmpl.ExecuteTemplate(w, "error-message", errorMessage)
+				return
+			}
+			// For regular requests, render the full page with error
+			data := PageData{
+				Title:  "Login",
+				Errors: v.Errors,
+			}
 			render(w, r, "login.tmpl", data)
 			return
 		}
-		if bcrypt.CompareHashAndPassword([]byte(user.PasswordHash), []byte(password)) != nil {
-			data := PageData{Title: "Login", Errors: map[string]string{"generic": "Invalid username or password"}}
+
+		// Attempt authentication
+		userModel := getUserModel()
+		user, err := userModel.GetByUsername(username)
+
+		// Check for authentication errors
+		var errorMessage string
+		if err != nil || user == nil {
+			errorMessage = "Invalid username or password"
+		} else if bcrypt.CompareHashAndPassword([]byte(user.PasswordHash), []byte(password)) != nil {
+			errorMessage = "Invalid username or password"
+		}
+
+		// If there's an authentication error
+		if errorMessage != "" {
+			if r.Header.Get("HX-Request") == "true" {
+				// For HTMX requests, render just the error message template
+				tmpl := template.Must(template.ParseFiles("ui/html/login.tmpl"))
+				tmpl.ExecuteTemplate(w, "error-message", errorMessage)
+				return
+			}
+			// For regular requests, render the full page with error
+			data := PageData{
+				Title:  "Login",
+				Errors: map[string]string{"generic": errorMessage},
+			}
 			render(w, r, "login.tmpl", data)
 			return
 		}
@@ -496,12 +551,20 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/", http.StatusSeeOther)
 		return
 	}
+
 	http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)
 }
 
 // logoutHandler logs out the user by destroying the session.
 func logoutHandler(w http.ResponseWriter, r *http.Request) {
-	session.Manager.Destroy(r)
+	// Clear session data first
+	session.Manager.Put(r, "userID", nil)
+	session.Manager.Put(r, "role", nil)
+
+	// Force the session to be saved with cleared values
+	session.Manager.Put(r, "_cleared", time.Now().Unix())
+
+	// Redirect to login page
 	http.Redirect(w, r, "/user/login", http.StatusSeeOther)
 }
 

@@ -1,1 +1,0 @@
--- Empty down migration for gratitude table 

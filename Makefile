@@ -26,7 +26,7 @@ build:
 # Run the application
 run:
 	@echo "Running..."
-	$(GORUN) $(shell find ./cmd/web -name '*.go' -not -name '*_test.go')
+	@$(GORUN) $(shell find ./cmd/web -name '*.go' -not -name '*_test.go')
 
 # Run tests
 test:

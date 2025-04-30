@@ -35,14 +35,10 @@ func routes() http.Handler {
 	mux.Handle("/gratitude/edit/", auth.RequireLogin(http.HandlerFunc(getNoteForEdit)))
 	mux.Handle("/notes/", auth.RequireLogin(http.HandlerFunc(updateGratitude)))
 
-	// Admin routes
-	mux.Handle("/admin", auth.RequireRole("admin", http.HandlerFunc(adminDashboard)))
-	mux.Handle("/analytics", auth.RequireRole("admin", http.HandlerFunc(viewAnalytics)))
-
 	// Auth routes
 	mux.HandleFunc("/register", registerHandler)
 	mux.HandleFunc("/user/login", loginHandler)
-	mux.HandleFunc("/logout", app.logoutHandler)
+	mux.HandleFunc("/logout", logoutHandler)
 
 	// Chain middleware in the correct order
 	// The order is important as each middleware wraps the next one
