@@ -18,6 +18,7 @@
 .vscode/
 *.swp
 *.swo
+*.md
 
 # OS specific
 .DS_Store
