@@ -1,7 +1,9 @@
 package session
 
 import (
+	"log"
 	"net/http"
+	"os"
 	"time"
 
 	"github.com/golangcollege/sessions"
@@ -10,9 +12,26 @@ import (
 var Manager *sessions.Session
 
 func init() {
-	Manager = sessions.New([]byte("your-secret-key"))
+	// Get session secret from environment variable or use a default in development
+	secretKey := os.Getenv("SESSION_SECRET")
+	if secretKey == "" {
+		// Only use this default in development
+		secretKey = "dev-session-secret-replace-in-production"
+		log.Println("WARNING: Using default session secret. Set SESSION_SECRET environment variable in production.")
+	}
+
+	Manager = sessions.New([]byte(secretKey))
 	Manager.Lifetime = 24 * time.Hour
-	Manager.Secure = false // Set to true in production with HTTPS
+
+	// Enable secure cookies in production
+	secureMode := os.Getenv("SECURE_COOKIES") == "true"
+	Manager.Secure = secureMode
+
+	// Always set HttpOnly to prevent JavaScript access
+	Manager.HttpOnly = true
+
+	// Set SameSite attribute to prevent CSRF
+	Manager.SameSite = http.SameSiteStrictMode
 }
 
 // GetLoggedInUser returns the user ID and role from the session, or 0, "" if not logged in

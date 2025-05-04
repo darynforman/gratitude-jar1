@@ -32,8 +32,8 @@ func routes() http.Handler {
 	mux.Handle("/gratitude", auth.RequireLogin(http.HandlerFunc(gratitude)))
 	mux.Handle("/notes", auth.RequireLogin(http.HandlerFunc(viewNotes)))
 	mux.Handle("/gratitude/create", auth.RequireLogin(http.HandlerFunc(createGratitude)))
-	mux.Handle("/gratitude/edit/", auth.RequireLogin(http.HandlerFunc(getNoteForEdit)))
-	mux.Handle("/notes/", auth.RequireLogin(http.HandlerFunc(updateGratitude)))
+	mux.Handle("/gratitude/edit/", auth.RequireLogin(auth.RequireOwnership(http.HandlerFunc(getNoteForEdit))))
+	mux.Handle("/notes/", auth.RequireLogin(auth.RequireOwnership(http.HandlerFunc(updateGratitude))))
 
 	// Auth routes
 	mux.HandleFunc("/register", registerHandler)
@@ -42,10 +42,12 @@ func routes() http.Handler {
 
 	// Chain middleware in the correct order
 	// The order is important as each middleware wraps the next one
-	handler := LoggingMiddleware(mux)          // Log all requests
-	handler = RateLimitMiddleware(handler)     // Rate limiting
-	handler = SecureHeadersMiddleware(handler) // Add security headers
-	handler = RecoverPanicMiddleware(handler)  // Recover from panics
+	handler := LoggingMiddleware(mux)                // Log all requests
+	handler = RateLimitMiddleware(handler)           // Rate limiting
+	handler = SecureHeadersMiddleware(handler)       // Add security headers
+	handler = auth.SessionTimeoutMiddleware(handler) // Check session timeout
+	handler = auth.CSRFMiddleware(handler)           // CSRF protection
+	handler = RecoverPanicMiddleware(handler)        // Recover from panics
 
 	return handler
 }

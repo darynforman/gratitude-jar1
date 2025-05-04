@@ -132,6 +132,15 @@ The application uses the following database configuration:
 
 Connection string: `postgres://gratitude_user:gratitude123@localhost:5432/gratitude_jar?sslmode=disable`
 
+## Environment Variables
+
+The application uses the following environment variables:
+
+- `SESSION_SECRET`: Secret key for session encryption (required in production)
+- `SECURE_COOKIES`: Set to "true" to enable secure cookies (recommended in production)
+- `CSRF_KEY`: Secret key for CSRF token generation (required in production)
+- `ENVIRONMENT`: Set to "production" in production environments
+
 ## License
 
-This project is developed for CMPS3162 Homework 2. 
+This project is developed for CMPS3162 Homework 2.

@@ -8,6 +8,7 @@ import (
 	"path/filepath"
 	"time"
 
+	"github.com/darynforman/gratitude-jar1/internal/auth"
 	"github.com/darynforman/gratitude-jar1/internal/session"
 )
 
@@ -34,6 +35,7 @@ func render(w http.ResponseWriter, r *http.Request, name string, data PageData) 
 		UserRole        string
 		Flash           string
 		CurrentYear     int
+		CSRFToken       string
 	}{
 		PageData:        data,
 		IsAuthenticated: userID > 0,
@@ -41,6 +43,7 @@ func render(w http.ResponseWriter, r *http.Request, name string, data PageData) 
 		UserRole:        role,
 		Flash:           flash,
 		CurrentYear:     time.Now().Year(),
+		CSRFToken:       auth.GetCSRFToken(r),
 	}
 
 	// For partial templates, execute without base template

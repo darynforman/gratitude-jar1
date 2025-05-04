@@ -19,13 +19,15 @@
         </div>
 
         <!-- Login Form -->
-        <form id="login-form" class="mt-8 space-y-6" 
-              hx-post="/user/login" 
+        <form id="login-form" class="mt-8 space-y-6"
+              hx-post="/user/login"
               hx-trigger="submit"
               hx-target="#error-container"
               hx-swap="innerHTML"
               autocomplete="off">
-            
+            <!-- CSRF Token -->
+            <input type="hidden" name="gorilla.csrf.Token" value="{{.CSRFToken}}">
+
             <!-- Error Container -->
             <div id="error-container">
                 {{if .Errors}}
@@ -56,7 +58,7 @@
                                 <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd" />
                             </svg>
                         </div>
-                        <input id="username" name="username" type="text" required 
+                        <input id="username" name="username" type="text" required
                             class="pl-10 focus:ring-[#9C6FFF] focus:border-[#9C6FFF] block w-full sm:text-sm border-gray-300 rounded-lg transition-colors duration-200"
                             placeholder="Enter your username"
                             autocomplete="off">
@@ -72,11 +74,11 @@
                                 <path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd" />
                             </svg>
                         </div>
-                        <input id="password" name="password" type="password" required 
+                        <input id="password" name="password" type="password" required
                             class="pl-10 focus:ring-[#9C6FFF] focus:border-[#9C6FFF] block w-full sm:text-sm border-gray-300 rounded-lg transition-colors duration-200"
                             placeholder="••••••••"
                             autocomplete="new-password">
-                        <button type="button" 
+                        <button type="button"
                                 class="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400 hover:text-gray-500"
                                 onclick="togglePasswordVisibility('password', 'passwordEyeIcon')">
                             <svg id="passwordEyeIcon" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -91,7 +93,7 @@
             <!-- Remember Me & Forgot Password -->
             <div class="flex items-center justify-between">
                 <div class="flex items-center">
-                    <input id="remember-me" name="remember-me" type="checkbox" 
+                    <input id="remember-me" name="remember-me" type="checkbox"
                         class="h-4 w-4 text-[#9C6FFF] focus:ring-[#9C6FFF] border-gray-300 rounded">
                     <label for="remember-me" class="ml-2 block text-sm text-gray-900">
                         Remember me
@@ -107,7 +109,7 @@
 
             <!-- Submit Button -->
             <div>
-                <button type="submit" 
+                <button type="submit"
                     class="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-lg text-white bg-gradient-to-r from-[#9C6FFF] to-[#76A1FF] hover:from-[#8A5AE8] hover:to-[#6990E8] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#9C6FFF] transition-all duration-200">
                     <span class="absolute left-0 inset-y-0 flex items-center pl-3">
                         <svg class="h-5 w-5 text-white/70 group-hover:text-white/90 transition-colors duration-200" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
@@ -187,7 +189,7 @@
 function togglePasswordVisibility(inputId, iconId) {
   const input = document.getElementById(inputId);
   const icon = document.getElementById(iconId);
-  
+
   if (input.type === 'password') {
     input.type = 'text';
     // Change to "hide" icon

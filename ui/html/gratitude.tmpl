@@ -27,30 +27,33 @@
 
         <!-- Main Form Card -->
         <div class="bg-white/95 backdrop-blur-lg rounded-3xl p-8 shadow-2xl relative overflow-hidden">
-            <form hx-post="/gratitude/create" 
+            <form hx-post="/gratitude/create"
                   hx-target="#message-container"
                   hx-swap="beforeend"
                   hx-indicator="#submit-indicator"
                   class="space-y-6"
                   hx-on::after-request="this.reset()">
-                
+
+                <!-- CSRF Token -->
+                <input type="hidden" name="gorilla.csrf.Token" value="{{.CSRFToken}}">
+
                 <!-- Title Input -->
                 <div class="group">
-                    <input type="text" 
-                           name="title" 
+                    <input type="text"
+                           name="title"
                            id="title"
                            required
                            minlength="3"
                            maxlength="100"
                            placeholder="Title of Your Gratitude"
                            class="block w-full rounded-xl border-2 border-gray-100 py-4 px-6 text-lg
-                                  bg-white/80 focus:border-[#9C6FFF] focus:ring-[#9C6FFF] 
+                                  bg-white/80 focus:border-[#9C6FFF] focus:ring-[#9C6FFF]
                                   transition-all duration-200 placeholder-gray-400">
                 </div>
 
                 <!-- Content Input -->
                 <div class="group">
-                    <textarea name="content" 
+                    <textarea name="content"
                              id="content"
                              required
                              minlength="10"
@@ -58,17 +61,17 @@
                              rows="4"
                              placeholder="Express Your Gratitude"
                              class="block w-full rounded-xl border-2 border-gray-100 py-4 px-6 text-lg
-                                    bg-white/80 focus:border-[#9C6FFF] focus:ring-[#9C6FFF] 
+                                    bg-white/80 focus:border-[#9C6FFF] focus:ring-[#9C6FFF]
                                     transition-all duration-200 placeholder-gray-400 resize-none"></textarea>
                 </div>
 
                 <!-- Category Select -->
                 <div class="group">
-                    <select name="category" 
+                    <select name="category"
                             id="category"
                             required
                             class="block w-full rounded-xl border-2 border-gray-100 py-4 px-6 text-lg
-                                   bg-white/80 focus:border-[#9C6FFF] focus:ring-[#9C6FFF] 
+                                   bg-white/80 focus:border-[#9C6FFF] focus:ring-[#9C6FFF]
                                    transition-all duration-200">
                         <option value="">Choose a category</option>
                         <option value="personal">✨ Personal Growth</option>
@@ -88,7 +91,7 @@
                         {{range $emoji := .Emojis}}
                         <button type="button"
                                 class="emoji-btn aspect-square rounded-lg text-2xl
-                                       hover:scale-110 hover:bg-[#9C6FFF]/10 
+                                       hover:scale-110 hover:bg-[#9C6FFF]/10
                                        transition-all duration-300"
                                 data-emoji="{{$emoji}}">
                             {{$emoji}}
@@ -100,15 +103,15 @@
                 <!-- Submit Button -->
                 <div class="flex justify-end pt-6">
                     <button type="submit"
-                            class="inline-flex items-center px-8 py-4 text-lg font-medium text-white 
-                                   rounded-xl shadow-lg bg-gradient-to-r from-[#FF8A3B] to-[#FF5858] 
+                            class="inline-flex items-center px-8 py-4 text-lg font-medium text-white
+                                   rounded-xl shadow-lg bg-gradient-to-r from-[#FF8A3B] to-[#FF5858]
                                    hover:opacity-90 transform hover:scale-105 transition-all duration-300
                                    relative">
                         <span>Add Gratitude</span>
                         <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
                         </svg>
-                        <div id="submit-indicator" 
+                        <div id="submit-indicator"
                              class="htmx-indicator absolute inset-0 bg-black/20 rounded-xl flex items-center justify-center">
                             <svg class="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                                 <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
@@ -187,12 +190,12 @@
 document.addEventListener('DOMContentLoaded', function() {
     const emojiButtons = document.querySelectorAll('.emoji-btn');
     const emojiInput = document.getElementById('selected-emoji');
-    
+
     emojiButtons.forEach(button => {
         button.addEventListener('click', function() {
             // Remove active class from all buttons
             emojiButtons.forEach(btn => btn.classList.remove('active'));
-            
+
             // Add active class to clicked button
             this.classList.add('active');
             emojiInput.value = this.dataset.emoji;
