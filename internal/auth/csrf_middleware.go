@@ -25,29 +25,57 @@ func CSRFMiddleware(next http.Handler) http.Handler {
 	// Determine if we're in production
 	isProduction := os.Getenv("ENVIRONMENT") == "production"
 
-	// Configure CSRF protection
-	return csrf.Protect(
-		CSRFKey(),
-		csrf.Secure(isProduction), // Set to true in production
-		csrf.HttpOnly(true),
-		csrf.SameSite(csrf.SameSiteStrictMode),
-		csrf.ErrorHandler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			reason := csrf.FailureReason(r)
-			log.Printf("CSRF error: %v", reason)
+	log.Printf("Initializing CSRF middleware (secure mode: %v)", isProduction)
 
-			// Log CSRF failure as a security event
-			security.LogSecurityEvent(
-				security.EventCSRFFailure,
-				0, // We don't know the user ID in this context
-				"",
-				security.GetClientIP(r),
-				"CSRF validation failed: "+reason.Error(),
-				false,
-			)
+	// Basic options that work for both environments
+	opts := []csrf.Option{
+		csrf.Path("/"),
+		csrf.CookieName("_gorilla_csrf"),
+		csrf.FieldName("gorilla.csrf.Token"),
+		csrf.Secure(isProduction),
+		csrf.RequestHeader("X-CSRF-Token"),
+	}
 
-			http.Error(w, "CSRF token validation failed", http.StatusForbidden)
-		})),
-	)(next)
+	if !isProduction {
+		// In development mode, accept requests from localhost
+		opts = append(opts, csrf.TrustedOrigins([]string{"http://localhost:4002"}))
+	}
+
+	// Add error handler to options
+	opts = append(opts, csrf.ErrorHandler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		reason := csrf.FailureReason(r)
+		log.Printf("CSRF error: %v", reason)
+		log.Printf("Request Method: %s", r.Method)
+		log.Printf("Request URL: %s", r.URL.String())
+		log.Printf("Request Headers: %v", r.Header)
+		log.Printf("Cookie Header: %s", r.Header.Get("Cookie"))
+		log.Printf("Origin Header: %s", r.Header.Get("Origin"))
+		log.Printf("Referer Header: %s", r.Header.Get("Referer"))
+
+		// For HTMX requests, send a more specific error with HTMX-specific headers
+		if r.Header.Get("HX-Request") == "true" {
+			w.Header().Set("HX-Retarget", "#error-container")
+			w.Header().Set("HX-Reswap", "innerHTML")
+			w.WriteHeader(http.StatusForbidden)
+			w.Write([]byte("<div class='error'>CSRF token validation failed. Please refresh the page and try again.</div>"))
+			return
+		}
+
+		// Log CSRF failure as a security event
+		security.LogSecurityEvent(
+			security.EventCSRFFailure,
+			0,
+			"",
+			security.GetClientIP(r),
+			"CSRF validation failed: "+reason.Error(),
+			false,
+		)
+
+		// Redirect to login page for regular requests
+		http.Redirect(w, r, "/user/login", http.StatusSeeOther)
+	})))
+
+	return csrf.Protect(CSRFKey(), opts...)(next)
 }
 
 // GetCSRFToken is a helper function to get the CSRF token for a request

@@ -138,8 +138,6 @@ The application uses the following environment variables:
 
 - `SESSION_SECRET`: Secret key for session encryption (required in production)
 - `SECURE_COOKIES`: Set to "true" to enable secure cookies (recommended in production)
-- `CSRF_KEY`: Secret key for CSRF token generation (required in production)
-- `ENVIRONMENT`: Set to "production" in production environments
 
 ## License
 

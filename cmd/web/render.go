@@ -8,8 +8,8 @@ import (
 	"path/filepath"
 	"time"
 
-	"github.com/darynforman/gratitude-jar1/internal/auth"
 	"github.com/darynforman/gratitude-jar1/internal/session"
+	"github.com/gorilla/csrf"
 )
 
 // render renders a template with the given data
@@ -43,7 +43,7 @@ func render(w http.ResponseWriter, r *http.Request, name string, data PageData) 
 		UserRole:        role,
 		Flash:           flash,
 		CurrentYear:     time.Now().Year(),
-		CSRFToken:       auth.GetCSRFToken(r),
+		CSRFToken:       csrf.Token(r),
 	}
 
 	// For partial templates, execute without base template

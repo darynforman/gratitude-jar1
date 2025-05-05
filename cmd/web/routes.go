@@ -46,7 +46,6 @@ func routes() http.Handler {
 	handler = RateLimitMiddleware(handler)           // Rate limiting
 	handler = SecureHeadersMiddleware(handler)       // Add security headers
 	handler = auth.SessionTimeoutMiddleware(handler) // Check session timeout
-	handler = auth.CSRFMiddleware(handler)           // CSRF protection
 	handler = RecoverPanicMiddleware(handler)        // Recover from panics
 
 	return handler

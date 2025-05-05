@@ -7,12 +7,14 @@ import (
 	"log"
 	"net/http"
 	"time"
+
+	"github.com/darynforman/gratitude-jar1/internal/session"
 )
 
 // RequireLogin ensures the user is logged in, otherwise redirects to login
 func RequireLogin(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		userID, _ := GetLoggedInUser(r)
+		userID, _ := session.GetLoggedInUser(r)
 		if userID == 0 {
 			http.Redirect(w, r, "/user/login", http.StatusSeeOther)
 			return
@@ -24,7 +26,7 @@ func RequireLogin(next http.Handler) http.Handler {
 // RequireAdmin ensures the user is an admin, otherwise returns 403
 func RequireAdmin(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		_, role := GetLoggedInUser(r)
+		_, role := session.GetLoggedInUser(r)
 		if role != "admin" {
 			http.Error(w, "Forbidden", http.StatusForbidden)
 			return

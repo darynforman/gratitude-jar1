@@ -4,15 +4,12 @@
           hx-target="#note-{{.ID}}"
           hx-swap="outerHTML"
           class="space-y-6">
-
-        <!-- CSRF Token -->
-        <input type="hidden" name="gorilla.csrf.Token" value="{{.CSRFToken}}">
-
+        
         <div class="flex justify-between items-start mb-4">
             <div class="flex items-center space-x-3">
                 <span class="text-3xl">{{.Emoji}}</span>
-                <input type="text"
-                       name="title"
+                <input type="text" 
+                       name="title" 
                        value="{{.Title}}"
                        required
                        minlength="3"
@@ -23,7 +20,7 @@
             </div>
         </div>
 
-        <textarea name="content"
+        <textarea name="content" 
                   required
                   minlength="10"
                   maxlength="1000"
@@ -93,10 +90,10 @@ document.addEventListener('DOMContentLoaded', function() {
             emojiButtons.forEach(btn => {
                 btn.classList.remove('active');
             });
-
+            
             // Add active class to clicked button
             this.classList.add('active');
-
+            
             // Update hidden input value
             emojiInput.value = this.dataset.emoji;
         });
@@ -112,4 +109,4 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 </script>
-{{end}}
+{{end}} 

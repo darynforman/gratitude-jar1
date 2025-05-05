@@ -12,7 +12,6 @@ import (
 
 	"github.com/darynforman/gratitude-jar1/internal/config"
 	"github.com/darynforman/gratitude-jar1/internal/data"
-	"github.com/darynforman/gratitude-jar1/internal/security"
 	"github.com/darynforman/gratitude-jar1/internal/session"
 	"github.com/darynforman/gratitude-jar1/internal/validator"
 	"golang.org/x/crypto/bcrypt"
@@ -418,16 +417,6 @@ func registerHandler(w http.ResponseWriter, r *http.Request) {
 		// Insert new user
 		err = userModel.Insert(username, email, string(hash), "user")
 		if err != nil {
-			// Log failed registration
-			security.LogSecurityEvent(
-				security.EventRegistration,
-				0,
-				username,
-				security.GetClientIP(r),
-				"Registration failed: "+err.Error(),
-				false,
-			)
-
 			data := PageData{
 				Title:  "Register",
 				Errors: map[string]string{"generic": "Registration failed: " + err.Error()},
@@ -439,16 +428,6 @@ func registerHandler(w http.ResponseWriter, r *http.Request) {
 			render(w, r, "register.tmpl", data)
 			return
 		}
-
-		// Log successful registration
-		security.LogSecurityEvent(
-			security.EventRegistration,
-			0, // We don't have the user ID yet
-			username,
-			security.GetClientIP(r),
-			"User registered successfully",
-			true,
-		)
 
 		// Set flash message for successful registration
 		session.Manager.Put(r, "flash", "Registration successful! Please log in.")
@@ -531,36 +510,14 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 
 		// Check for authentication errors
 		var errorMessage string
-		var authSuccess bool
-
 		if err != nil || user == nil {
 			errorMessage = "Invalid username or password"
-			// Log failed login attempt
-			security.LogSecurityEvent(
-				security.EventLogin,
-				0,
-				username,
-				security.GetClientIP(r),
-				"User not found",
-				false,
-			)
 		} else if bcrypt.CompareHashAndPassword([]byte(user.PasswordHash), []byte(password)) != nil {
 			errorMessage = "Invalid username or password"
-			// Log failed login attempt
-			security.LogSecurityEvent(
-				security.EventLogin,
-				user.ID,
-				username,
-				security.GetClientIP(r),
-				"Invalid password",
-				false,
-			)
-		} else {
-			authSuccess = true
 		}
 
 		// If there's an authentication error
-		if !authSuccess {
+		if errorMessage != "" {
 			if r.Header.Get("HX-Request") == "true" {
 				// For HTMX requests, render just the error message template
 				tmpl := template.Must(template.ParseFiles("ui/html/login.tmpl"))
@@ -575,16 +532,6 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 			render(w, r, "login.tmpl", data)
 			return
 		}
-
-		// Log successful login
-		security.LogSecurityEvent(
-			security.EventLogin,
-			user.ID,
-			username,
-			security.GetClientIP(r),
-			"Login successful",
-			true,
-		)
 
 		// Set session values
 		session.Manager.Put(r, "userID", user.ID)
@@ -610,22 +557,12 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 
 // logoutHandler logs out the user by destroying the session.
 func logoutHandler(w http.ResponseWriter, r *http.Request) {
-	// Get user info before clearing session
-	userID := session.Manager.GetInt(r, "userID")
-	username := session.Manager.GetString(r, "username")
+	// Clear session data first
+	session.Manager.Put(r, "userID", nil)
+	session.Manager.Put(r, "role", nil)
 
-	// Log logout event
-	security.LogSecurityEvent(
-		security.EventLogout,
-		userID,
-		username,
-		security.GetClientIP(r),
-		"User logged out",
-		true,
-	)
-
-	// Clear session data
-	session.LogoutUser(w, r)
+	// Force the session to be saved with cleared values
+	session.Manager.Put(r, "_cleared", time.Now().Unix())
 
 	// Redirect to login page
 	http.Redirect(w, r, "/user/login", http.StatusSeeOther)

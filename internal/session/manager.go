@@ -1,6 +1,7 @@
 package session
 
 import (
+	"encoding/gob"
 	"log"
 	"net/http"
 	"os"
@@ -12,6 +13,10 @@ import (
 var Manager *sessions.Session
 
 func init() {
+	// Register types that will be stored in the session
+	// This must be done before the session manager is initialized
+	gob.Register(time.Time{})
+
 	// Get session secret from environment variable or use a default in development
 	secretKey := os.Getenv("SESSION_SECRET")
 	if secretKey == "" {
