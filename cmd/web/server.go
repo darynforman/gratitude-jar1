@@ -31,9 +31,9 @@ func startServer(app *application) {
 	// Wrap mux with SCS session middleware
 	handler := session.Manager.Enable(mux)
 
-	// Start the HTTP server on port 4003
-	log.Println("Starting server on :4003...")
-	err := http.ListenAndServe(":4003", handler)
+	// Start the HTTP server on port 4000
+	log.Println("Starting server on :4000...")
+	err := http.ListenAndServe(":4000", handler)
 	if err != nil {
 		log.Printf("Server error: %v", err)
 		log.Fatal(err)

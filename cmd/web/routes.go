@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/darynforman/gratitude-jar1/internal/auth"
+	"github.com/justinas/nosurf"
 )
 
 // routes sets up all HTTP routes for the application and configures middleware.
@@ -47,6 +48,7 @@ func routes() http.Handler {
 	handler = SecureHeadersMiddleware(handler)       // Add security headers
 	handler = auth.SessionTimeoutMiddleware(handler) // Check session timeout
 	handler = RecoverPanicMiddleware(handler)        // Recover from panics
+	handler = nosurf.New(handler)                   // Add CSRF protection
 
 	return handler
 }

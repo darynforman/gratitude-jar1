@@ -33,7 +33,7 @@
 
     <form method="POST" action="/register" class="space-y-6" autocomplete="off">
       <!-- CSRF Token -->
-      <input type="hidden" name="gorilla.csrf.Token" value="{{.CSRFToken}}">
+      <input type="hidden" name="csrf_token" value="{{.CSRFToken}}">
       <!-- Username Field -->
       <div>
         <label for="username" class="block text-sm font-medium text-gray-700">Username</label>

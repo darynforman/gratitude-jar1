@@ -32,11 +32,14 @@
                   hx-swap="beforeend"
                   hx-indicator="#submit-indicator"
                   hx-headers='{"X-CSRF-Token": "{{.CSRFToken}}"}'
-                  class="space-y-6"
-                  hx-on::after-request="this.reset()">
+                  hx-on::after-request="if(event.detail.successful) { 
+                    this.reset(); 
+                    setTimeout(() => window.location.href = '/notes', 2000);
+                  }"
+                  class="space-y-6">
 
                 <!-- CSRF Token -->
-                <input type="hidden" name="gorilla.csrf.Token" value="{{.CSRFToken}}">
+                <input type="hidden" name="csrf_token" value="{{.CSRFToken}}">
 
                 <!-- Title Input -->
                 <div class="group">
@@ -122,10 +125,10 @@
                     </button>
                 </div>
             </form>
-        </div>
 
-        <!-- Message Container for Thank You Messages -->
-        <div id="message-container" class="fixed top-0 right-0 z-50 p-4"></div>
+            <!-- Message Container for Thank You Messages -->
+            <div id="message-container" class="fixed top-4 right-4 z-50 space-y-4"></div>
+        </div>
 
         <!-- Notes Container -->
         <div id="notes-container" class="mt-12 space-y-6">

@@ -9,7 +9,7 @@ import (
 	"time"
 
 	"github.com/darynforman/gratitude-jar1/internal/session"
-	"github.com/gorilla/csrf"
+	"github.com/justinas/nosurf"
 )
 
 // render renders a template with the given data
@@ -43,7 +43,7 @@ func render(w http.ResponseWriter, r *http.Request, name string, data PageData) 
 		UserRole:        role,
 		Flash:           flash,
 		CurrentYear:     time.Now().Year(),
-		CSRFToken:       csrf.Token(r),
+		CSRFToken:       nosurf.Token(r),
 	}
 
 	// For partial templates, execute without base template

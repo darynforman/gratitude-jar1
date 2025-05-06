@@ -24,11 +24,10 @@
               hx-trigger="submit"
               hx-target="#error-container"
               hx-swap="innerHTML"
-              hx-headers='{"X-CSRF-Token": "{{.CSRFToken}}"}'
               autocomplete="off">
 
             <!-- CSRF Token -->
-            <input type="hidden" name="gorilla.csrf.Token" value="{{.CSRFToken}}">
+            <input type="hidden" name="csrf_token" value="{{.CSRFToken}}">
 
             <!-- Error Container -->
             <div id="error-container">

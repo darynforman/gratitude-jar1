@@ -9,7 +9,23 @@ import (
 	"time"
 
 	"github.com/darynforman/gratitude-jar1/internal/session"
+	"github.com/justinas/nosurf"
 )
+
+// NoSurf adds CSRF protection to all POST requests using the nosurf package.
+// It generates a token cookie and compares it with the token in the form
+// to prevent cross-site request forgery attacks.
+func NoSurf(next http.Handler) http.Handler {
+	csrfHandler := nosurf.New(next)
+	
+	csrfHandler.SetBaseCookie(http.Cookie{
+		HttpOnly: true,
+		Path:     "/",
+		Secure:   false, // Set to true in production
+	})
+
+	return csrfHandler
+}
 
 // RequireLogin ensures the user is logged in, otherwise redirects to login
 func RequireLogin(next http.Handler) http.Handler {

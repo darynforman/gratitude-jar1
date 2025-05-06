@@ -26,6 +26,18 @@
         <!-- HTMX -->
         <script src="https://unpkg.com/htmx.org@1.9.10"></script>
 
+        <!-- CSRF Configuration for HTMX -->
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                document.body.addEventListener('htmx:configRequest', (event) => {
+                    let token = document.querySelector('input[name="csrf_token"]');
+                    if (token) {
+                        event.detail.headers['X-CSRF-Token'] = token.value;
+                    }
+                });
+            });
+        </script>
+
         <!-- Custom Styles -->
         <style>
             @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
