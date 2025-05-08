@@ -8,6 +8,7 @@ import "github.com/darynforman/gratitude-jar1/internal/data"
 type PageData struct {
 	Title           string               // The title of the page to be displayed in the template
 	Notes           []data.GratitudeNote // A slice of GratitudeNote that will be displayed in the template
+	Note            *data.GratitudeNote  // A single gratitude note for editing/viewing
 	Errors          map[string]string    // Validation errors for form fields
 	Emojis          []string             // Available emojis for gratitude note creation
 	Form            map[string]string    // Form values for re-populating registration/login

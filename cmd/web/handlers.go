@@ -8,6 +8,7 @@ import (
 	"log"
 	"net/http"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/darynforman/gratitude-jar1/internal/config"
@@ -52,8 +53,8 @@ func viewNotes(w http.ResponseWriter, r *http.Request) {
 	// Get user info from session
 	userID := session.Manager.GetInt(r, "userID")
 
-	// Get notes from database
-	notes, err := getGratitudeModel().GetAll(userID)
+	// Get notes from database with context
+	notes, err := getGratitudeModel().GetAll(r.Context(), userID)
 	if err != nil {
 		log.Printf("Error fetching notes: %v", err)
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
@@ -172,8 +173,8 @@ func createGratitude(w http.ResponseWriter, r *http.Request) {
 		UpdatedAt: time.Now(),
 	}
 
-	// Insert the note into the database
-	err = getGratitudeModel().Insert(note)
+	// Insert the note into the database with context
+	err = getGratitudeModel().Insert(r.Context(), note)
 	if err != nil {
 		log.Printf("Error inserting note into database: %v", err)
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
@@ -199,7 +200,11 @@ func createGratitude(w http.ResponseWriter, r *http.Request) {
 // updateGratitude handles both updating and deleting gratitude notes.
 // It processes PUT and DELETE requests and supports HTMX partial updates.
 func updateGratitude(w http.ResponseWriter, r *http.Request) {
-	log.Printf("Handling update/delete request with method: %s", r.Method)
+	method := r.Method
+	if override := r.Header.Get("X-HTTP-Method-Override"); override != "" {
+		method = override
+	}
+	log.Printf("Handling update/delete request with method: %s", method)
 	log.Printf("Request URL: %s", r.URL.Path)
 
 	// Get user info from session
@@ -210,14 +215,15 @@ func updateGratitude(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Extract ID from URL or form
-	idStr := r.URL.Path[len("/notes/"):]
-	if idStr == "" {
-		// Try to get ID from form data
-		idStr = r.FormValue("id")
+	// Extract ID from URL path
+	parts := strings.Split(r.URL.Path, "/")
+	if len(parts) < 3 {
+		log.Printf("Invalid URL path: %s", r.URL.Path)
+		http.Error(w, "Invalid URL", http.StatusBadRequest)
+		return
 	}
-	log.Printf("ID string: %s", idStr)
 
+	idStr := parts[len(parts)-1]
 	id, err := strconv.Atoi(idStr)
 	if err != nil {
 		log.Printf("Invalid ID: %v", err)
@@ -227,9 +233,9 @@ func updateGratitude(w http.ResponseWriter, r *http.Request) {
 	log.Printf("Parsed ID: %d", id)
 
 	// Handle DELETE request
-	if r.Method == http.MethodDelete {
+	if method == http.MethodDelete {
 		log.Printf("Processing DELETE request for note ID: %d", id)
-		err = getGratitudeModel().Delete(id, userID)
+		err = getGratitudeModel().Delete(r.Context(), id, userID)
 		if err != nil {
 			log.Printf("Error deleting note: %v", err)
 			http.Error(w, "Internal Server Error", http.StatusInternalServerError)
@@ -240,9 +246,9 @@ func updateGratitude(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Handle PUT request
-	if r.Method != http.MethodPut {
-		log.Printf("Invalid method: %s", r.Method)
+	// Handle PUT request (or POST with override)
+	if method != http.MethodPut {
+		log.Printf("Invalid method: %s", method)
 		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 		return
 	}
@@ -256,15 +262,22 @@ func updateGratitude(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Debug: Log all incoming form data
+	log.Printf("Raw form data: %v", r.PostForm)
+
 	// Get form values
 	title := r.PostForm.Get("title")
 	content := r.PostForm.Get("content")
 	category := r.PostForm.Get("category")
 	emoji := r.PostForm.Get("emoji")
 
+	// Log form values for debugging
+	log.Printf("Form values - Title: %s, Content: %s, Category: %s, Emoji: %s", title, content, category, emoji)
+
 	// Validate the form data
 	v := validator.ValidateGratitudeNote(title, content, category, emoji)
 	if !v.ValidData() {
+		log.Printf("Validation errors: %v", v.Errors)
 		// If validation fails, return the errors
 		if r.Header.Get("HX-Request") == "true" {
 			// For HTMX requests, return the errors as JSON
@@ -294,8 +307,8 @@ func updateGratitude(w http.ResponseWriter, r *http.Request) {
 	}
 	log.Printf("Created note object: %+v", note)
 
-	// Update note in database
-	err = getGratitudeModel().Update(note)
+	// Update note in database with context
+	err = getGratitudeModel().Update(r.Context(), note)
 	if err != nil {
 		log.Printf("Error updating note in database: %v", err)
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
@@ -303,8 +316,8 @@ func updateGratitude(w http.ResponseWriter, r *http.Request) {
 	}
 	log.Printf("Successfully updated note in database")
 
-	// Fetch the updated note
-	updatedNote, err := getGratitudeModel().Get(id)
+	// Fetch the updated note with context
+	updatedNote, err := getGratitudeModel().Get(r.Context(), id)
 	if err != nil {
 		log.Printf("Error fetching updated note: %v", err)
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
@@ -312,23 +325,20 @@ func updateGratitude(w http.ResponseWriter, r *http.Request) {
 	}
 	log.Printf("Fetched updated note: %+v", updatedNote)
 
-	// Render the updated note as HTML
-	w.Header().Set("Content-Type", "text/html")
-	// Format the updated note for display
-	// Get the template from cache and render it
-	tmpl, err := getTemplate("notes.tmpl")
-	if err != nil {
-		log.Printf("Error getting template: %v", err)
-		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+	// For HTMX requests, return the updated note HTML
+	if r.Header.Get("HX-Request") == "true" {
+		w.Header().Set("Content-Type", "text/html")
+		tmpl := template.Must(template.ParseFiles("ui/html/partials/note-card.tmpl"))
+		if err := tmpl.ExecuteTemplate(w, "note-card", updatedNote); err != nil {
+			log.Printf("Error executing template: %v", err)
+			http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+			return
+		}
 		return
 	}
-	// Execute the note-card template
-	if err := tmpl.ExecuteTemplate(w, "note-card", updatedNote); err != nil {
-		log.Printf("Error executing template: %v", err)
-		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
-		return
-	}
-	log.Printf("Successfully rendered updated note")
+
+	// For regular requests, redirect to notes page
+	http.Redirect(w, r, "/notes", http.StatusSeeOther)
 }
 
 // getNoteForEdit handles requests to get a note for editing.
@@ -345,21 +355,24 @@ func getNoteForEdit(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Get note from database
-	note, err := getGratitudeModel().Get(id)
+	// Get note from database with context
+	note, err := getGratitudeModel().Get(r.Context(), id)
 	if err != nil {
 		log.Printf("Error fetching note: %v", err)
 		http.Error(w, "Note not found", http.StatusNotFound)
 		return
 	}
 
+	// Prepare template data
+	data := PageData{
+		Title: "Edit Gratitude Note",
+		Note: note,
+		Emojis: []string{"✨", "🌟", "💫", "🙏", "❤️", "🌈", "🌞", "🌺", "🎉", "💝", "🌱", "⭐"},
+	}
+
 	// Render edit form
 	w.Header().Set("Content-Type", "text/html")
-	tmpl := template.Must(template.ParseFiles("ui/html/edit-form.tmpl"))
-	if err := tmpl.ExecuteTemplate(w, "edit-form", note); err != nil {
-		log.Printf("Error rendering edit form: %v", err)
-		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
-	}
+	render(w, r, "edit-form.tmpl", data)
 }
 
 // registerHandler handles user registration (GET shows form, POST processes registration).
@@ -386,12 +399,12 @@ func registerHandler(w http.ResponseWriter, r *http.Request) {
 		// Validate all registration fields
 		v := validator.ValidateRegistration(username, email, password, confirmPassword)
 
-		// Check for existing username/email
+		// Check for existing username/email with context
 		userModel := getUserModel()
-		if user, _ := userModel.GetByUsername(username); user != nil {
+		if user, _ := userModel.GetByUsername(r.Context(), username); user != nil {
 			v.AddError("username", "Username already taken")
 		}
-		if user, _ := userModel.GetByEmail(email); user != nil {
+		if user, _ := userModel.GetByEmail(r.Context(), email); user != nil {
 			v.AddError("email", "Email already registered")
 		}
 
@@ -414,8 +427,8 @@ func registerHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		// Insert new user
-		err = userModel.Insert(username, email, string(hash), "user")
+		// Insert new user with context
+		err = userModel.Insert(r.Context(), username, email, string(hash), "user")
 		if err != nil {
 			data := PageData{
 				Title:  "Register",
@@ -506,7 +519,7 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 
 		// Attempt authentication
 		userModel := getUserModel()
-		user, err := userModel.GetByUsername(username)
+		user, err := userModel.GetByUsername(r.Context(), username)
 
 		// Check for authentication errors
 		var errorMessage string

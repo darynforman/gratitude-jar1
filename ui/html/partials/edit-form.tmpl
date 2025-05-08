@@ -1,9 +1,11 @@
 <!-- Edit Form Card -->
-<div id="note-{{.ID}}" class="bg-white/95 backdrop-blur-lg rounded-2xl p-6 shadow-xl transition-all duration-300">
-    <form hx-put="/notes/{{.ID}}"
-          hx-target="#note-{{.ID}}"
+<div id="note-{{.Note.ID}}" class="bg-white/95 backdrop-blur-lg rounded-2xl p-6 shadow-xl transition-all duration-300">
+    <form hx-put="/notes/{{.Note.ID}}"
+          hx-target="#note-{{.Note.ID}}"
           hx-swap="outerHTML"
+          hx-headers='{"X-CSRF-Token": "{{.CSRFToken}}"}'
           class="space-y-4">
+        <input type="hidden" name="csrf_token" value="{{.CSRFToken}}">
         <!-- Title Input -->
         <div class="group">
             <input type="text" 
@@ -12,7 +14,7 @@
                    required
                    minlength="3"
                    maxlength="100"
-                   value="{{.Title}}"
+                   value="{{.Note.Title}}"
                    class="block w-full rounded-xl border-2 border-gray-100 py-3 px-4 text-lg
                           bg-white/80 focus:border-[#9C6FFF] focus:ring-[#9C6FFF] 
                           transition-all duration-200 placeholder-gray-400">
@@ -28,7 +30,7 @@
                      rows="4"
                      class="block w-full rounded-xl border-2 border-gray-100 py-3 px-4 text-lg
                             bg-white/80 focus:border-[#9C6FFF] focus:ring-[#9C6FFF] 
-                            transition-all duration-200 placeholder-gray-400 resize-none">{{.Content}}</textarea>
+                            transition-all duration-200 placeholder-gray-400 resize-none">{{.Note.Content}}</textarea>
         </div>
 
         <!-- Category Select -->
@@ -39,21 +41,21 @@
                     class="block w-full rounded-xl border-2 border-gray-100 py-3 px-4 text-lg
                            bg-white/80 focus:border-[#9C6FFF] focus:ring-[#9C6FFF] 
                            transition-all duration-200">
-                <option value="personal" {{if eq .Category "personal"}}selected{{end}}>✨ Personal Growth</option>
-                <option value="work" {{if eq .Category "work"}}selected{{end}}>💼 Professional Life</option>
-                <option value="family" {{if eq .Category "family"}}selected{{end}}>👨‍👩‍👧‍👦 Family & Friends</option>
-                <option value="health" {{if eq .Category "health"}}selected{{end}}>🌱 Health & Wellness</option>
-                <option value="experiences" {{if eq .Category "experiences"}}selected{{end}}>🌟 Experiences</option>
-                <option value="other" {{if eq .Category "other"}}selected{{end}}>✨ Other Blessings</option>
+                <option value="personal" {{if eq .Note.Category "personal"}}selected{{end}}>✨ Personal Growth</option>
+                <option value="work" {{if eq .Note.Category "work"}}selected{{end}}>💼 Professional Life</option>
+                <option value="family" {{if eq .Note.Category "family"}}selected{{end}}>👨‍👩‍👧‍👦 Family & Friends</option>
+                <option value="health" {{if eq .Note.Category "health"}}selected{{end}}>🌱 Health & Wellness</option>
+                <option value="experiences" {{if eq .Note.Category "experiences"}}selected{{end}}>🌟 Experiences</option>
+                <option value="other" {{if eq .Note.Category "other"}}selected{{end}}>✨ Other Blessings</option>
             </select>
         </div>
 
         <!-- Emoji Selection -->
         <div>
             <label class="block text-sm font-medium text-gray-600 mb-2">Choose an Emoji</label>
-            <input type="hidden" name="emoji" id="selected-emoji" value="{{.Emoji}}" required>
+            <input type="hidden" name="emoji" id="selected-emoji" value="{{.Note.Emoji}}" required>
             <div class="grid grid-cols-6 gap-2">
-                {{$currentEmoji := .Emoji}}
+                {{$currentEmoji := .Note.Emoji}}
                 {{range $emoji := .Emojis}}
                 <button type="button"
                         class="emoji-btn w-12 h-12 rounded-xl flex items-center justify-center text-2xl

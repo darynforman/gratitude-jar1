@@ -1,6 +1,7 @@
 package data
 
 import (
+	"context"
 	"database/sql"
 	"errors"
 )
@@ -20,10 +21,10 @@ type UserModel struct {
 }
 
 // GetByEmail fetches a user by email
-func (m *UserModel) GetByEmail(email string) (*User, error) {
+func (m *UserModel) GetByEmail(ctx context.Context, email string) (*User, error) {
 	query := `SELECT id, username, email, password_hash, role FROM users WHERE email = $1`
 	user := &User{}
-	err := m.DB.QueryRow(query, email).Scan(&user.ID, &user.Username, &user.Email, &user.PasswordHash, &user.Role)
+	err := m.DB.QueryRowContext(ctx, query, email).Scan(&user.ID, &user.Username, &user.Email, &user.PasswordHash, &user.Role)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return nil, nil
@@ -34,17 +35,17 @@ func (m *UserModel) GetByEmail(email string) (*User, error) {
 }
 
 // Insert adds a new user to the database
-func (m *UserModel) Insert(username, email, passwordHash, role string) error {
+func (m *UserModel) Insert(ctx context.Context, username, email, passwordHash, role string) error {
 	query := `INSERT INTO users (username, email, password_hash, role) VALUES ($1, $2, $3, $4)`
-	_, err := m.DB.Exec(query, username, email, passwordHash, role)
+	_, err := m.DB.ExecContext(ctx, query, username, email, passwordHash, role)
 	return err
 }
 
 // GetByUsername fetches a user by username.
-func (m *UserModel) GetByUsername(username string) (*User, error) {
+func (m *UserModel) GetByUsername(ctx context.Context, username string) (*User, error) {
 	query := `SELECT id, username, password_hash, role FROM users WHERE username = $1`
 	user := &User{}
-	err := m.DB.QueryRow(query, username).Scan(&user.ID, &user.Username, &user.PasswordHash, &user.Role)
+	err := m.DB.QueryRowContext(ctx, query, username).Scan(&user.ID, &user.Username, &user.PasswordHash, &user.Role)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return nil, nil

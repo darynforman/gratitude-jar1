@@ -38,9 +38,9 @@ func RequireOwnership(next http.HandlerFunc) http.HandlerFunc {
 
 		// Check if this is a gratitude note
 		if strings.Contains(r.URL.Path, "/gratitude/") || strings.Contains(r.URL.Path, "/notes/") {
-			// Get the note
+			// Get the note with context
 			gratitudeModel := data.NewGratitudeModel(config.DB)
-			note, err := gratitudeModel.Get(resourceID)
+			note, err := gratitudeModel.Get(r.Context(), resourceID)
 			if err != nil || note == nil {
 				http.NotFound(w, r)
 				return
