@@ -539,8 +539,12 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 			}
 			// For regular requests, render the full page with error
 			data := PageData{
-				Title:  "Login",
-				Errors: map[string]string{"generic": errorMessage},
+				Title: "Login",
+				Errors: map[string]string{
+					"generic":  errorMessage,
+					"username": "Invalid username or password",
+					"password": "Invalid username or password",
+				},
 			}
 			render(w, r, "login.tmpl", data)
 			return
