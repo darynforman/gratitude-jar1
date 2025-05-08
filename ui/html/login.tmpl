@@ -24,7 +24,7 @@
               hx-trigger="submit"
               hx-target="#error-container"
               hx-swap="innerHTML"
-              autocomplete="off">
+              autocomplete="off" novalidate>
 
             <!-- CSRF Token -->
             <input type="hidden" name="csrf_token" value="{{.CSRFToken}}">
@@ -60,10 +60,13 @@
                             </svg>
                         </div>
                         <input id="username" name="username" type="text" required
-                            class="pl-12 focus:ring-[#9C6FFF] focus:border-[#9C6FFF] block w-full text-lg border-gray-300 rounded-xl transition-colors duration-200 py-4 px-4"
+                            class="pl-12 focus:ring-[#9C6FFF] focus:border-[#9C6FFF] block w-full text-lg border-gray-300 rounded-xl transition-colors duration-200 py-4 px-4{{if .Errors.username}} border-red-500 ring-2 ring-red-400{{end}}"
                             placeholder="Enter your username"
                             autocomplete="off">
                     </div>
+                    {{if .Errors.username}}
+                    <p class="mt-2 text-sm text-red-600">{{.Errors.username}}</p>
+                    {{end}}
                 </div>
 
                 <!-- Password Input -->
@@ -76,7 +79,7 @@
                             </svg>
                         </div>
                         <input id="password" name="password" type="password" required
-                            class="pl-12 focus:ring-[#9C6FFF] focus:border-[#9C6FFF] block w-full text-lg border-gray-300 rounded-xl transition-colors duration-200 py-4 px-4"
+                            class="pl-12 focus:ring-[#9C6FFF] focus:border-[#9C6FFF] block w-full text-lg border-gray-300 rounded-xl transition-colors duration-200 py-4 px-4{{if .Errors.password}} border-red-500 ring-2 ring-red-400{{end}}"
                             placeholder="••••••••"
                             autocomplete="new-password">
                         <button type="button"
@@ -88,6 +91,9 @@
                             </svg>
                         </button>
                     </div>
+                    {{if .Errors.password}}
+                    <p class="mt-2 text-sm text-red-600">{{.Errors.password}}</p>
+                    {{end}}
                 </div>
             </div>
 
