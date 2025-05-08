@@ -28,6 +28,7 @@ func routes() http.Handler {
 	// Define application routes
 	// Each route is mapped to its corresponding handler function
 	mux.HandleFunc("/contact", contact) // Contact page
+	mux.HandleFunc("/about", about)     // About page
 	mux.HandleFunc("/", home)           // Home page
 	// Protected routes
 	mux.Handle("/gratitude", auth.RequireLogin(http.HandlerFunc(gratitude)))
@@ -48,7 +49,7 @@ func routes() http.Handler {
 	handler = SecureHeadersMiddleware(handler)       // Add security headers
 	handler = auth.SessionTimeoutMiddleware(handler) // Check session timeout
 	handler = RecoverPanicMiddleware(handler)        // Recover from panics
-	handler = nosurf.New(handler)                   // Add CSRF protection
+	handler = nosurf.New(handler)                    // Add CSRF protection
 
 	return handler
 }

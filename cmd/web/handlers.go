@@ -365,8 +365,8 @@ func getNoteForEdit(w http.ResponseWriter, r *http.Request) {
 
 	// Prepare template data
 	data := PageData{
-		Title: "Edit Gratitude Note",
-		Note: note,
+		Title:  "Edit Gratitude Note",
+		Note:   note,
 		Emojis: []string{"✨", "🌟", "💫", "🙏", "❤️", "🌈", "🌞", "🌺", "🎉", "💝", "🌱", "⭐"},
 	}
 
@@ -607,4 +607,20 @@ func contact(w http.ResponseWriter, r *http.Request) {
 	// Render the contact template with the given data
 	render(w, r, "contact.tmpl", data)
 	log.Printf("Contact page rendered successfully")
+}
+
+// about handles requests to the about page.
+func about(w http.ResponseWriter, r *http.Request) {
+	if r.URL.Path != "/about" {
+		http.NotFound(w, r)
+		return
+	}
+	if r.Method != http.MethodGet {
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+	data := PageData{
+		Title: "About",
+	}
+	render(w, r, "about.tmpl", data)
 }
