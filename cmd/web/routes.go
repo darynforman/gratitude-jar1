@@ -33,7 +33,6 @@ func routes() http.Handler {
 	// Protected routes
 	mux.Handle("/gratitude", auth.RequireLogin(http.HandlerFunc(gratitude)))
 	mux.Handle("/notes", auth.RequireLogin(http.HandlerFunc(viewNotes)))
-	mux.Handle("/gratitude/create", auth.RequireLogin(http.HandlerFunc(createGratitude)))
 	mux.Handle("/gratitude/edit/", auth.RequireLogin(auth.RequireOwnership(http.HandlerFunc(getNoteForEdit))))
 	mux.Handle("/notes/", auth.RequireLogin(auth.RequireOwnership(http.HandlerFunc(updateGratitude))))
 

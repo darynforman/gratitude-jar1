@@ -89,112 +89,62 @@ func viewNotes(w http.ResponseWriter, r *http.Request) {
 // gratitude handles requests to the gratitude page where users can add new notes.
 // It supports both full page loads and HTMX partial updates.
 func gratitude(w http.ResponseWriter, r *http.Request) {
-	log.Printf("Handling gratitude page request")
-
-	data := PageData{
-		Title:  "Add Gratitude Note",
-		Emojis: []string{"✨", "🌟", "💫", "🙏", "❤️", "🌈", "🌞", "🌺", "🎉", "💝", "🌱", "⭐"},
-	}
-
-	// Check if the request is from HTMX (for partial updates)
-	if r.Header.Get("HX-Request") == "true" {
-		log.Printf("HTMX request detected, rendering partial template")
-		// Load and parse only the notes-list section from gratitude.tmpl
-		tmpl := template.Must(template.ParseFiles("ui/html/gratitude.tmpl"))
-		tmpl.ExecuteTemplate(w, "notes-list", data)
-		return
-	}
-
-	log.Printf("Rendering gratitude template")
-	// Otherwise, render the gratitude template
-	render(w, r, "gratitude.tmpl", data)
-}
-
-// createGratitude handles form submissions for creating new gratitude notes.
-// It processes POST requests and supports both regular form submissions and HTMX requests.
-func createGratitude(w http.ResponseWriter, r *http.Request) {
-	log.Printf("Handling create gratitude note request")
-
-	if r.Method != http.MethodPost {
-		log.Printf("Invalid method: %s", r.Method)
-		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
-		return
-	}
-
-	err := r.ParseForm()
-	if err != nil {
-		log.Printf("Error parsing form: %v", err)
-		http.Error(w, "Bad Request", http.StatusBadRequest)
-		return
-	}
-
-	// Get form values
-	title := r.PostForm.Get("title")
-	content := r.PostForm.Get("content")
-	category := r.PostForm.Get("category")
-	emoji := r.PostForm.Get("emoji")
-
-	// Validate the form data
-	v := validator.ValidateGratitudeNote(title, content, category, emoji)
-	if !v.ValidData() {
-		// If validation fails, return the errors
-		if r.Header.Get("HX-Request") == "true" {
-			// For HTMX requests, return the errors as JSON
-			w.Header().Set("Content-Type", "application/json")
-			w.WriteHeader(http.StatusBadRequest)
-			json.NewEncoder(w).Encode(v.Errors)
+	emojis := []string{"✨", "🌟", "💫", "🙏", "❤️", "🌈"}
+	if r.Method == http.MethodPost {
+		err := r.ParseForm()
+		if err != nil {
+			http.Error(w, "Bad Request", http.StatusBadRequest)
 			return
 		}
-		// For regular requests, render the form with errors
-		data := PageData{
-			Title:  "Add Gratitude Note",
-			Errors: v.Errors,
+		title := r.PostForm.Get("title")
+		content := r.PostForm.Get("content")
+		category := r.PostForm.Get("category")
+		emoji := r.PostForm.Get("emoji")
+		v := validator.ValidateGratitudeNote(title, content, category, emoji)
+		if !v.ValidData() {
+			data := PageData{
+				Title:  "Add Gratitude Note",
+				Errors: v.Errors,
+				Emojis: emojis,
+				Form: map[string]string{
+					"title":    title,
+					"content":  content,
+					"category": category,
+					"emoji":    emoji,
+				},
+			}
+			render(w, r, "add-note.tmpl", data)
+			return
 		}
-		render(w, r, "add-note.tmpl", data)
-		return
-	}
-
-	// Get user ID from session
-	userID := session.Manager.GetInt(r, "userID")
-	if userID == 0 {
-		log.Printf("No user ID found in session")
-		http.Error(w, "Unauthorized", http.StatusUnauthorized)
-		return
-	}
-
-	// Create a new gratitude note from form data
-	note := &data.GratitudeNote{
-		Title:     title,
-		Content:   content,
-		Category:  category,
-		Emoji:     emoji,
-		UserID:    userID,
-		CreatedAt: time.Now(),
-		UpdatedAt: time.Now(),
-	}
-
-	// Insert the note into the database with context
-	err = getGratitudeModel().Insert(r.Context(), note)
-	if err != nil {
-		log.Printf("Error inserting note into database: %v", err)
-		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
-		return
-	}
-
-	// If this is an HTMX request, return the thank you message
-	if r.Header.Get("HX-Request") == "true" {
-		// Render the thank you message template
-		tmpl := template.Must(template.ParseFiles("ui/html/partials/thank-you-message.tmpl"))
-		if err := tmpl.ExecuteTemplate(w, "thank-you-message", nil); err != nil {
-			log.Printf("Error executing template: %v", err)
+		userID := session.Manager.GetInt(r, "userID")
+		if userID == 0 {
+			http.Error(w, "Unauthorized", http.StatusUnauthorized)
+			return
+		}
+		note := &data.GratitudeNote{
+			Title:     title,
+			Content:   content,
+			Category:  category,
+			Emoji:     emoji,
+			UserID:    userID,
+			CreatedAt: time.Now(),
+			UpdatedAt: time.Now(),
+		}
+		err = getGratitudeModel().Insert(r.Context(), note)
+		if err != nil {
 			http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 			return
 		}
+		http.Redirect(w, r, "/notes", http.StatusSeeOther)
 		return
 	}
-
-	// For regular form submissions, redirect to the notes page
-	http.Redirect(w, r, "/notes", http.StatusSeeOther)
+	// GET: show empty form
+	data := PageData{
+		Title:  "Add Gratitude Note",
+		Emojis: emojis,
+		Form:   map[string]string{},
+	}
+	render(w, r, "add-note.tmpl", data)
 }
 
 // updateGratitude handles both updating and deleting gratitude notes.
@@ -246,8 +196,8 @@ func updateGratitude(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Handle PUT request (or POST with override)
-	if method != http.MethodPut {
+	// Accept both PUT and POST for updates
+	if method != http.MethodPut && method != http.MethodPost {
 		log.Printf("Invalid method: %s", method)
 		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 		return
@@ -539,12 +489,8 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 			}
 			// For regular requests, render the full page with error
 			data := PageData{
-				Title: "Login",
-				Errors: map[string]string{
-					"generic":  errorMessage,
-					"username": "Invalid username or password",
-					"password": "Invalid username or password",
-				},
+				Title:  "Login",
+				Errors: map[string]string{"generic": errorMessage},
 			}
 			render(w, r, "login.tmpl", data)
 			return

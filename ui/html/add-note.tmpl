@@ -28,54 +28,40 @@
 
         <!-- Main Form Card -->
         <div class="bg-white/95 backdrop-blur-lg rounded-3xl p-8 shadow-2xl relative overflow-hidden animate-slide-up">
-            <form hx-post="/gratitude/create"
-                  hx-push-url="true"
-                  hx-indicator="#submit-indicator"
-                  hx-target="#form-messages"
-                  hx-swap="innerHTML"
-                  class="space-y-8 relative">
-                
+            <form method="POST" action="/gratitude" class="space-y-8 relative" novalidate>
+                <input type="hidden" name="csrf_token" value="{{.CSRFToken}}">
                 <!-- Form messages -->
                 <div id="form-messages" class="text-red-500"></div>
-                
-                <!-- Loading indicator -->
-                <div id="submit-indicator" class="htmx-indicator">
-                    <div class="flex items-center justify-center">
-                        <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-[#9C6FFF]"></div>
-                    </div>
-                </div>
-
+                <!-- Loading indicator removed -->
                 <div class="group">
                     <label for="title" class="block text-sm font-medium text-gray-700 mb-2 group-focus-within:text-[#9C6FFF] transition-colors">Title</label>
-                    <input type="text" id="title" name="title" required minlength="3" maxlength="100"
+                    <input type="text" id="title" name="title"
                            placeholder="What brings you joy today?"
+                           value="{{index .Form "title"}}"
                            class="block w-full rounded-xl border-2 border-gray-100 shadow-sm focus:border-[#9C6FFF] focus:ring-[#9C6FFF] transition-all duration-200 text-lg py-3 px-4 bg-white/80">
-                    <div class="error-message text-red-500 text-sm mt-1" data-field="title"></div>
+                    {{if .Errors.title}}<div class="error-message text-red-500 text-sm mt-1">{{.Errors.title}}</div>{{end}}
                 </div>
-
                 <div class="group">
                     <label for="content" class="block text-sm font-medium text-gray-700 mb-2 group-focus-within:text-[#9C6FFF] transition-colors">Express Your Gratitude</label>
-                    <textarea id="content" name="content" rows="4" required minlength="10" maxlength="1000"
+                    <textarea id="content" name="content" rows="4"
                               placeholder="Take a moment to reflect on what you're thankful for..."
-                              class="block w-full rounded-xl border-2 border-gray-100 shadow-sm focus:border-[#9C6FFF] focus:ring-[#9C6FFF] transition-all duration-200 text-lg py-3 px-4 bg-white/80"></textarea>
-                    <div class="error-message text-red-500 text-sm mt-1" data-field="content"></div>
+                              class="block w-full rounded-xl border-2 border-gray-100 shadow-sm focus:border-[#9C6FFF] focus:ring-[#9C6FFF] transition-all duration-200 text-lg py-3 px-4 bg-white/80">{{index .Form "content"}}</textarea>
+                    {{if .Errors.content}}<div class="error-message text-red-500 text-sm mt-1">{{.Errors.content}}</div>{{end}}
                 </div>
-
                 <div class="group">
                     <label for="category" class="block text-sm font-medium text-gray-700 mb-2 group-focus-within:text-[#9C6FFF] transition-colors">Category</label>
-                    <select id="category" name="category" required
+                    <select id="category" name="category"
                             class="block w-full rounded-xl border-2 border-gray-100 shadow-sm focus:border-[#9C6FFF] focus:ring-[#9C6FFF] transition-all duration-200 text-lg py-3 px-4 bg-white/80">
                         <option value="">Select a category</option>
-                        <option value="personal">✨ Personal Growth</option>
-                        <option value="work">💼 Professional Life</option>
-                        <option value="family">👨‍👩‍👧‍👦 Family & Friends</option>
-                        <option value="achievements">🏆 Achievements</option>
-                        <option value="health">🌱 Health & Wellness</option>
-                        <option value="experiences">🌟 Experiences</option>
+                        <option value="personal" {{if eq (index .Form "category") "personal"}}selected{{end}}>✨ Personal Growth</option>
+                        <option value="work" {{if eq (index .Form "category") "work"}}selected{{end}}>💼 Professional Life</option>
+                        <option value="family" {{if eq (index .Form "category") "family"}}selected{{end}}>👨‍👩‍👧‍👦 Family & Friends</option>
+                        <option value="achievements" {{if eq (index .Form "category") "achievements"}}selected{{end}}>🏆 Achievements</option>
+                        <option value="health" {{if eq (index .Form "category") "health"}}selected{{end}}>🌱 Health & Wellness</option>
+                        <option value="experiences" {{if eq (index .Form "category") "experiences"}}selected{{end}}>🌟 Experiences</option>
                     </select>
-                    <div class="error-message text-red-500 text-sm mt-1" data-field="category"></div>
+                    {{if .Errors.category}}<div class="error-message text-red-500 text-sm mt-1">{{.Errors.category}}</div>{{end}}
                 </div>
-
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-4">Choose an Emoji</label>
                     <div class="emoji-grid grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-4 p-4 bg-white/80 rounded-xl border-2 border-gray-100">
@@ -86,10 +72,9 @@
                         <button type="button" class="emoji-btn text-4xl p-4 rounded-lg hover:scale-110 hover:bg-[#9C6FFF]/10 transition-all duration-300" data-emoji="❤️" title="Red Heart">❤️</button>
                         <button type="button" class="emoji-btn text-4xl p-4 rounded-lg hover:scale-110 hover:bg-[#9C6FFF]/10 transition-all duration-300" data-emoji="🌈" title="Rainbow">🌈</button>
                     </div>
-                    <input type="hidden" id="selected-emoji" name="emoji" value="✨">
-                    <div class="error-message text-red-500 text-sm mt-1" data-field="emoji"></div>
+                    <input type="hidden" id="selected-emoji" name="emoji" value="{{index .Form "emoji"}}">
+                    {{if .Errors.emoji}}<div class="error-message text-red-500 text-sm mt-1">{{.Errors.emoji}}</div>{{end}}
                 </div>
-
                 <div class="flex justify-end pt-6">
                     <button type="submit"
                             class="inline-flex items-center px-8 py-4 text-lg font-medium text-white rounded-xl shadow-lg 
@@ -99,7 +84,6 @@
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
                         </svg>
                         <span>Add Gratitude</span>
-                        <span class="htmx-indicator ml-2">...</span>
                     </button>
                 </div>
             </form>

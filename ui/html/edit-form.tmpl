@@ -10,14 +10,8 @@
 
 {{define "content"}}
 <div id="note-{{.PageData.Note.ID}}" class="note-card bg-white/95 backdrop-blur-lg rounded-2xl p-6 shadow-xl transition-all duration-300">
-    <form method="POST"
-          hx-post="/notes/{{.PageData.Note.ID}}"
-          hx-headers='{"X-HTTP-Method-Override": "PUT", "X-CSRF-Token": "{{.CSRFToken}}"}'
-          hx-target="#note-{{.Note.ID}}"
-          hx-swap="outerHTML"
-          class="space-y-6">
+    <form method="POST" action="/notes/{{.PageData.Note.ID}}" class="space-y-8 relative" novalidate>
         <input type="hidden" name="csrf_token" value="{{.CSRFToken}}">
-        
         <div class="flex justify-between items-start mb-4">
             <div class="flex items-center space-x-3">
                 <span class="text-3xl">{{.PageData.Note.Emoji}}</span>
@@ -52,13 +46,10 @@
             </select>
 
             <div class="flex space-x-2">
-                <button type="button"
-                        hx-get="/notes"
-                        hx-target="#note-{{.PageData.Note.ID}}"
-                        hx-swap="outerHTML"
-                        class="px-4 py-2 text-gray-700 bg-gray-200 hover:bg-gray-300 rounded-lg transition-all duration-200">
+                <a href="/notes"
+                   class="px-4 py-2 text-gray-700 bg-gray-200 hover:bg-gray-300 rounded-lg transition-all duration-200">
                     Cancel
-                </button>
+                </a>
                 <button type="submit"
                         class="px-4 py-2 text-white bg-[#9C6FFF] hover:bg-[#7C4DFF] rounded-lg transition-all duration-200">
                     Save Changes

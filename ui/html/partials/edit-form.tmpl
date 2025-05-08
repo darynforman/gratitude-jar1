@@ -1,10 +1,6 @@
 <!-- Edit Form Card -->
 <div id="note-{{.Note.ID}}" class="bg-white/95 backdrop-blur-lg rounded-2xl p-6 shadow-xl transition-all duration-300">
-    <form hx-put="/notes/{{.Note.ID}}"
-          hx-target="#note-{{.Note.ID}}"
-          hx-swap="outerHTML"
-          hx-headers='{"X-CSRF-Token": "{{.CSRFToken}}"}'
-          class="space-y-4">
+    <form method="POST" action="/notes/{{.Note.ID}}" class="space-y-8 relative" novalidate>
         <input type="hidden" name="csrf_token" value="{{.CSRFToken}}">
         <!-- Title Input -->
         <div class="group">
