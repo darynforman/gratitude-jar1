@@ -18,7 +18,7 @@ import (
 // Note: This function is currently not used as the server initialization
 // is handled directly in main.go. It's kept here for reference and potential
 // future use if server configuration becomes more complex.
-func startServer(app *application) {
+func startServer() {
 	// Initialize the template cache
 	if err := initTemplateCache(); err != nil {
 		log.Fatalf("Failed to initialize template cache: %v", err)

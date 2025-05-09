@@ -44,5 +44,5 @@ func main() {
 	}
 
 	// Start the server
-	startServer(app)
+	startServer()
 }
